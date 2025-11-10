@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -21,7 +22,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="container flex h-16 items-center justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="font-bold text-lg tracking-tight">
+              <Button
+                variant="ghost"
+                className="font-bold text-lg tracking-tight hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+              >
                 Mindful Charts
               </Button>
             </DropdownMenuTrigger>
