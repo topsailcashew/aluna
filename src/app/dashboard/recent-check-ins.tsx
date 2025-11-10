@@ -124,7 +124,7 @@ export function RecentCheckIns() {
                         {entry.emotion}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {entry.specificEmotions.join(', ')}
+                        {entry.specificEmotions?.join(', ')}
                       </p>
                     </div>
                     <div className="ml-auto text-right">
