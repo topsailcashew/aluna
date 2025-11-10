@@ -432,5 +432,3 @@ export function CheckInForm() {
     </Form>
   );
 }
-
-    
