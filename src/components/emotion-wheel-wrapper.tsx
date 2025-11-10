@@ -23,3 +23,5 @@ export function EmotionWheelWrapper(props: EmotionWheelWrapperProps) {
 
     return <EmotionWheel {...props} />;
 }
+
+    
