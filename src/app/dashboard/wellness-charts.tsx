@@ -44,6 +44,14 @@ const emotionChartConfig = L2Emotions.reduce((acc, emotion) => {
     return acc;
 }, {} as ChartConfig);
 
+const emotionLegendConfig = emotionCategories.reduce((acc, category) => {
+    acc[category.name] = {
+        label: category.name,
+        color: category.color,
+    };
+    return acc;
+}, {} as ChartConfig);
+
 
 const thoughtChartConfig = thoughtPatternConfig.reduce((acc, pattern) => {
   acc[pattern.id] = {
@@ -124,13 +132,17 @@ export function WellnessCharts() {
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
+                interval={0}
+                tick={{ fontSize: 12, angle: -45, textAnchor: 'end' }}
+                height={60}
               />
               <YAxis />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="count" radius={8} />
+               <ChartLegend content={<ChartLegendContent nameKey="name" payload={emotionCategories.map(cat => ({ value: cat.name, color: cat.color, type: 'square' }))} />} />
+              <Bar dataKey="count" radius={4} barSize={20} />
             </BarChart>
           </ChartContainer>
         </CardContent>
