@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import {
   Form,
@@ -171,7 +170,7 @@ export function CheckInForm() {
                     <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Scan your body. Note any physical sensations, their location, and intensity.
                     </p>
-                    <Card className="w-full max-w-4xl mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col h-auto max-h-[60vh]">
+                    <Card className="w-full max-w-4xl mx-auto bg-background/80 backdrop-blur-sm rounded-2xl flex flex-col h-auto max-h-[60vh]">
                         <CardContent className="flex-1 grid md:grid-cols-2 gap-x-8 gap-y-4 p-6 overflow-hidden">
                           {/* Left: Editor */}
                           <div className="flex flex-col gap-4 text-left">
@@ -381,14 +380,14 @@ export function CheckInForm() {
                         <div className="absolute inset-0 bg-gradient-to-tl from-green-400 via-yellow-400 to-blue-500 rounded-full blur-3xl opacity-50"></div>
                     </div>
                 </div>
-                <div className="relative z-10 w-full">
+                <div className="relative z-10 w-full px-4">
                     <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">
                         What's On Your Mind?
                     </h1>
                     <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Observe your thoughts without judgment. What patterns do you notice? This helps in understanding your mental habits.
                     </p>
-                    <Card className="w-full max-w-2xl mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col max-h-[60vh]">
+                    <Card className="w-full max-w-2xl mx-auto bg-background/80 backdrop-blur-sm rounded-2xl flex flex-col max-h-[60vh]">
                         <CardContent className="flex-1 p-6">
                             <ScrollArea className="h-full pr-3">
                             <FormField
@@ -444,7 +443,7 @@ export function CheckInForm() {
                     </Card>
                 </div>
             </div>
-            <CardFooter className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
+            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
                 <Button
                 type="submit"
                 size="lg"
@@ -453,7 +452,7 @@ export function CheckInForm() {
                 >
                 {form.formState.isSubmitting ? "Saving..." : "Save Entry"}
                 </Button>
-            </CardFooter>
+            </div>
         </StepSection>
       </form>
     </Form>
