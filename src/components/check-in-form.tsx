@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowDown, Plus, Trash2, XIcon } from "lucide-react";
+import { ArrowDown, Plus, XIcon } from "lucide-react";
 import * as React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -213,8 +213,9 @@ export function CheckInForm() {
                               onChange={(e) => setCurrentSensation(p => ({...p, notes: e.target.value}))}
                             />
                         </FormItem>
-                        <Button type="button" onClick={addNewSensation} className="mt-auto">
-                          <Plus className="mr-2 h-4 w-4" /> Log Sensation
+                        <Button type="button" size="icon" onClick={addNewSensation} className="mt-auto self-end">
+                          <Plus className="h-4 w-4" />
+                          <span className="sr-only">Log Sensation</span>
                         </Button>
                       </div>
 
@@ -463,5 +464,3 @@ export function CheckInForm() {
     </Form>
   );
 }
-
-    
