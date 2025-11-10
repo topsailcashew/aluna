@@ -166,12 +166,12 @@ export function CheckInForm() {
                         <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-indigo-600 to-yellow-300 rounded-full blur-3xl opacity-50"></div>
                     </div>
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 w-full px-4">
                     <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">Where Do You Feel It?</h1>
-                    <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mb-8">
+                    <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Scan your body. Note any physical sensations, their location, and intensity.
                     </p>
-                    <Card className="w-full max-w-2xl bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col h-auto max-h-[60vh]">
+                    <Card className="w-full max-w-4xl mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col h-auto max-h-[60vh]">
                         <CardContent className="flex-1 grid md:grid-cols-2 gap-x-8 gap-y-4 p-6 overflow-hidden">
                           {/* Left: Editor */}
                           <div className="flex flex-col gap-4 text-left">
@@ -459,3 +459,5 @@ export function CheckInForm() {
     </Form>
   );
 }
+
+    
