@@ -121,13 +121,14 @@ export const emotions = emotionCategories.flatMap(cat =>
 
 
 export const thoughtPatterns = [
-  { id: "planning", label: "Planning or problem-solving" },
-  { id: "worrying", label: "Worrying about the future" },
-  { id: "ruminating", label: "Ruminating on the past" },
-  { id: "self-critical", label: "Self-critical thoughts" },
-  { id: "grateful", label: "Grateful or appreciative thoughts" },
-  { id: "neutral", label: "Neutral or observational" },
-  { id: "daydreaming", label: "Daydreaming or wandering" },
+  { id: "future_worry", label: "Worrying about the future" },
+  { id: "past_rumination", label: "Dwelling on the past" },
+  { id: "self_criticism", label: "Engaging in self-criticism" },
+  { id: "black_and_white", label: "Black-and-white thinking" },
+  { id: "gratitude", label: "Feeling grateful or appreciative" },
+  { id: "problem_solving", label: "Planning or problem-solving" },
+  { id: "observational", label: "Simply observing the present" },
+  { id: "daydreaming", label: "Mind wandering or daydreaming" },
 ];
 
 export const initialLogEntries: LogEntry[] = [
@@ -139,7 +140,7 @@ export const initialLogEntries: LogEntry[] = [
     sensations: [
       { id: "s1", location: "Chest", intensity: 7, notes: "Heaviness" },
     ],
-    thoughts: ["ruminating"],
+    thoughts: ["past_rumination"],
   },
   {
     id: "2",
@@ -150,7 +151,7 @@ export const initialLogEntries: LogEntry[] = [
       { id: "s2", location: "Stomach", intensity: 8, notes: "Butterflies" },
       { id: "s3", location: "Hands", intensity: 6, notes: "Sweaty palms" },
     ],
-    thoughts: ["worrying"],
+    thoughts: ["future_worry"],
   },
   {
     id: "3",
@@ -160,7 +161,7 @@ export const initialLogEntries: LogEntry[] = [
     sensations: [
       { id: "s4", location: "Chest", intensity: 4, notes: "Warmth and lightness" },
     ],
-    thoughts: ["grateful"],
+    thoughts: ["gratitude"],
   },
   {
     id: "4",
@@ -170,7 +171,7 @@ export const initialLogEntries: LogEntry[] = [
     sensations: [
        { id: "s5", location: "Stomach", intensity: 5, notes: "Excited jitters" },
     ],
-    thoughts: ["planning", "daydreaming"],
+    thoughts: ["problem_solving", "daydreaming"],
   },
   {
     id: "5",
@@ -181,6 +182,6 @@ export const initialLogEntries: LogEntry[] = [
        { id: "s6", location: "Head", intensity: 6, notes: "Tension headache" },
        { id: "s7", location: "Shoulders", intensity: 7, notes: "Tightness" },
     ],
-    thoughts: ["self-critical", "ruminating"],
+    thoughts: ["self_criticism", "past_rumination"],
   },
 ];
