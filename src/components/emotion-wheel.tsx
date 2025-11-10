@@ -92,8 +92,6 @@ const EmotionWheel = ({
                 <path
                   d={pathData}
                   fill={category.color}
-                  stroke="hsl(var(--card))"
-                  strokeWidth="2"
                   className={cn(
                     "cursor-pointer transition-all duration-200 ease-in-out",
                      isSelected ? "opacity-100 scale-105" : "opacity-70 hover:opacity-100",
@@ -144,8 +142,6 @@ const EmotionWheel = ({
                   <path
                     d={pathData}
                     fill={category?.color}
-                    stroke="hsl(var(--card))"
-                    strokeWidth="2"
                     className={cn(
                       "cursor-pointer transition-all duration-200 ease-in-out",
                       isSelected ? "opacity-100 scale-105 brightness-125" : "opacity-90 hover:opacity-100 hover:brightness-110",

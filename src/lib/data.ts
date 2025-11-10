@@ -36,7 +36,7 @@ export const bodyParts = [
 export const emotionCategories = [
   {
     name: "Happy",
-    color: "#FDBA74", // Softer Orange
+    color: "#F9B233", // Bolder Orange
     subCategories: [
       { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene"] },
       { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated"] },
@@ -46,7 +46,7 @@ export const emotionCategories = [
   },
   {
     name: "Sad",
-    color: "#F9A8D4", // Softer Pink
+    color: "#EF798A", // Bolder Pink
     subCategories: [
       { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful"] },
       { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty"] },
@@ -56,7 +56,7 @@ export const emotionCategories = [
   },
   {
     name: "Disgusted",
-    color: "#C4B5FD", // Softer Purple
+    color: "#A086D3", // Bolder Purple
     subCategories: [
       { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened"] },
       { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing"] },
@@ -64,7 +64,7 @@ export const emotionCategories = [
   },
   {
     name: "Angry",
-    color: "#A5B4FC", // Softer Blue/Purple
+    color: "#61A0AF", // Bolder Teal/Blue
     subCategories: [
       { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated"] },
       { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged"] },
@@ -73,7 +73,7 @@ export const emotionCategories = [
   },
   {
     name: "Fearful",
-    color: "#6EE7B7", // Softer Teal/Green
+    color: "#48B3A6", // Bolder Teal/Green
     subCategories: [
       { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed"] },
       { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain"] },
@@ -82,7 +82,7 @@ export const emotionCategories = [
   },
   {
     name: "Surprised",
-    color: "#FDE047", // Softer Yellow
+    color: "#F2CD5C", // Bolder Yellow
     subCategories: [
       { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed"] },
       { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed"] },
