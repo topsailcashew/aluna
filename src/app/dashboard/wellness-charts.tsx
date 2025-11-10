@@ -124,7 +124,7 @@ export function WellnessCharts() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={emotionChartConfig} className="min-h-[250px] w-full">
+          <ChartContainer config={emotionChartConfig} className="min-h-[160px] w-full">
             <BarChart accessibilityLayer data={emotionFrequency}>
               <CartesianGrid vertical={false} />
               <XAxis
@@ -156,7 +156,7 @@ export function WellnessCharts() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={{}} className="min-h-[250px] w-full">
+          <ChartContainer config={{}} className="min-h-[160px] w-full">
             <LineChart
               accessibilityLayer
               data={sensationTimeline}
@@ -190,7 +190,7 @@ export function WellnessCharts() {
         <CardContent className="flex items-center justify-center">
             <ChartContainer
                 config={thoughtChartConfig}
-                className="mx-auto aspect-square max-h-[350px]"
+                className="mx-auto aspect-square max-h-[300px]"
             >
                 <PieChart>
                 <ChartTooltip
