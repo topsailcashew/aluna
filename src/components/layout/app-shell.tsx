@@ -14,8 +14,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur">
-        <div className="container flex h-16 items-center justify-center">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight mr-8">
+        <div className="container flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight">
             <Icons.logo className="h-6 w-6"/>
             Mindful Charts
           </Link>
@@ -27,6 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Dashboard
             </Link>
           </nav>
+           <div className="w-40" />
         </div>
       </header>
       <main className="flex-1 flex flex-col">{children}</main>
