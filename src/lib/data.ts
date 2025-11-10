@@ -54,55 +54,55 @@ export const emotionCategories = [
     name: "Happy",
     color: "#F9B233", // Bolder Orange
     subCategories: [
-      { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene"] },
-      { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated"] },
-      { name: "Proud", emotions: ["Satisfied", "Triumphant", "Confident"] },
-      { name: "Optimistic", emotions: ["Hopeful", "Encouraged", "Inspired"] },
+      { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene", "Tranquil", "At Ease", "Grounded", "Fulfilled", "Secure"] },
+      { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated", "Ecstatic", "Jubilant", "Radiant", "Delighted", "Overjoyed"] },
+      { name: "Proud", emotions: ["Satisfied", "Triumphant", "Confident", "Accomplished", "Respected", "Valued", "Assured", "Capable", "Worthy"] },
+      { name: "Optimistic", emotions: ["Hopeful", "Encouraged", "Inspired", "Positive", "Enthusiastic", "Eager", "Motivated", "Ambitious", "Trusting"] },
     ],
   },
   {
     name: "Sad",
     color: "#EF798A", // Bolder Pink
     subCategories: [
-      { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful"] },
-      { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty"] },
-      { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Regretful"] },
-      { name: "Depressed", emotions: ["Gloomy", "Miserable", "Dejected"] },
+      { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful", "Let Down", "Wounded", "Betrayed", "Crushed", "Grieved", "Heartbroken"] },
+      { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty", "Forsaken", "Alienated", "Unwanted", "Disconnected", "Alone", "Rejected"] },
+      { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Regretful", "Culpable", "Sorry", "Contrite", "Self-reproach", "Disgraced", "Blameworthy"] },
+      { name: "Depressed", emotions: ["Gloomy", "Miserable", "Dejected", "Despondent", "Hopeless", "Melancholy", "Defeated", "Powerless", "Lifeless"] },
     ],
   },
   {
     name: "Disgusted",
     color: "#A086D3", // Bolder Purple
     subCategories: [
-      { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened"] },
-      { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing"] },
+      { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened", "Averse", "Disturbed", "Appalled", "Offended", "Contemptuous", "Horrified"] },
+      { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing", "Scornful", "Skeptical", "Cynical", "Condemning", "Repulsed", "Displeased"] },
     ],
   },
   {
     name: "Angry",
     color: "#61A0AF", // Bolder Teal/Blue
     subCategories: [
-      { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated"] },
-      { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged"] },
-      { name: "Bitter", emotions: ["Resentful", "Vindictive", "Spiteful"] },
+      { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated", "Impatient", "Aggravated", "Agitated", "Restless", "Bothered", "Vexed"] },
+      { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged", "Hateful", "Violent", "Threatening", "Provoked", "Irate", "Outraged"] },
+      { name: "Bitter", emotions: ["Resentful", "Vindictive", "Spiteful", "Jealous", "Grudge-holding", "Acrimonious", "Caustic", "Malicious", "Sullen"] },
     ],
   },
   {
     name: "Fearful",
     color: "#48B3A6", // Bolder Teal/Green
     subCategories: [
-      { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed"] },
-      { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain"] },
-      { name: "Scared", emotions: ["Frightened", "Terrified", "Panicked"] },
+      { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed", "Apprehensive", "Uneasy", "Tense", "Edgy", "Overwhelmed", "Frazzled"] },
+      { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain", "Self-conscious", "Vulnerable", "Worthless", "Unsure", "Exposed", "Helpless"] },
+      { name: "Scared", emotions: ["Frightened", "Terrified", "Panicked", "Alarmed", "Petrified", "Dread", "Horrified", "Afraid", "Daunted"] },
     ],
   },
   {
     name: "Surprised",
     color: "#F2CD5C", // Bolder Yellow
     subCategories: [
-      { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed"] },
-      { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed"] },
-      { name: "Excited", emotions: ["Eager", "Enthusiastic", "Thrilled"] },
+      { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed", "Startled", "Moved", "Speechless", "Stunned", "Wonder", "Dumbfounded"] },
+      { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed", "Bewildered", "Disoriented", "Lost", "Uncertain", "Muddled", "Clueless"] },
+      { name: "Excited", emotions: ["Eager", "Enthusiastic", "Thrilled", "Anticipating", "Energetic", "Lively", "Aroused", "Fired up", "Passionate"] },
     ],
   },
 ];
