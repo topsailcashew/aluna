@@ -391,7 +391,7 @@ export function CheckInForm() {
                     <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                         Observe your thoughts without judgment. What patterns do you notice? This helps in understanding your mental habits.
                     </p>
-                    <Card className="w-full max-w-md mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col max-h-[60vh]">
+                    <Card className="w-full max-w-2xl mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col max-h-[60vh]">
                         <CardHeader>
                             <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">Notice Your Thinking Patterns</CardTitle>
                             <CardDescription>
@@ -404,44 +404,46 @@ export function CheckInForm() {
                                 control={form.control}
                                 name="thoughts"
                                 render={() => (
-                                <FormItem className="space-y-3">
-                                    {thoughtPatterns.map((item) => (
-                                    <FormField
-                                        key={item.id}
-                                        control={form.control}
-                                        name="thoughts"
-                                        render={({ field }) => (
-                                        <FormItem
+                                <FormItem>
+                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {thoughtPatterns.map((item) => (
+                                        <FormField
                                             key={item.id}
-                                            className="flex flex-row items-start space-x-3 space-y-0 rounded-lg bg-black/5 p-3"
-                                        >
-                                            <FormControl>
-                                            <Checkbox
-                                                checked={
-                                                field.value?.includes(item.id)
-                                                }
-                                                onCheckedChange={(checked) =>
-                                                checked
-                                                    ? field.onChange([
-                                                        ...(field.value ?? []),
-                                                        item.id,
-                                                    ])
-                                                    : field.onChange(
-                                                        field.value?.filter(
-                                                        (value) =>
-                                                            value !== item.id
+                                            control={form.control}
+                                            name="thoughts"
+                                            render={({ field }) => (
+                                            <FormItem
+                                                key={item.id}
+                                                className="flex flex-row items-start space-x-3 space-y-0 rounded-lg bg-black/5 p-3"
+                                            >
+                                                <FormControl>
+                                                <Checkbox
+                                                    checked={
+                                                    field.value?.includes(item.id)
+                                                    }
+                                                    onCheckedChange={(checked) =>
+                                                    checked
+                                                        ? field.onChange([
+                                                            ...(field.value ?? []),
+                                                            item.id,
+                                                        ])
+                                                        : field.onChange(
+                                                            field.value?.filter(
+                                                            (value) =>
+                                                                value !== item.id
+                                                            )
                                                         )
-                                                    )
-                                                }
-                                            />
-                                            </FormControl>
-                                            <FormLabel className="font-normal text-sm sm:text-base">
-                                            {item.label}
-                                            </FormLabel>
-                                        </FormItem>
-                                        )}
-                                    />
-                                    ))}
+                                                    }
+                                                />
+                                                </FormControl>
+                                                <FormLabel className="font-normal text-sm sm:text-base">
+                                                {item.label}
+                                                </FormLabel>
+                                            </FormItem>
+                                            )}
+                                        />
+                                        ))}
+                                    </div>
                                     <FormMessage />
                                 </FormItem>
                                 )}
