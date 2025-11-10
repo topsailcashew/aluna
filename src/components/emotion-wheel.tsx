@@ -59,10 +59,10 @@ const EmotionWheel = ({
   const displayText = selectedEmotion || selectedCategory || "Select";
 
   return (
-    <div className="flex justify-center items-center p-4">
+    <div className="flex justify-center items-center w-full h-full">
       <svg
         viewBox="-300 -300 600 600"
-        className="w-full max-w-2xl"
+        className="w-full h-full"
         aria-label="Emotion Wheel"
       >
         <defs>
