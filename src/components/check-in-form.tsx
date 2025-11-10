@@ -140,7 +140,7 @@ export function CheckInForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="h-screen w-screen">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 w-full">
         <Carousel setApi={setApi} className="w-full h-full">
           <CarouselContent className="h-full">
             {/* Step 1: Sensations */}
