@@ -145,111 +145,11 @@ export function CheckInForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
         <Carousel setApi={setApi} className="w-full h-full">
           <CarouselContent>
-            {/* Step 1: Emotions */}
+            {/* Step 1: Sensations */}
             <CarouselItem>
               <StepCard>
                 <CardHeader>
-                  <CardTitle>1. Select Your Emotion</CardTitle>
-                  <CardDescription>
-                    First, pick a broad category, then a specific feeling.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col overflow-auto">
-                    <div className="flex-1 flex items-center justify-center">
-                        <FormField
-                            control={form.control}
-                            name="emotion"
-                            render={({ field }) => (
-                                <FormItem className="w-full">
-                                <FormControl>
-                                    <EmotionWheelWrapper
-                                    selectedEmotion={field.value}
-                                    onSelectEmotion={field.onChange}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-center" />
-                                </FormItem>
-                            )}
-                            />
-                    </div>
-                  <AnimatePresence>
-                    {specificEmotionsOptions.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="mt-6 pt-6 border-t"
-                      >
-                        <FormField
-                          control={form.control}
-                          name="specificEmotions"
-                          render={() => (
-                            <FormItem>
-                              <div className="mb-4">
-                                <FormLabel className="text-base">
-                                  Which of these best describe how you're feeling?
-                                </FormLabel>
-                                <p className="text-sm text-muted-foreground">
-                                  Select all that apply.
-                                </p>
-                              </div>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {specificEmotionsOptions.map((item) => (
-                                  <FormField
-                                    key={item}
-                                    control={form.control}
-                                    name="specificEmotions"
-                                    render={({ field }) => (
-                                      <FormItem
-                                        key={item}
-                                        className="flex flex-row items-start space-x-3 space-y-0"
-                                      >
-                                        <FormControl>
-                                          <Checkbox
-                                            checked={field.value?.includes(item)}
-                                            onCheckedChange={(checked) =>
-                                              checked
-                                                ? field.onChange([
-                                                    ...(field.value ?? []),
-                                                    item,
-                                                  ])
-                                                : field.onChange(
-                                                    field.value?.filter(
-                                                      (value) => value !== item
-                                                    )
-                                                  )
-                                            }
-                                          />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                          {item}
-                                        </FormLabel>
-                                      </FormItem>
-                                    )}
-                                  />
-                                ))}
-                              </div>
-                              <FormMessage className="pt-2" />
-                            </FormItem>
-                          )}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </CardContent>
-                <CardFooter className="justify-end">
-                  <Button type="button" onClick={handleNext}>
-                    Next <ArrowRight className="ml-2" />
-                  </Button>
-                </CardFooter>
-              </StepCard>
-            </CarouselItem>
-
-            {/* Step 2: Sensations */}
-            <CarouselItem>
-              <StepCard>
-                <CardHeader>
-                  <CardTitle>2. Log Physical Sensations</CardTitle>
+                  <CardTitle>1. Log Physical Sensations</CardTitle>
                   <CardDescription>
                     Where in your body are you feeling something?
                   </CardDescription>
@@ -349,6 +249,106 @@ export function CheckInForm() {
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Sensation
                   </Button>
+                </CardContent>
+                <CardFooter className="justify-end">
+                  <Button type="button" onClick={handleNext}>
+                    Next <ArrowRight className="ml-2" />
+                  </Button>
+                </CardFooter>
+              </StepCard>
+            </CarouselItem>
+
+            {/* Step 2: Emotions */}
+            <CarouselItem>
+              <StepCard>
+                <CardHeader>
+                  <CardTitle>2. Select Your Emotion</CardTitle>
+                  <CardDescription>
+                    First, pick a broad category, then a specific feeling.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col overflow-auto">
+                    <div className="flex-1 flex items-center justify-center">
+                        <FormField
+                            control={form.control}
+                            name="emotion"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                <FormControl>
+                                    <EmotionWheelWrapper
+                                    selectedEmotion={field.value}
+                                    onSelectEmotion={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-center" />
+                                </FormItem>
+                            )}
+                            />
+                    </div>
+                  <AnimatePresence>
+                    {specificEmotionsOptions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="mt-6 pt-6 border-t"
+                      >
+                        <FormField
+                          control={form.control}
+                          name="specificEmotions"
+                          render={() => (
+                            <FormItem>
+                              <div className="mb-4">
+                                <FormLabel className="text-base">
+                                  Which of these best describe how you're feeling?
+                                </FormLabel>
+                                <p className="text-sm text-muted-foreground">
+                                  Select all that apply.
+                                </p>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {specificEmotionsOptions.map((item) => (
+                                  <FormField
+                                    key={item}
+                                    control={form.control}
+                                    name="specificEmotions"
+                                    render={({ field }) => (
+                                      <FormItem
+                                        key={item}
+                                        className="flex flex-row items-start space-x-3 space-y-0"
+                                      >
+                                        <FormControl>
+                                          <Checkbox
+                                            checked={field.value?.includes(item)}
+                                            onCheckedChange={(checked) =>
+                                              checked
+                                                ? field.onChange([
+                                                    ...(field.value ?? []),
+                                                    item,
+                                                  ])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                      (value) => value !== item
+                                                    )
+                                                  )
+                                            }
+                                          />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">
+                                          {item}
+                                        </FormLabel>
+                                      </FormItem>
+                                    )}
+                                  />
+                                ))}
+                              </div>
+                              <FormMessage className="pt-2" />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </CardContent>
                 <CardFooter className="justify-between">
                   <Button type="button" variant="outline" onClick={handlePrev}>
