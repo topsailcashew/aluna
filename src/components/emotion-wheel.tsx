@@ -65,7 +65,12 @@ const EmotionWheel = ({
         className="w-full max-w-2xl"
         aria-label="Emotion Wheel"
       >
-        <g>
+        <defs>
+          <filter id="soft-shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.1" />
+          </filter>
+        </defs>
+        <g filter="url(#soft-shadow)">
           {/* Outer Wheel - Level 1 Categories */}
           {emotionCategories.map((category, i) => {
             const startAngle = i * angleStep - Math.PI / 2;
@@ -171,7 +176,7 @@ const EmotionWheel = ({
               );
            })}
         </g>
-        <circle cx="0" cy="0" r="60" fill={displayCategory?.color || "hsl(var(--card))"} />
+        <circle cx="0" cy="0" r="60" fill={displayCategory?.color || "hsl(var(--card))"} filter="url(#soft-shadow)" />
         <text
           x="0"
           y="0"

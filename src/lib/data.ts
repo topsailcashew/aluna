@@ -36,7 +36,7 @@ export const bodyParts = [
 export const emotionCategories = [
   {
     name: "Happy",
-    color: "#ff8c00",
+    color: "#FDBA74", // Softer Orange
     subCategories: [
       { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene"] },
       { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated"] },
@@ -46,7 +46,7 @@ export const emotionCategories = [
   },
   {
     name: "Sad",
-    color: "#c71585",
+    color: "#F9A8D4", // Softer Pink
     subCategories: [
       { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful"] },
       { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty"] },
@@ -56,7 +56,7 @@ export const emotionCategories = [
   },
   {
     name: "Disgusted",
-    color: "#8a2be2",
+    color: "#C4B5FD", // Softer Purple
     subCategories: [
       { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened"] },
       { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing"] },
@@ -64,7 +64,7 @@ export const emotionCategories = [
   },
   {
     name: "Angry",
-    color: "#483d8b",
+    color: "#A5B4FC", // Softer Blue/Purple
     subCategories: [
       { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated"] },
       { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged"] },
@@ -73,7 +73,7 @@ export const emotionCategories = [
   },
   {
     name: "Fearful",
-    color: "#008080",
+    color: "#6EE7B7", // Softer Teal/Green
     subCategories: [
       { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed"] },
       { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain"] },
@@ -82,7 +82,7 @@ export const emotionCategories = [
   },
   {
     name: "Surprised",
-    color: "#ffd700",
+    color: "#FDE047", // Softer Yellow
     subCategories: [
       { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed"] },
       { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed"] },
