@@ -13,9 +13,6 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import {
   Form,
@@ -392,13 +389,7 @@ export function CheckInForm() {
                         Observe your thoughts without judgment. What patterns do you notice? This helps in understanding your mental habits.
                     </p>
                     <Card className="w-full max-w-2xl mx-auto bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col max-h-[60vh]">
-                        <CardHeader>
-                            <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">Notice Your Thinking Patterns</CardTitle>
-                            <CardDescription>
-                            What kind of thinking is happening right now? Select all that apply.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-1">
+                        <CardContent className="flex-1 p-6">
                             <ScrollArea className="h-full pr-3">
                             <FormField
                                 control={form.control}
@@ -468,5 +459,3 @@ export function CheckInForm() {
     </Form>
   );
 }
-
-    
