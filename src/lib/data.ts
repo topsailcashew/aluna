@@ -1,4 +1,5 @@
-import { addDays, subDays } from "date-fns";
+
+import { subDays } from "date-fns";
 
 export type Sensation = {
   id: string;
@@ -10,7 +11,8 @@ export type Sensation = {
 export type LogEntry = {
   id: string;
   date: string;
-  emotion: string;
+  emotion: string; // This will now store the Level 2 emotion
+  specificEmotions: string[]; // New field for Level 3 emotions
   sensations: Sensation[];
   thoughts: string[];
 };
@@ -30,72 +32,77 @@ export const bodyParts = [
   "Other",
 ];
 
-export const emotions = [
-  { name: 'Happy', color: '#ff8c00' },
-  { name: 'Playful', color: '#ff8c00' },
-  { name: 'Content', color: '#ff8c00' },
-  { name: 'Interested', color: '#ff8c00' },
-  { name: 'Proud', color: '#ff8c00' },
-  { name: 'Accepted', color: '#ff8c00' },
-  { name: 'Powerful', color: '#ff8c00' },
-  { name: 'Peaceful', color: '#ff8c00' },
-  { name: 'Trusting', color: '#ff8c00' },
-  { name: 'Optimistic', color: '#ff8c00' },
-
-  { name: 'Sad', color: '#c71585' },
-  { name: 'Lonely', color: '#c71585' },
-  { name: 'Vulnerable', color: '#c71585' },
-  { name: 'Despair', color: '#c71585' },
-  { name: 'Guilty', color: '#c71585' },
-  { name: 'Depressed', color: '#c71585' },
-  { name: 'Hurt', color: '#c71585' },
-
-  { name: 'Disgusted', color: '#8a2be2' },
-  { name: 'Disapproving', color: '#8a2be2' },
-  { name: 'Disappointed', color: '#8a2be2' },
-  { name: 'Awful', color: '#8a2be2' },
-  { name: 'Repelled', color: '#8a2be2' },
-  
-  { name: 'Angry', color: '#483d8b' },
-  { name: 'Critical', color: '#483d8b' },
-  { name: 'Distant', color: '#483d8b' },
-  { name: 'Frustrated', color: '#483d8b' },
-  { name: 'Aggressive', color: '#483d8b' },
-  { name: 'Mad', color: '#483d8b' },
-  { name: 'Bitter', color: '#483d8b' },
-  { name: 'Humiliated', color: '#483d8b' },
-  { name: 'Let down', color: '#483d8b' },
-  
-  { name: 'Fearful', color: '#008080' },
-  { name: 'Threatened', color: '#008080' },
-  { name: 'Rejected', color: '#008080' },
-  { name: 'Weak', color: '#008080' },
-  { name: 'Insecure', color: '#008080' },
-  { name: 'Anxious', color: '#008080' },
-  { name: 'Scared', color: '#008080' },
-  
-  { name: 'Bad', color: '#2e8b57' },
-  { name: 'Bored', color: '#2e8b57' },
-  { name: 'Busy', color: '#2e8b57' },
-  { name: 'Stressed', color: '#2e8b57' },
-  { name: 'Tired', color: '#2e8b57' },
-
-  { name: 'Surprised', color: '#ffd700' },
-  { name: 'Startled', color: '#ffd700' },
-  { name: 'Confused', color: '#ffd700' },
-  { name: 'Amazed', color: '#ffd700' },
-  { name: 'Excited', color: '#ffd700' },
-];
-
+// This is a new, 3-level data structure for emotions.
 export const emotionCategories = [
-  { name: "Happy", color: "#ff8c00", emotions: ["Playful", "Content", "Interested", "Proud", "Accepted", "Powerful", "Peaceful", "Trusting", "Optimistic"] },
-  { name: "Sad", color: "#c71585", emotions: ["Lonely", "Vulnerable", "Despair", "Guilty", "Depressed", "Hurt"] },
-  { name: "Disgusted", color: "#8a2be2", emotions: ["Disapproving", "Disappointed", "Awful", "Repelled"] },
-  { name: "Angry", color: "#483d8b", emotions: ["Critical", "Distant", "Frustrated", "Aggressive", "Mad", "Bitter", "Humiliated", "Let down"] },
-  { name: "Fearful", color: "#008080", emotions: ["Threatened", "Rejected", "Weak", "Insecure", "Anxious", "Scared"] },
-  { name: "Bad", color: "#2e8b57", emotions: ["Bored", "Busy", "Stressed", "Tired"] },
-  { name: "Surprised", color: "#ffd700", emotions: ["Startled", "Confused", "Amazed", "Excited"] },
+  {
+    name: "Happy",
+    color: "#ff8c00",
+    subCategories: [
+      { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene"] },
+      { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated"] },
+      { name: "Proud", emotions: ["Satisfied", "Triumphant", "Confident"] },
+      { name: "Optimistic", emotions: ["Hopeful", "Encouraged", "Inspired"] },
+    ],
+  },
+  {
+    name: "Sad",
+    color: "#c71585",
+    subCategories: [
+      { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful"] },
+      { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty"] },
+      { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Regretful"] },
+      { name: "Depressed", emotions: ["Gloomy", "Miserable", "Dejected"] },
+    ],
+  },
+  {
+    name: "Disgusted",
+    color: "#8a2be2",
+    subCategories: [
+      { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened"] },
+      { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing"] },
+    ],
+  },
+  {
+    name: "Angry",
+    color: "#483d8b",
+    subCategories: [
+      { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated"] },
+      { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged"] },
+      { name: "Bitter", emotions: ["Resentful", "Vindictive", "Spiteful"] },
+    ],
+  },
+  {
+    name: "Fearful",
+    color: "#008080",
+    subCategories: [
+      { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed"] },
+      { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain"] },
+      { name: "Scared", emotions: ["Frightened", "Terrified", "Panicked"] },
+    ],
+  },
+  {
+    name: "Surprised",
+    color: "#ffd700",
+    subCategories: [
+      { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed"] },
+      { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed"] },
+      { name: "Excited", emotions: ["Eager", "Enthusiastic", "Thrilled"] },
+    ],
+  },
 ];
+
+
+// This is a flattened list for easier lookups in the chart components.
+// We are not using this for now, but it might be useful later.
+export const emotions = emotionCategories.flatMap(cat => 
+  cat.subCategories.flatMap(sub => 
+    sub.emotions.map(emo => ({
+      name: emo,
+      color: cat.color
+    }))
+  )
+);
+
 
 export const thoughtPatterns = [
   { id: "planning", label: "Planning or problem-solving" },
@@ -111,7 +118,8 @@ export const initialLogEntries: LogEntry[] = [
   {
     id: "1",
     date: subDays(new Date(), 7).toISOString(),
-    emotion: "Sad",
+    emotion: "Depressed",
+    specificEmotions: ["Gloomy", "Miserable"],
     sensations: [
       { id: "s1", location: "Chest", intensity: 7, notes: "Heaviness" },
     ],
@@ -120,7 +128,8 @@ export const initialLogEntries: LogEntry[] = [
   {
     id: "2",
     date: subDays(new Date(), 5).toISOString(),
-    emotion: "Fearful",
+    emotion: "Anxious",
+    specificEmotions: ["Worried", "Stressed"],
     sensations: [
       { id: "s2", location: "Stomach", intensity: 8, notes: "Butterflies" },
       { id: "s3", location: "Hands", intensity: 6, notes: "Sweaty palms" },
@@ -130,7 +139,8 @@ export const initialLogEntries: LogEntry[] = [
   {
     id: "3",
     date: subDays(new Date(), 4).toISOString(),
-    emotion: "Happy",
+    emotion: "Joyful",
+    specificEmotions: ["Pleased", "Cheerful"],
     sensations: [
       { id: "s4", location: "Chest", intensity: 4, notes: "Warmth and lightness" },
     ],
@@ -138,8 +148,9 @@ export const initialLogEntries: LogEntry[] = [
   },
   {
     id: "4",
-    date: subDays(new Date(), 2).toISOString(),
+    date: subDays(new date(), 2).toISOString(),
     emotion: "Excited",
+    specificEmotions: ["Eager", "Thrilled"],
     sensations: [
        { id: "s5", location: "Stomach", intensity: 5, notes: "Excited jitters" },
     ],
@@ -147,8 +158,9 @@ export const initialLogEntries: LogEntry[] = [
   },
   {
     id: "5",
-    date: subDays(new Date(), 1).toISOString(),
-    emotion: "Angry",
+    date: subDays(new date(), 1).toISOString(),
+    emotion: "Frustrated",
+    specificEmotions: ["Irritated", "Annoyed"],
     sensations: [
        { id: "s6", location: "Head", intensity: 6, notes: "Tension headache" },
        { id: "s7", location: "Shoulders", intensity: 7, notes: "Tightness" },

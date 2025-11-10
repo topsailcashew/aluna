@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,7 @@ import { PlusCircle, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { EmotionWheel } from "@/components/emotion-wheel";
 import { Button } from "@/components/ui/button";
@@ -36,7 +38,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { submitLogEntry } from "@/lib/actions";
-import { bodyParts, thoughtPatterns } from "@/lib/data";
+import { bodyParts, thoughtPatterns, emotionCategories } from "@/lib/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useWellnessLog } from "@/context/wellness-log-provider";
 import { useRouter } from "next/navigation";
@@ -50,6 +52,7 @@ const sensationSchema = z.object({
 
 const formSchema = z.object({
   emotion: z.string().min(1, "Please select an emotion from the wheel."),
+  specificEmotions: z.array(z.string()).min(1, "Please select at least one specific emotion."),
   sensations: z.array(sensationSchema),
   thoughts: z.array(z.string()).optional().default([]),
 });
@@ -65,6 +68,7 @@ export function CheckInForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       emotion: "",
+      specificEmotions: [],
       sensations: [],
       thoughts: [],
     },
@@ -74,6 +78,25 @@ export function CheckInForm() {
     control: form.control,
     name: "sensations",
   });
+  
+  const selectedLevel2Emotion = form.watch("emotion");
+
+  const specificEmotionsOptions = React.useMemo(() => {
+    if (!selectedLevel2Emotion) return [];
+    for (const category of emotionCategories) {
+      const subCategory = category.subCategories.find(sub => sub.name === selectedLevel2Emotion);
+      if (subCategory) {
+        return subCategory.emotions;
+      }
+    }
+    return [];
+  }, [selectedLevel2Emotion]);
+
+  React.useEffect(() => {
+    // Reset specific emotions when the level 2 emotion changes
+    form.setValue("specificEmotions", []);
+  }, [selectedLevel2Emotion, form]);
+
 
   const onSubmit = async (data: CheckInFormValues) => {
     const result = await submitLogEntry(data);
@@ -100,7 +123,7 @@ export function CheckInForm() {
           <CardHeader>
             <CardTitle>1. Select Your Emotion</CardTitle>
             <CardDescription>
-              What is the primary emotion you are feeling right now?
+              First, pick a broad category, then a specific feeling.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -119,6 +142,67 @@ export function CheckInForm() {
                 </FormItem>
               )}
             />
+            <AnimatePresence>
+            {specificEmotionsOptions.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="mt-6 pt-6 border-t"
+                >
+                    <FormField
+                        control={form.control}
+                        name="specificEmotions"
+                        render={() => (
+                            <FormItem>
+                                <div className="mb-4">
+                                    <FormLabel className="text-base">
+                                        Which of these best describe how you're feeling?
+                                    </FormLabel>
+                                    <p className="text-sm text-muted-foreground">Select all that apply.</p>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {specificEmotionsOptions.map((item) => (
+                                    <FormField
+                                    key={item}
+                                    control={form.control}
+                                    name="specificEmotions"
+                                    render={({ field }) => {
+                                        return (
+                                        <FormItem
+                                            key={item}
+                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                        >
+                                            <FormControl>
+                                            <Checkbox
+                                                checked={field.value?.includes(item)}
+                                                onCheckedChange={(checked) => {
+                                                return checked
+                                                    ? field.onChange([...(field.value ?? []), item])
+                                                    : field.onChange(
+                                                        field.value?.filter(
+                                                        (value) => value !== item
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                            </FormControl>
+                                            <FormLabel className="font-normal">
+                                            {item}
+                                            </FormLabel>
+                                        </FormItem>
+                                        );
+                                    }}
+                                    />
+                                ))}
+                                </div>
+                                <FormMessage className="pt-2" />
+                            </FormItem>
+                        )}
+                        />
+                </motion.div>
+            )}
+            </AnimatePresence>
           </CardContent>
         </Card>
 

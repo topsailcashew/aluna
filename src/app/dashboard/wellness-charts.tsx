@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useWellnessLog } from "@/context/wellness-log-provider";
@@ -24,25 +25,25 @@ import {
   LineChart,
   Pie,
   PieChart,
-  PolarAngleAxis,
-  Radar,
-  RadarChart,
-  PolarGrid,
   XAxis,
   YAxis,
 } from "recharts";
 import type { ChartConfig } from "@/components/ui/chart";
-import { emotions, thoughtPatterns as thoughtPatternConfig } from "@/lib/data";
+import { emotionCategories, thoughtPatterns as thoughtPatternConfig } from "@/lib/data";
 import { format, parseISO } from "date-fns";
 import { useMemo } from "react";
 
-const emotionChartConfig = emotions.reduce((acc, emotion) => {
-  acc[emotion.name] = {
-    label: emotion.name,
-    color: emotion.color,
-  };
-  return acc;
+const L2Emotions = emotionCategories.flatMap(cat => cat.subCategories);
+
+const emotionChartConfig = L2Emotions.reduce((acc, emotion) => {
+    const category = emotionCategories.find(c => c.subCategories.some(sc => sc.name === emotion.name));
+    acc[emotion.name] = {
+        label: emotion.name,
+        color: category?.color || '#ccc',
+    };
+    return acc;
 }, {} as ChartConfig);
+
 
 const thoughtChartConfig = thoughtPatternConfig.reduce((acc, pattern) => {
   acc[pattern.id] = {
@@ -56,10 +57,15 @@ export function WellnessCharts() {
   const { logEntries } = useWellnessLog();
 
   const emotionFrequency = useMemo(() => {
-    return emotions.map(emotion => ({
+    const emotionCounts: {[key: string]: number} = {};
+    logEntries.forEach(entry => {
+        emotionCounts[entry.emotion] = (emotionCounts[entry.emotion] || 0) + 1;
+    });
+    return L2Emotions.map(emotion => ({
       emotion: emotion.name,
-      count: logEntries.filter(entry => entry.emotion === emotion.name).length
-    }));
+      count: emotionCounts[emotion.name] || 0,
+      fill: emotionChartConfig[emotion.name]?.color
+    })).filter(e => e.count > 0);
   }, [logEntries]);
 
   const sensationTimeline = useMemo(() => {
@@ -124,14 +130,7 @@ export function WellnessCharts() {
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="count" radius={8}>
-                {emotionFrequency.map((entry, index) => (
-                  <rect
-                    key={`cell-${index}`}
-                    fill={emotions.find(e => e.name === entry.emotion)?.color || '#ccc'}
-                  />
-                ))}
-              </Bar>
+              <Bar dataKey="count" radius={8} />
             </BarChart>
           </ChartContainer>
         </CardContent>

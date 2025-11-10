@@ -1,3 +1,4 @@
+
 "use server";
 
 import { z } from "zod";
@@ -10,7 +11,8 @@ const sensationSchema = z.object({
 });
 
 const logEntrySchema = z.object({
-  emotion: z.string().min(1, "Emotion selection is required."),
+  emotion: z.string().min(1, "A level 2 emotion selection is required."),
+  specificEmotions: z.array(z.string()).min(1, "At least one specific emotion must be selected."),
   sensations: z.array(sensationSchema),
   thoughts: z.array(z.string()),
 });

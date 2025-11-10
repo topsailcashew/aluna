@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { LogEntry } from "@/lib/data";

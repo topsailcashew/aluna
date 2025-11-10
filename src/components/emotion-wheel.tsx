@@ -1,11 +1,12 @@
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { emotionCategories } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 interface EmotionWheelProps {
-  selectedEmotion: string;
+  selectedEmotion: string; // This is now the Level 2 emotion
   onSelectEmotion: (emotion: string) => void;
 }
 
@@ -19,11 +20,15 @@ const EmotionWheel = ({
   const innerRadius = 150;
   const numSegments = emotionCategories.length;
   const angleStep = (2 * Math.PI) / numSegments;
+
+  const subCategories = useMemo(() => 
+    selectedCategory
+      ? emotionCategories.find(c => c.name === selectedCategory)?.subCategories || []
+      : [],
+    [selectedCategory]
+  );
   
-  const subEmotions = selectedCategory
-    ? emotionCategories.find(c => c.name === selectedCategory)?.emotions || []
-    : [];
-  const subNumSegments = subEmotions.length;
+  const subNumSegments = subCategories.length;
   const subAngleStep = subNumSegments > 0 ? (2 * Math.PI) / subNumSegments : 0;
 
   const getCoordinatesForAngle = (angle: number, radius: number) => [
@@ -33,12 +38,13 @@ const EmotionWheel = ({
 
   const handleCategorySelect = (categoryName: string) => {
     if (selectedCategory === categoryName) {
-      setSelectedCategory(null); // Allow deselecting a category
+      // If clicking the same category, deselect everything
+      setSelectedCategory(null);
       onSelectEmotion("");
     } else {
       setSelectedCategory(categoryName);
-      // Select the category itself as the emotion
-      onSelectEmotion(categoryName);
+      // Clear the L2 emotion when a new L1 category is chosen
+      onSelectEmotion("");
     }
   };
 
@@ -46,7 +52,10 @@ const EmotionWheel = ({
     onSelectEmotion(emotionName);
   };
   
-  const category = emotionCategories.find(c => c.emotions.includes(selectedEmotion) || c.name === selectedEmotion);
+  const L1Category = emotionCategories.find(c => c.name === selectedCategory);
+  const L2CategoryInfo = emotionCategories.find(c => c.subCategories.some(sc => sc.name === selectedEmotion));
+  const displayCategory = L2CategoryInfo || L1Category;
+  
   const displayText = selectedEmotion || selectedCategory || "Select";
 
   return (
@@ -57,7 +66,7 @@ const EmotionWheel = ({
         aria-label="Emotion Wheel"
       >
         <g>
-          {/* Outer Wheel - Categories */}
+          {/* Outer Wheel - Level 1 Categories */}
           {emotionCategories.map((category, i) => {
             const startAngle = i * angleStep - Math.PI / 2;
             const endAngle = (i + 1) * angleStep - Math.PI / 2;
@@ -110,8 +119,8 @@ const EmotionWheel = ({
             );
           })}
 
-           {/* Inner Wheel - Emotions */}
-           {selectedCategory && subEmotions.map((emotionName, i) => {
+           {/* Inner Wheel - Level 2 Emotions */}
+           {selectedCategory && subCategories.map((subCategory, i) => {
               const startAngle = i * subAngleStep - Math.PI / 2;
               const endAngle = (i + 1) * subAngleStep - Math.PI / 2;
 
@@ -123,10 +132,10 @@ const EmotionWheel = ({
               const pathData = `M 0 0 L ${x1} ${y1} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
               
               const category = emotionCategories.find(c => c.name === selectedCategory);
-              const isSelected = selectedEmotion === emotionName;
+              const isSelected = selectedEmotion === subCategory.name;
 
               return (
-                <g key={emotionName}>
+                <g key={subCategory.name}>
                   <path
                     d={pathData}
                     fill={category?.color}
@@ -138,14 +147,14 @@ const EmotionWheel = ({
                       "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
                     )}
                      transform={isSelected ? "scale(1.01)" : "scale(1)"}
-                    onClick={() => handleEmotionSelect(emotionName)}
+                    onClick={() => handleEmotionSelect(subCategory.name)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
-                        handleEmotionSelect(emotionName);
+                        handleEmotionSelect(subCategory.name);
                       }
                     }}
                     tabIndex={0}
-                    aria-label={`Select emotion: ${emotionName}`}
+                    aria-label={`Select emotion: ${subCategory.name}`}
                     role="button"
                   />
                   <text
@@ -156,20 +165,20 @@ const EmotionWheel = ({
                     className="pointer-events-none fill-current text-xs font-medium"
                     style={{ fill: 'white', opacity: 0.9 }}
                   >
-                    {emotionName}
+                    {subCategory.name}
                   </text>
                 </g>
               );
            })}
         </g>
-        <circle cx="0" cy="0" r="60" fill={category?.color || "hsl(var(--card))"} />
+        <circle cx="0" cy="0" r="60" fill={displayCategory?.color || "hsl(var(--card))"} />
         <text
           x="0"
           y="0"
           textAnchor="middle"
           dy=".3em"
           className="text-lg font-bold"
-          fill={category ? 'white' : 'hsl(var(--foreground))'}
+          fill={displayCategory ? 'white' : 'hsl(var(--foreground))'}
         >
           {displayText}
         </text>
