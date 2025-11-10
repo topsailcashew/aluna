@@ -113,8 +113,7 @@ const EmotionWheel = ({
                     y={getCoordinatesForAngle(startAngle + angleStep / 2, (outerRadius + innerRadius) / 2)[1]}
                     textAnchor="middle"
                     dy=".3em"
-                    className="pointer-events-none fill-current text-sm font-semibold"
-                    style={{ fill: 'white', opacity: 0.9 }}
+                    className="pointer-events-none fill-white text-sm font-semibold"
                 >
                     {category.name}
                 </text>
@@ -163,8 +162,7 @@ const EmotionWheel = ({
                     y={getCoordinatesForAngle(startAngle + subAngleStep / 2, innerRadius / 1.5)[1]}
                     textAnchor="middle"
                     dy=".3em"
-                    className="pointer-events-none fill-current text-xs font-medium"
-                    style={{ fill: 'white', opacity: 0.9 }}
+                    className="pointer-events-none fill-white text-xs font-medium"
                   >
                     {subCategory.name}
                   </text>

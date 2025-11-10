@@ -41,7 +41,6 @@ import { useWellnessLog } from "@/context/wellness-log-provider";
 import { useRouter } from "next/navigation";
 import { EmotionWheelWrapper } from "./emotion-wheel-wrapper";
 import { ScrollArea } from "./ui/scroll-area";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from 'next/image';
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
@@ -103,8 +102,6 @@ export function CheckInForm() {
   });
   
   const selectedLevel2Emotion = form.watch("emotion");
-  
-  const thinkingPatternImage = PlaceHolderImages.find(img => img.id === 'thinking-patterns');
 
   const specificEmotionsOptions = React.useMemo(() => {
     if (!selectedLevel2Emotion) return [];
@@ -167,93 +164,100 @@ export function CheckInForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-screen snap-y snap-mandatory overflow-y-scroll overflow-x-hidden">
         
         <StepSection ref={sensationRef}>
-            <div className="flex flex-col items-center justify-center h-full text-center">
-                <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl text-gray-700 mb-4">Where Do You Feel It?</h1>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mb-8">
-                    Take a moment to scan your body. Add any physical sensations you notice, specifying the location, intensity, and any descriptive notes.
-                </p>
+            <div className="flex flex-col items-center justify-center h-full text-center relative">
+                 <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative w-full max-w-lg h-96">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-indigo-600 to-yellow-300 rounded-full blur-3xl opacity-50"></div>
+                    </div>
+                </div>
+                <div className="relative z-10">
+                    <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">Where Do You Feel It?</h1>
+                    <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mb-8">
+                        Scan your body. Note any physical sensations, their location, and intensity.
+                    </p>
+                    <Card className="w-full max-w-xl bg-background/80 backdrop-blur-sm border-0 shadow-none rounded-2xl flex flex-col h-auto max-h-[60vh]">
+                        <CardContent className="flex-1 grid md:grid-cols-2 gap-x-8 gap-y-4 p-6 overflow-hidden">
+                          {/* Left: Editor */}
+                          <div className="flex flex-col gap-4 text-left">
+                            <h3 className="font-semibold text-lg">Log a new sensation</h3>
+                             <FormItem>
+                                <FormLabel>Location</FormLabel>
+                                <Select 
+                                  value={currentSensation.location} 
+                                  onValueChange={(val) => setCurrentSensation(p => ({...p, location: val}))}
+                                >
+                                    <SelectTrigger className="bg-white/50">
+                                        <SelectValue placeholder="Select a body part" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {bodyParts.map((part) => (
+                                            <SelectItem key={part} value={part}>
+                                                {part}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                            <FormItem>
+                               <FormLabel>Intensity: {currentSensation.intensity}</FormLabel>
+                               <Slider
+                                  value={[currentSensation.intensity]}
+                                  max={10}
+                                  step={1}
+                                  onValueChange={(vals) => setCurrentSensation(p => ({...p, intensity: vals[0]}))}
+                               />
+                            </FormItem>
+                             <FormItem>
+                                <FormLabel>Sensation Notes</FormLabel>
+                                <Input 
+                                  placeholder="e.g., tingling, warmth"
+                                  value={currentSensation.notes}
+                                  onChange={(e) => setCurrentSensation(p => ({...p, notes: e.target.value}))}
+                                  className="bg-white/50"
+                                />
+                            </FormItem>
+                            <Button type="button" size="icon" onClick={addNewSensation} className="mt-auto self-end rounded-full">
+                              <Plus className="h-4 w-4" />
+                              <span className="sr-only">Log Sensation</span>
+                            </Button>
+                          </div>
 
-                <Card className="w-full max-w-4xl bg-white/50 backdrop-blur-sm rounded-2xl flex flex-col h-auto max-h-[70vh]">
-                    <CardContent className="flex-1 grid md:grid-cols-2 gap-6 p-6 overflow-hidden">
-                      {/* Left: Editor */}
-                      <div className="flex flex-col gap-4 text-left">
-                        <h3 className="font-semibold text-lg">Log a new sensation</h3>
-                         <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <Select 
-                              value={currentSensation.location} 
-                              onValueChange={(val) => setCurrentSensation(p => ({...p, location: val}))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a body part" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {bodyParts.map((part) => (
-                                        <SelectItem key={part} value={part}>
-                                            {part}
-                                        </SelectItem>
+                          {/* Right: Pills */}
+                          <div className="flex flex-col gap-4">
+                            <h3 className="font-semibold text-lg text-left">Logged Sensations</h3>
+                             <ScrollArea className="h-full bg-black/5 rounded-lg border p-3">
+                               {fields.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                    <AnimatePresence>
+                                    {fields.map((field, index) => (
+                                       <motion.div
+                                        key={field.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.5 }}
+                                       >
+                                        <Badge variant="secondary" className="text-base py-1 pl-3 pr-2 h-auto">
+                                          {field.location}: {field.intensity}/10
+                                          <button type="button" onClick={() => remove(index)} className="ml-2 rounded-full hover:bg-black/10 p-0.5">
+                                            <XIcon className="h-3 w-3" />
+                                            <span className="sr-only">Remove {field.location}</span>
+                                          </button>
+                                        </Badge>
+                                      </motion.div>
                                     ))}
-                                </SelectContent>
-                            </Select>
-                        </FormItem>
-                        <FormItem>
-                           <FormLabel>Intensity: {currentSensation.intensity}</FormLabel>
-                           <Slider
-                              value={[currentSensation.intensity]}
-                              max={10}
-                              step={1}
-                              onValueChange={(vals) => setCurrentSensation(p => ({...p, intensity: vals[0]}))}
-                           />
-                        </FormItem>
-                         <FormItem>
-                            <FormLabel>Sensation Notes</FormLabel>
-                            <Input 
-                              placeholder="e.g., tingling, sharp pain, warmth"
-                              value={currentSensation.notes}
-                              onChange={(e) => setCurrentSensation(p => ({...p, notes: e.target.value}))}
-                            />
-                        </FormItem>
-                        <Button type="button" size="icon" onClick={addNewSensation} className="mt-auto self-end">
-                          <Plus className="h-4 w-4" />
-                          <span className="sr-only">Log Sensation</span>
-                        </Button>
-                      </div>
-
-                      {/* Right: Pills */}
-                      <div className="flex flex-col gap-4">
-                        <h3 className="font-semibold text-lg text-left">Logged Sensations</h3>
-                         <ScrollArea className="h-full bg-slate-100/50 rounded-lg border p-3">
-                           {fields.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                <AnimatePresence>
-                                {fields.map((field, index) => (
-                                   <motion.div
-                                    key={field.id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.5 }}
-                                   >
-                                    <Badge variant="secondary" className="text-base py-1 pl-3 pr-2 h-auto">
-                                      {field.location}: {field.intensity}/10
-                                      <button type="button" onClick={() => remove(index)} className="ml-2 rounded-full hover:bg-black/10 p-0.5">
-                                        <XIcon className="h-3 w-3" />
-                                        <span className="sr-only">Remove {field.location}</span>
-                                      </button>
-                                    </Badge>
-                                  </motion.div>
-                                ))}
-                              </AnimatePresence>
-                            </div>
-                           ) : (
-                            <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-                              No sensations logged yet.
-                            </div>
-                           )}
-                         </ScrollArea>
-                      </div>
-                    </CardContent>
-                </Card>
+                                  </AnimatePresence>
+                                </div>
+                               ) : (
+                                <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+                                  No sensations logged yet.
+                                </div>
+                               )}
+                             </ScrollArea>
+                          </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
             <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
                 <Button type="button" size="icon" variant="ghost" className="rounded-full h-12 w-12 animate-bounce" onClick={() => scrollTo(emotionRef)}>
@@ -265,10 +269,10 @@ export function CheckInForm() {
         {/* Step 2: Emotions */}
         <StepSection ref={emotionRef}>
             <div className="flex flex-col h-full">
-                <CardHeader>
-                    <CardTitle className="text-2xl sm:text-3xl">Select Your Emotion</CardTitle>
-                    <CardDescription>
-                        First, pick a broad category, then a specific feeling.
+                <CardHeader className="text-center">
+                    <CardTitle className="font-extrabold text-4xl sm:text-5xl tracking-tighter">Select Your Emotion</CardTitle>
+                    <CardDescription className="max-w-md mx-auto">
+                        First, pick a broad category from the outer wheel, then a specific feeling from the inner wheel.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 grid md:grid-cols-2 gap-4 md:gap-8 items-center overflow-hidden">
@@ -368,30 +372,21 @@ export function CheckInForm() {
         {/* Step 3: Thoughts */}
         <StepSection ref={thoughtRef}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center h-full">
-                <div className="p-4 md:p-8 h-full flex flex-col justify-center">
-                <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl text-gray-700 mb-4 sm:mb-6">
-                    Thinking Patterns
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600">
-                    Take a moment to observe your thoughts. Recognize
-                    recurring patterns and their impact on your feelings and
-                    actions.
-                </p>
+                <div className="p-4 md:p-8 h-full flex flex-col justify-center text-center md:text-left">
+                  <h1 className="font-extrabold text-5xl sm:text-7xl tracking-tighter text-foreground mb-4 sm:mb-6">
+                      Thinking Patterns
+                  </h1>
+                  <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto md:mx-0">
+                      Take a moment to observe your thoughts. Recognize
+                      recurring patterns and their impact on your feelings and
+                      actions.
+                  </p>
                 </div>
                 <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full overflow-hidden">
-                <Card className="w-full max-w-md bg-white/50 backdrop-blur-sm rounded-2xl flex flex-col h-full relative overflow-hidden">
-                    {thinkingPatternImage && (
-                    <Image
-                        src={thinkingPatternImage.imageUrl}
-                        alt={thinkingPatternImage.description}
-                        fill
-                        className="object-cover opacity-20"
-                        data-ai-hint={thinkingPatternImage.imageHint}
-                    />
-                    )}
+                  <Card className="w-full max-w-md bg-transparent border-0 shadow-none flex flex-col h-full relative overflow-hidden">
                     <div className="relative z-10 flex flex-col h-full">
                     <CardHeader>
-                        <CardTitle className="text-xl sm:text-2xl">Notice Your Thoughts</CardTitle>
+                        <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight">Notice Your Thoughts</CardTitle>
                         <CardDescription>
                         What kind of thinking is happening?
                         </CardDescription>
@@ -447,7 +442,7 @@ export function CheckInForm() {
                         </ScrollArea>
                     </CardContent>
                     </div>
-                </Card>
+                  </Card>
                 </div>
             </div>
             <CardFooter className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
@@ -455,6 +450,7 @@ export function CheckInForm() {
                 type="submit"
                 size="lg"
                 disabled={form.formState.isSubmitting}
+                className="font-bold"
                 >
                 {form.formState.isSubmitting ? "Saving..." : "Save Entry"}
                 </Button>

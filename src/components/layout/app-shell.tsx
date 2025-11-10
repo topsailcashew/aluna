@@ -5,65 +5,27 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PenSquare, LayoutDashboard } from "lucide-react";
-
 import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="mr-6 flex items-center gap-2 font-semibold">
-            <span className="font-headline text-xl font-medium">
-              Mindful Charts
-            </span>
+      <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur">
+        <div className="container flex h-16 items-center">
+          <Link href="/" className="mr-auto flex items-center gap-2 font-bold text-lg tracking-tight">
+            <Icons.logo className="h-6 w-6"/>
+            Mindful Charts
           </Link>
-          <nav className="ml-auto flex items-center gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={pathname === "/" ? "secondary" : "ghost"}
-                    size="icon"
-                    asChild
-                  >
-                    <Link href="/">
-                      <PenSquare className="h-4 w-4" />
-                      <span className="sr-only">Check-in</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Check-in</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={pathname === "/dashboard" ? "secondary" : "ghost"}
-                    size="icon"
-                    asChild
-                  >
-                    <Link href="/dashboard">
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span className="sr-only">Dashboard</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Dashboard</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-muted-foreground">
+            <Link href="/" className={cn("transition-colors hover:text-foreground", pathname === "/" && "text-foreground")}>
+              Check-in
+            </Link>
+            <Link href="/dashboard" className={cn("transition-colors hover:text-foreground", pathname === "/dashboard" && "text-foreground")}>
+              Dashboard
+            </Link>
           </nav>
         </div>
       </header>
