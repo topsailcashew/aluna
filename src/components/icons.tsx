@@ -1,4 +1,3 @@
-import { HeartPulse } from "lucide-react";
 import type { SVGProps } from "react";
 
 export const Icons = {

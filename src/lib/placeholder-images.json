@@ -5,6 +5,12 @@
       "description": "A calm, abstract background image for the dashboard hero section.",
       "imageUrl": "https://images.unsplash.com/photo-1729258345933-e19940bd9e09?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGNhbG18ZW58MHx8fHwxNzYyNzM2NDI3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "abstract calm"
+    },
+    {
+      "id": "thinking-patterns",
+      "description": "A watercolor illustration of a person meditating on a grassy hill against a soft sky.",
+      "imageUrl": "https://images.unsplash.com/photo-1594561177665-052b6b4b781a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtZWRpdGF0aW9uJTIwd2F0ZXJjb2xvcnxlbnwwfHx8fDE3NjI3OTA4MTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "meditation watercolor"
     }
   ]
 }

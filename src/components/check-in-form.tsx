@@ -48,6 +48,8 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { ScrollArea } from "./ui/scroll-area";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import Image from 'next/image';
 
 const sensationSchema = z.object({
   id: z.string(),
@@ -97,6 +99,8 @@ export function CheckInForm() {
   });
   
   const selectedLevel2Emotion = form.watch("emotion");
+  
+  const thinkingPatternImage = PlaceHolderImages.find(img => img.id === 'thinking-patterns');
 
   const specificEmotionsOptions = React.useMemo(() => {
     if (!selectedLevel2Emotion) return [];
@@ -264,7 +268,7 @@ export function CheckInForm() {
               <StepCard>
                 <div className="flex flex-col h-full">
                     <CardHeader>
-                        <CardTitle>2. Select Your Emotion</CardTitle>
+                        <CardTitle>Select Your Emotion</CardTitle>
                         <CardDescription>
                             First, pick a broad category, then a specific feeling.
                         </CardDescription>
@@ -367,61 +371,93 @@ export function CheckInForm() {
               </StepCard>
             </CarouselItem>
 
-            {/* Step 3: Thoughts */}
+             {/* Step 3: Thoughts */}
             <CarouselItem className="h-full">
               <StepCard>
-                <CardHeader>
-                  <CardTitle>3. Notice Your Thoughts</CardTitle>
-                  <CardDescription>
-                    What kind of thinking is happening?
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto">
-                  <FormField
-                    control={form.control}
-                    name="thoughts"
-                    render={() => (
-                      <FormItem className="space-y-3">
-                        {thoughtPatterns.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={form.control}
-                            name="thoughts"
-                            render={({ field }) => (
-                              <FormItem
-                                key={item.id}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(item.id)}
-                                    onCheckedChange={(checked) =>
-                                      checked
-                                        ? field.onChange([
-                                            ...(field.value ?? []),
-                                            item.id,
-                                          ])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== item.id
-                                            )
-                                          )
-                                    }
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {item.label}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-                <CardFooter className="justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                  <div className="p-8 md:p-16">
+                    <h1 className="font-headline text-5xl md:text-7xl text-gray-700 mb-6">
+                      Thinking Patterns
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                      Take a moment to observe your thoughts. Recognize
+                      recurring patterns and their impact on your feelings and
+                      actions.
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-4 h-full overflow-hidden">
+                    <Card className="w-full max-w-md bg-white/50 backdrop-blur-sm rounded-2xl flex flex-col h-full relative overflow-hidden">
+                       {thinkingPatternImage && (
+                        <Image
+                            src={thinkingPatternImage.imageUrl}
+                            alt={thinkingPatternImage.description}
+                            fill
+                            className="object-cover opacity-20"
+                            data-ai-hint={thinkingPatternImage.imageHint}
+                        />
+                      )}
+                      <div className="relative z-10 flex flex-col h-full">
+                        <CardHeader>
+                          <CardTitle>Notice Your Thoughts</CardTitle>
+                          <CardDescription>
+                            What kind of thinking is happening?
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                          <ScrollArea className="h-full pr-3">
+                            <FormField
+                              control={form.control}
+                              name="thoughts"
+                              render={() => (
+                                <FormItem className="space-y-3">
+                                  {thoughtPatterns.map((item) => (
+                                    <FormField
+                                      key={item.id}
+                                      control={form.control}
+                                      name="thoughts"
+                                      render={({ field }) => (
+                                        <FormItem
+                                          key={item.id}
+                                          className="flex flex-row items-start space-x-3 space-y-0 rounded-lg bg-background/60 p-3"
+                                        >
+                                          <FormControl>
+                                            <Checkbox
+                                              checked={
+                                                field.value?.includes(item.id)
+                                              }
+                                              onCheckedChange={(checked) =>
+                                                checked
+                                                  ? field.onChange([
+                                                      ...(field.value ?? []),
+                                                      item.id,
+                                                    ])
+                                                  : field.onChange(
+                                                      field.value?.filter(
+                                                        (value) =>
+                                                          value !== item.id
+                                                      )
+                                                    )
+                                              }
+                                            />
+                                          </FormControl>
+                                          <FormLabel className="font-normal">
+                                            {item.label}
+                                          </FormLabel>
+                                        </FormItem>
+                                      )}
+                                    />
+                                  ))}
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </ScrollArea>
+                        </CardContent>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+                <CardFooter className="absolute bottom-6 right-6 justify-between w-[calc(100%-3rem)]">
                    <Button type="button" variant="outline" onClick={handlePrev}>
                     <ArrowLeft className="mr-2" /> Previous
                   </Button>
