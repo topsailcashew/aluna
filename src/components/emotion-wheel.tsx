@@ -13,7 +13,7 @@ const EmotionWheel = ({
   selectedEmotion,
   onSelectEmotion,
 }: EmotionWheelProps) => {
-  const radius = 150;
+  const radius = 250;
   const numSegments = emotions.length;
   const angleStep = (2 * Math.PI) / numSegments;
 
@@ -25,8 +25,8 @@ const EmotionWheel = ({
   return (
     <div className="flex justify-center items-center p-4">
       <svg
-        viewBox="-200 -200 400 400"
-        className="w-full max-w-sm"
+        viewBox="-300 -300 600 600"
+        className="w-full max-w-2xl"
         aria-label="Emotion Wheel"
       >
         <defs>
@@ -37,11 +37,11 @@ const EmotionWheel = ({
               d={`
                 M ${getCoordinatesForAngle(
                   i * angleStep - angleStep / 2,
-                  radius - 30
+                  radius - 20
                 ).join(" ")}
-                A ${radius - 30} ${radius - 30} 0 0 1 ${getCoordinatesForAngle(
+                A ${radius - 20} ${radius - 20} 0 0 1 ${getCoordinatesForAngle(
                 i * angleStep + angleStep / 2,
-                radius - 30
+                radius - 20
               ).join(" ")}
               `}
             />
@@ -90,7 +90,7 @@ const EmotionWheel = ({
                 <text
                   dy="-5"
                   className="pointer-events-none fill-current text-xs font-semibold"
-                  style={{ fill: 'black', opacity: 0.7 }}
+                  style={{ fill: 'white', opacity: 0.9 }}
                 >
                   <textPath
                     href={`#text-path-${i}`}
@@ -104,7 +104,7 @@ const EmotionWheel = ({
             );
           })}
         </g>
-        <circle cx="0" cy="0" r="40" fill="hsl(var(--card))" />
+        <circle cx="0" cy="0" r="60" fill="hsl(var(--card))" />
         <text
           x="0"
           y="0"
