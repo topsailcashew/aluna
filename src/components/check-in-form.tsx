@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
+import { ArrowDown, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -245,11 +245,11 @@ export function CheckInForm() {
                     </Card>
                 </div>
             </div>
-            <CardFooter className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
-            <Button type="button" size="lg" onClick={() => scrollTo(emotionRef)}>
-                Next <ArrowDown className="ml-2" />
-            </Button>
-            </CardFooter>
+            <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
+                <Button type="button" size="icon" variant="ghost" className="rounded-full h-12 w-12 animate-bounce" onClick={() => scrollTo(emotionRef)}>
+                    <ArrowDown />
+                </Button>
+            </div>
         </StepSection>
 
         {/* Step 2: Emotions */}
@@ -347,14 +347,11 @@ export function CheckInForm() {
                         )}
                     </AnimatePresence>
                 </CardContent>
-                <CardFooter className="justify-between">
-                <Button type="button" variant="outline" onClick={() => scrollTo(sensationRef)}>
-                    <ArrowUp className="mr-2" /> Previous
-                </Button>
-                <Button type="button" onClick={() => scrollTo(thoughtRef)}>
-                    Next <ArrowDown className="ml-2" />
-                </Button>
-                </CardFooter>
+                <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
+                    <Button type="button" size="icon" variant="ghost" className="rounded-full h-12 w-12 animate-bounce" onClick={() => scrollTo(thoughtRef)}>
+                        <ArrowDown />
+                    </Button>
+                </div>
             </div>
         </StepSection>
 
@@ -443,10 +440,7 @@ export function CheckInForm() {
                 </Card>
                 </div>
             </div>
-            <CardFooter className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 justify-between w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)]">
-                <Button type="button" variant="outline" onClick={() => scrollTo(emotionRef)}>
-                <ArrowUp className="mr-2" /> Previous
-                </Button>
+            <CardFooter className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
                 <Button
                 type="submit"
                 size="lg"
