@@ -21,25 +21,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const mainActionPath = user ? "/dashboard" : "/";
 
+  // Hide check-in button on the form page itself
+  const showCheckInButton = user && !pathname.startsWith('/check-in');
+
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur">
-        <div className="flex h-16 items-center px-4">
-          <div className="flex items-center">
-            {/* Conditional left-side menu or placeholder */}
-          </div>
-
-          <div className="flex-1 flex justify-center">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
+        <div className="container flex h-16 items-center">
+          <div className="mr-auto flex items-center">
             <Button
               asChild
-              variant="ghost"
-              className="font-bold text-lg tracking-tight hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+              variant="link"
+              className="px-0 font-bold text-lg tracking-tight text-foreground hover:no-underline"
             >
               <Link href={mainActionPath}>Aluna</Link>
             </Button>
           </div>
 
-          <div className="flex-1 flex justify-end items-center gap-2">
+          <div className="flex items-center gap-2">
             {!isUserLoading && !user && (
               <>
                 <Button variant="ghost" asChild>
@@ -51,36 +50,43 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </>
             )}
             {!isUserLoading && user && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <UserCircle className="h-6 w-6" />
-                      <span className="sr-only">User Menu</span>
+                <>
+                  {showCheckInButton && (
+                    <Button asChild>
+                      <Link href="/check-in">New Check-in</Link>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile">
-                        <UserCircle className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/tools">
-                        <WandSparkles className="mr-2 h-4 w-4" />
-                        <span>Breathing Tools</span>
-                      </Link>
-                    </DropdownMenuItem>
-                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      <Paintbrush className="mr-2 h-4 w-4" />
-                      <span>Theme</span>
-                      <div className="ml-auto">
-                        <ThemeToggle />
-                      </div>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <UserCircle className="h-6 w-6" />
+                        <span className="sr-only">User Menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                          <UserCircle className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/tools">
+                          <WandSparkles className="mr-2 h-4 w-4" />
+                          <span>Breathing Tools</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Paintbrush className="mr-2 h-4 w-4" />
+                        <span>Theme</span>
+                        <div className="ml-auto">
+                          <ThemeToggle />
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
             )}
           </div>
         </div>
