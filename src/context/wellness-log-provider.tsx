@@ -2,11 +2,10 @@
 'use client';
 
 import type { LogEntry, Sensation } from '@/lib/data';
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, serverTimestamp } from 'firebase/firestore';
 import * as React from 'react';
-import { useMemo } from 'react';
 import { initialLogEntries } from '@/lib/data';
 
 type WellnessLogContextType = {
@@ -27,8 +26,8 @@ export function WellnessLogProvider({
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
 
-  const wellnessEntriesRef = useMemo(() => {
-    if (!user) return null;
+  const wellnessEntriesRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
     return collection(firestore, `users/${user.uid}/wellnessEntries`);
   }, [user, firestore]);
 
