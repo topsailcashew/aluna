@@ -39,6 +39,9 @@ import { EmotionWheelWrapper } from "./emotion-wheel-wrapper";
 import { ScrollArea } from "./ui/scroll-area";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
+import { ContextTagsSelector } from "./context-tags-selector";
+import { JournalEntryEditor } from "./journal-entry-editor";
+import type { ContextTags } from "@/lib/types";
 
 const sensationSchema = z.object({
   id: z.string(),
@@ -52,6 +55,15 @@ const formSchema = z.object({
   specificEmotions: z.array(z.string()).min(1, "Please select at least one specific emotion."),
   sensations: z.array(sensationSchema),
   thoughts: z.array(z.string()).optional().default([]),
+  // Phase 1: New optional fields
+  contextTags: z.object({
+    location: z.string().optional(),
+    activity: z.array(z.string()).optional(),
+    triggers: z.array(z.string()).optional(),
+    people: z.string().optional(),
+    timeOfDay: z.string().optional(),
+  }).optional(),
+  journalEntry: z.string().max(2000, "Journal entry is too long (max 2000 characters)").optional(),
 });
 
 type CheckInFormValues = z.infer<typeof formSchema>;
@@ -74,6 +86,8 @@ export function CheckInForm() {
   const sensationRef = React.useRef<HTMLDivElement>(null);
   const emotionRef = React.useRef<HTMLDivElement>(null);
   const thoughtRef = React.useRef<HTMLDivElement>(null);
+  const contextRef = React.useRef<HTMLDivElement>(null);
+  const journalRef = React.useRef<HTMLDivElement>(null);
 
   const [currentSensation, setCurrentSensation] = React.useState({
     location: '',
@@ -88,6 +102,8 @@ export function CheckInForm() {
       specificEmotions: [],
       sensations: [],
       thoughts: [],
+      contextTags: {},
+      journalEntry: "",
     },
   });
 
@@ -443,19 +459,87 @@ export function CheckInForm() {
                       </Card>
                   </div>
               </div>
+              <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
+                  <Button type="button" size="icon" variant="ghost" className="rounded-full h-12 w-12 animate-bounce" onClick={() => scrollTo(contextRef)}>
+                      <ArrowDown />
+                  </Button>
+              </div>
+          </StepSection>
+
+          {/* Step 4: Context Tags */}
+          <StepSection ref={contextRef}>
+              <div className="flex flex-col items-center justify-center h-full relative overflow-y-auto">
+                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="relative w-full max-w-lg h-96">
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-full blur-3xl opacity-50"></div>
+                      </div>
+                  </div>
+                  <div className="relative z-10 w-full px-4 py-8 max-w-4xl mx-auto">
+                      <FormField
+                          control={form.control}
+                          name="contextTags"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormControl>
+                                      <ContextTagsSelector
+                                          value={field.value || {}}
+                                          onChange={field.onChange}
+                                      />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                  </div>
+              </div>
+              <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
+                  <Button type="button" size="icon" variant="ghost" className="rounded-full h-12 w-12 animate-bounce" onClick={() => scrollTo(journalRef)}>
+                      <ArrowDown />
+                  </Button>
+              </div>
+          </StepSection>
+
+          {/* Step 5: Journal Entry */}
+          <StepSection ref={journalRef}>
+              <div className="flex flex-col items-center justify-center h-full relative overflow-y-auto">
+                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="relative w-full max-w-lg h-96">
+                          <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-full blur-3xl opacity-50"></div>
+                      </div>
+                  </div>
+                  <div className="relative z-10 w-full px-4 py-8 max-w-3xl mx-auto">
+                      <FormField
+                          control={form.control}
+                          name="journalEntry"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormControl>
+                                      <JournalEntryEditor
+                                          value={field.value || ""}
+                                          onChange={field.onChange}
+                                      />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
+                  </div>
+              </div>
               <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
                   <Button
                       type="submit"
-                      size="icon"
+                      size="lg"
                       disabled={form.formState.isSubmitting}
-                      className="rounded-full h-14 w-14"
+                      className="rounded-full px-8 shadow-lg"
                   >
                   {form.formState.isSubmitting ? (
-                      <span className="animate-spin">...</span>
+                      <span className="animate-spin">⏳</span>
                   ) : (
-                      <Plus className="h-6 w-6" />
+                      <>
+                        <Plus className="h-5 w-5 mr-2" />
+                        Complete Check-in
+                      </>
                   )}
-                  <span className="sr-only">Save Entry</span>
                   </Button>
               </div>
           </StepSection>

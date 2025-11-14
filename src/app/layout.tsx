@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { WellnessLogProvider } from '@/context/wellness-log-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase';
+import { EmergencyResourcesButton } from '@/components/emergency-resources-button';
 
 export const metadata: Metadata = {
   title: 'Aluna',
@@ -38,6 +39,8 @@ export default function RootLayout({
             <WellnessLogProvider>
               <AppShell>{children}</AppShell>
               <Toaster />
+              {/* Emergency resources button - always accessible */}
+              <EmergencyResourcesButton position="fixed" />
             </WellnessLogProvider>
           </FirebaseClientProvider>
         </ThemeProvider>
