@@ -15,6 +15,7 @@ import {
 import { Menu, Paintbrush, WandSparkles, UserCircle } from "lucide-react";
 import { ThemeToggle } from "../theme-toggle";
 import { useUser } from "@/firebase";
+import { Skeleton } from "../ui/skeleton";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -39,7 +40,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2">
-            {!isUserLoading && !user && (
+            {isUserLoading ? (
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-20" />
+              </div>
+            ) : !user ? (
               <>
                 <Button variant="ghost" asChild>
                   <Link href="/login">Sign In</Link>
@@ -48,8 +54,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link href="/signup">Sign Up</Link>
                 </Button>
               </>
-            )}
-            {!isUserLoading && user && (
+            ) : (
                 <>
                   {showCheckInButton && (
                     <Button asChild>
