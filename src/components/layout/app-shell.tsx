@@ -41,10 +41,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2">
             {isUserLoading ? (
-              <div className="flex items-center gap-2">
+              <>
                 <Skeleton className="h-10 w-28" />
                 <Skeleton className="h-10 w-10 rounded-full" />
-              </div>
+              </>
             ) : !user ? (
               <>
                 <Button variant="ghost" asChild>
