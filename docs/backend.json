@@ -1,0 +1,211 @@
+{
+  "entities": {
+    "WellnessEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WellnessEntry",
+      "type": "object",
+      "description": "Represents a single wellness check-in entry.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the wellness entry."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time when the wellness entry was created.",
+          "format": "date-time"
+        },
+        "sensationId": {
+          "type": "string",
+          "description": "Reference to Sensation. (Relationship: WellnessEntry 1:1 Sensation)"
+        },
+        "emotionId": {
+          "type": "string",
+          "description": "Reference to Emotion. (Relationship: WellnessEntry 1:1 Emotion)"
+        },
+        "thoughtId": {
+          "type": "string",
+          "description": "Reference to Thought. (Relationship: WellnessEntry 1:1 Thought)"
+        }
+      },
+      "required": [
+        "id",
+        "timestamp",
+        "sensationId",
+        "emotionId",
+        "thoughtId"
+      ]
+    },
+    "Sensation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Sensation",
+      "type": "object",
+      "description": "Represents a physical sensation experienced.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the sensation."
+        },
+        "location": {
+          "type": "string",
+          "description": "Location in the body where the sensation is felt."
+        },
+        "intensity": {
+          "type": "number",
+          "description": "Intensity of the sensation (e.g., on a scale of 1 to 10)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the sensation (e.g., tingling, sharp pain)."
+        }
+      },
+      "required": [
+        "id",
+        "location",
+        "intensity",
+        "description"
+      ]
+    },
+    "Emotion": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Emotion",
+      "type": "object",
+      "description": "Represents an emotion felt.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the emotion."
+        },
+        "emotionName": {
+          "type": "string",
+          "description": "Name of the emotion (e.g., joy, sadness, anger)."
+        },
+        "intensity": {
+          "type": "number",
+          "description": "Intensity of the emotion (e.g., on a scale of 1 to 10)."
+        }
+      },
+      "required": [
+        "id",
+        "emotionName",
+        "intensity"
+      ]
+    },
+    "Thought": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Thought",
+      "type": "object",
+      "description": "Represents a type of thinking pattern.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the thought."
+        },
+        "thoughtPattern": {
+          "type": "string",
+          "description": "Type of thinking pattern (e.g., negative self-talk, catastrophizing)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A more detailed description of the specific thought."
+        }
+      },
+      "required": [
+        "id",
+        "thoughtPattern",
+        "description"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/wellnessEntries/{wellnessEntryId}",
+        "definition": {
+          "entityName": "WellnessEntry",
+          "schema": {
+            "$ref": "#/backend/entities/WellnessEntry"
+          },
+          "description": "Stores wellness entries for each user. Includes params for userId and wellnessEntryId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who owns the wellness entry."
+            },
+            {
+              "name": "wellnessEntryId",
+              "description": "The unique ID of the wellness entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/sensations/{sensationId}",
+        "definition": {
+          "entityName": "Sensation",
+          "schema": {
+            "$ref": "#/backend/entities/Sensation"
+          },
+          "description": "Stores sensations for each user. Includes params for userId and sensationId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who owns the sensation."
+            },
+            {
+              "name": "sensationId",
+              "description": "The unique ID of the sensation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/emotions/{emotionId}",
+        "definition": {
+          "entityName": "Emotion",
+          "schema": {
+            "$ref": "#/backend/entities/Emotion"
+          },
+          "description": "Stores emotions for each user. Includes params for userId and emotionId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who owns the emotion."
+            },
+            {
+              "name": "emotionId",
+              "description": "The unique ID of the emotion."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/thoughts/{thoughtId}",
+        "definition": {
+          "entityName": "Thought",
+          "schema": {
+            "$ref": "#/backend/entities/Thought"
+          },
+          "description": "Stores thoughts for each user. Includes params for userId and thoughtId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who owns the thought."
+            },
+            {
+              "name": "thoughtId",
+              "description": "The unique ID of the thought."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability for the Mindful Charts application. The core principle is path-based ownership for user-specific data. Each user's wellness entries, sensations, emotions, and thoughts are stored under their respective user ID, eliminating the need for `get()` calls in security rules and enabling atomic operations.\n\n`/users/{userId}/wellnessEntries/{wellnessEntryId}`:  Each user has their own collection of wellness entries.  This structure enforces that only the user can create, read, update, or delete their own wellness entries. Includes references to Sensation, Emotion, and Thought documents within the same user's subcollections.  The separation into subcollections ensures homogeneous security posture. Sensation, Emotion and Thought are also stored under users since they are private to the user\n\nQAPs (Rules are not Filters) is achieved through structural segregation. User-specific data is stored under the `/users/{userId}` path, preventing unauthorized access to other users' data during list operations. Path based ownership enables secure `list` operations without the need to filter based on document content."
+  }
+}

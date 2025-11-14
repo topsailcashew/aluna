@@ -1,0 +1,192 @@
+/**
+ * @fileoverview Firestore Security Rules for Mindful Charts application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model. Each user has complete control over their data tree under `/users/{userId}`.
+ *
+ * Data Structure:
+ * All data is nested under `/users/{userId}`, ensuring that all data is private to the user.
+ *  - /users/{userId}/wellnessEntries/{wellnessEntryId}
+ *  - /users/{userId}/sensations/{sensationId}
+ *  - /users/{userId}/emotions/{emotionId}
+ *  - /users/{userId}/thoughts/{thoughtId}
+ *
+ * Key Security Decisions:
+ * - Users can only access their own data.
+ * - Listing other users' data is disallowed to protect privacy.
+ *
+ * Denormalization for Authorization:
+ * The path `/users/{userId}` serves as the ownership anchor. No denormalization is required.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the request is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the requested user ID matches the authenticated user's ID.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the document exists and the user is the owner.
+     */
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces that on create, the document's ID matches the {wellnessEntryId} path parameter.
+     */
+    function isValidNewWellnessEntry(wellnessEntryId) {
+        return request.resource.data.id == wellnessEntryId;
+    }
+
+    /**
+     * @description Enforces that the userId remains immutable on update.
+     */
+    function isValidExistingWellnessEntry() {
+        return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * @description Enforces that on create, the document's ID matches the {sensationId} path parameter.
+     */
+    function isValidNewSensation(sensationId) {
+        return request.resource.data.id == sensationId;
+    }
+
+    /**
+     * @description Enforces that the sensationId remains immutable on update.
+     */
+    function isValidExistingSensation() {
+        return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * @description Enforces that on create, the document's ID matches the {emotionId} path parameter.
+     */
+    function isValidNewEmotion(emotionId) {
+        return request.resource.data.id == emotionId;
+    }
+
+    /**
+     * @description Enforces that the emotionId remains immutable on update.
+     */
+    function isValidExistingEmotion() {
+        return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * @description Enforces that on create, the document's ID matches the {thoughtId} path parameter.
+     */
+    function isValidNewThought(thoughtId) {
+        return request.resource.data.id == thoughtId;
+    }
+
+    /**
+     * @description Enforces that the thoughtId remains immutable on update.
+     */
+    function isValidExistingThought() {
+        return request.resource.data.id == resource.data.id;
+    }
+   /**
+     * @description Rules for the root `/users` collection.  Used to create a user document when they first sign in.
+     * @path /users/{userId}
+     * @allow (create) User 'abc' can create their own user document if request.auth.uid == 'abc'
+     * @deny (create) User 'abc' cannot create user document 'def'
+     * @principle Enforces self-creation for user documents.
+     */
+    match /users/{userId} {
+        allow get: if false;
+        allow list: if false;
+        allow create: if isOwner(userId);
+        allow update: if false;
+        allow delete: if false;
+    }
+
+    /**
+     * @description Manages wellness entries for a specific user.
+     * @path /users/{userId}/wellnessEntries/{wellnessEntryId}
+     * @allow (create) User 'abc' can create a wellness entry with id 'entry1' under their user ID if they are authenticated.
+     * @allow (get) User 'abc' can read wellness entry 'entry1' under their user ID if they are authenticated.
+     * @allow (update) User 'abc' can update their own wellness entry 'entry1'.
+     * @allow (delete) User 'abc' can delete their own wellness entry 'entry1'.
+     * @deny (create) User 'def' cannot create a wellness entry under user 'abc'.
+     * @deny (get) User 'def' cannot read a wellness entry under user 'abc'.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/wellnessEntries/{wellnessEntryId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidNewWellnessEntry(wellnessEntryId);
+      allow update: if isExistingOwner(userId) && isValidExistingWellnessEntry();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages sensations for a specific user.
+     * @path /users/{userId}/sensations/{sensationId}
+     * @allow (create) User 'abc' can create a sensation with id 'sensation1' under their user ID if they are authenticated.
+     * @allow (get) User 'abc' can read sensation 'sensation1' under their user ID if they are authenticated.
+     * @allow (update) User 'abc' can update their own sensation 'sensation1'.
+     * @allow (delete) User 'abc' can delete their own sensation 'sensation1'.
+     * @deny (create) User 'def' cannot create a sensation under user 'abc'.
+     * @deny (get) User 'def' cannot read a sensation under user 'abc'.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/sensations/{sensationId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidNewSensation(sensationId);
+      allow update: if isExistingOwner(userId) && isValidExistingSensation();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages emotions for a specific user.
+     * @path /users/{userId}/emotions/{emotionId}
+     * @allow (create) User 'abc' can create an emotion with id 'emotion1' under their user ID if they are authenticated.
+     * @allow (get) User 'abc' can read emotion 'emotion1' under their user ID if they are authenticated.
+     * @allow (update) User 'abc' can update their own emotion 'emotion1'.
+     * @allow (delete) User 'abc' can delete their own emotion 'emotion1'.
+     * @deny (create) User 'def' cannot create an emotion under user 'abc'.
+     * @deny (get) User 'def' cannot read an emotion under user 'abc'.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/emotions/{emotionId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidNewEmotion(emotionId);
+      allow update: if isExistingOwner(userId) && isValidExistingEmotion();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages thoughts for a specific user.
+     * @path /users/{userId}/thoughts/{thoughtId}
+     * @allow (create) User 'abc' can create a thought with id 'thought1' under their user ID if they are authenticated.
+     * @allow (get) User 'abc' can read thought 'thought1' under their user ID if they are authenticated.
+     * @allow (update) User 'abc' can update their own thought 'thought1'.
+     * @allow (delete) User 'abc' can delete their own thought 'thought1'.
+     * @deny (create) User 'def' cannot create a thought under user 'abc'.
+     * @deny (get) User 'def' cannot read a thought under user 'abc'.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/thoughts/{thoughtId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidNewThought(thoughtId);
+      allow update: if isExistingOwner(userId) && isValidExistingThought();
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
