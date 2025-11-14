@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Paintbrush, WandSparkles, UserCircle } from "lucide-react";
+import { Paintbrush, WandSparkles, UserCircle } from "lucide-react";
 import { ThemeToggle } from "../theme-toggle";
 import { useUser } from "@/firebase";
 import { Skeleton } from "../ui/skeleton";
@@ -43,7 +43,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {isUserLoading ? (
               <div className="flex items-center gap-2">
                 <Skeleton className="h-8 w-20" />
-                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-8 rounded-full" />
               </div>
             ) : !user ? (
               <>
