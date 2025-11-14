@@ -24,6 +24,13 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { emotionCategories } from '@/lib/data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import {
+  LOCATION_OPTIONS,
+  ACTIVITY_OPTIONS,
+  TRIGGER_OPTIONS,
+  PEOPLE_OPTIONS
+} from '@/lib/constants/context-options';
 
 const emotionLegendConfig = emotionCategories.reduce((acc, category) => {
     acc[category.name] = {
@@ -44,6 +51,26 @@ export function RecentCheckIns() {
       )
       .slice(0, 5);
   }, [logEntries]);
+
+  // Helper to get context label with emoji
+  const getContextLabel = (type: 'location' | 'activity' | 'trigger' | 'people', id: string) => {
+    let option;
+    switch (type) {
+      case 'location':
+        option = LOCATION_OPTIONS.find(o => o.id === id);
+        break;
+      case 'activity':
+        option = ACTIVITY_OPTIONS.find(o => o.id === id);
+        break;
+      case 'trigger':
+        option = TRIGGER_OPTIONS.find(o => o.id === id);
+        break;
+      case 'people':
+        option = PEOPLE_OPTIONS.find(o => o.id === id);
+        break;
+    }
+    return option ? `${option.emoji} ${option.label}` : id;
+  };
 
    const emotionDistribution = useMemo(() => {
     if (!logEntries) return [];
@@ -140,9 +167,16 @@ export function RecentCheckIns() {
             {sortedEntries.length > 0 ? (
               sortedEntries.map((entry) => {
                 const l1Category = emotionCategories.find(c => c.subCategories.some(sc => sc.name === entry.emotion));
+                const hasContext = entry.contextTags && (
+                  entry.contextTags.location ||
+                  (entry.contextTags.activity && entry.contextTags.activity.length > 0) ||
+                  (entry.contextTags.triggers && entry.contextTags.triggers.length > 0) ||
+                  entry.contextTags.people
+                );
+
                 return (
-                  <div key={entry.id} className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{backgroundColor: l1Category?.color || '#ccc'}}>
+                  <div key={entry.id} className="flex items-start gap-4 pb-4 border-b last:border-b-0 last:pb-0">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0" style={{backgroundColor: l1Category?.color || '#ccc'}}>
                        <span className="text-xl">
                         {
                             {
@@ -156,21 +190,51 @@ export function RecentCheckIns() {
                         }
                         </span>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium leading-none">
-                        {entry.emotion}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {entry.specificEmotions?.join(', ')}
-                      </p>
-                    </div>
-                    <div className="ml-auto text-right">
-                      <p className="text-sm font-medium">
-                        {formatDistanceToNow(parseISO(entry.date), { addSuffix: true })}
-                      </p>
-                       <p className="text-xs text-muted-foreground">
-                        {entry.sensations.length} sensation{entry.sensations.length !== 1 && 's'}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium leading-none">
+                            {entry.emotion}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {entry.specificEmotions?.join(', ')}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-medium">
+                            {formatDistanceToNow(parseISO(entry.date), { addSuffix: true })}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {entry.sensations.length} sensation{entry.sensations.length !== 1 && 's'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Context Tags */}
+                      {hasContext && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {entry.contextTags?.location && (
+                            <Badge variant="secondary" className="text-xs">
+                              {getContextLabel('location', entry.contextTags.location)}
+                            </Badge>
+                          )}
+                          {entry.contextTags?.activity?.map((activity) => (
+                            <Badge key={activity} variant="secondary" className="text-xs">
+                              {getContextLabel('activity', activity)}
+                            </Badge>
+                          ))}
+                          {entry.contextTags?.triggers?.slice(0, 2).map((trigger) => (
+                            <Badge key={trigger} variant="outline" className="text-xs">
+                              {getContextLabel('trigger', trigger)}
+                            </Badge>
+                          ))}
+                          {entry.contextTags?.people && (
+                            <Badge variant="secondary" className="text-xs">
+                              {getContextLabel('people', entry.contextTags.people)}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

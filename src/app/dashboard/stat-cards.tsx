@@ -8,14 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Activity, Star, TrendingUp } from 'lucide-react';
+import { Activity, Star, TrendingUp, Flame } from 'lucide-react';
 import { useMemo } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { emotionCategories } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useStreak } from '@/hooks/use-streak';
 
 export function StatCards() {
   const { logEntries, isLoading } = useWellnessLog();
+  const streakData = useStreak(logEntries || []);
 
   const summary = useMemo(() => {
     if (!logEntries || logEntries.length === 0) {
@@ -62,7 +64,7 @@ export function StatCards() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Last Check-in</CardTitle>
@@ -93,12 +95,31 @@ export function StatCards() {
             <Skeleton className="h-4 w-3/4" />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+            <Flame className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-8 w-1/2 mb-2" />
+            <Skeleton className="h-4 w-3/4" />
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
+  const getStreakMessage = (streak: number) => {
+    if (streak === 0) return 'Start your streak today!';
+    if (streak === 1) return 'Great start!';
+    if (streak < 7) return 'Keep it up!';
+    if (streak < 30) return 'Fantastic consistency!';
+    if (streak < 100) return 'Amazing dedication!';
+    return 'Legendary streak!';
+  };
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
@@ -138,6 +159,22 @@ export function StatCards() {
           <div className="text-2xl font-bold">{summary.weeklyAverageIntensity} / 10</div>
           <p className="text-xs text-muted-foreground">
             Average intensity of sensations this week.
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Current Streak
+          </CardTitle>
+          <Flame className="h-4 w-4 text-orange-500" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold flex items-center gap-1">
+            {streakData.current} {streakData.current > 0 && '🔥'}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {getStreakMessage(streakData.current)}
           </p>
         </CardContent>
       </Card>
