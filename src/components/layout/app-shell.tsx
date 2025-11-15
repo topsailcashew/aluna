@@ -27,14 +27,14 @@ import {
   UserPlus
 } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
-import { useUser } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useTheme } from 'next-themes';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/firebase/config';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const pathname = usePathname();
   const router = useRouter();
@@ -46,8 +46,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
+    if (auth) {
+      await signOut(auth);
+      router.push('/');
+    }
   };
 
   const getUserInitials = () => {
