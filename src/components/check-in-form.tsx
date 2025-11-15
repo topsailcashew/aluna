@@ -218,17 +218,17 @@ export function CheckInForm() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <StepSection ref={sensationRef}>
               <div className="flex flex-col items-center justify-center h-full text-center relative">
-                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="relative w-full max-w-2xl h-[500px]">
-                          <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-indigo-600 to-yellow-300 rounded-full blur-3xl opacity-30 dark:opacity-20 animate-pulse"></div>
+                   <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="relative w-full max-w-lg h-96">
+                          <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-indigo-600 to-yellow-300 rounded-full blur-3xl opacity-50"></div>
                       </div>
                   </div>
-                  <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
-                      <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tighter bg-gradient-to-r from-orange-600 to-indigo-600 dark:from-orange-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4">Where Do You Feel It?</h1>
-                      <p className="text-base sm:text-lg font-medium text-foreground/80 max-w-2xl mx-auto mb-8">
+                  <div className="relative z-10 w-full px-4">
+                      <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tighter text-foreground mb-4">Where Do You Feel It?</h1>
+                      <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                           Scan your body. Note any physical sensations, their location, and intensity.
                       </p>
-                      <Card className="w-full max-w-6xl mx-auto bg-background/95 backdrop-blur-md border-2 shadow-2xl">
+                      <Card className="w-full max-w-6xl mx-auto bg-background/80 backdrop-blur-sm">
                         <CardContent className="p-6">
                           <div className="grid md:grid-cols-2 gap-6">
                             {/* Left: Body Map */}
