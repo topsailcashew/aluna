@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { runFlow } from 'genkit';
 import { recognizePatternsFlow } from '@/ai/flows';
 
 export async function POST(request: NextRequest) {
@@ -13,17 +14,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call the Genkit flow
-    const result = await recognizePatternsFlow({
+    // Call the Genkit flow using runFlow
+    const result = await runFlow(recognizePatternsFlow, {
       entries,
       daysAnalyzed: daysAnalyzed || 30,
     });
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error recognizing patterns:', error);
+    console.error('Error details:', error.message, error.stack);
     return NextResponse.json(
-      { error: 'Failed to recognize patterns' },
+      {
+        error: 'Failed to recognize patterns',
+        details: error.message || 'Unknown error'
+      },
       { status: 500 }
     );
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { runFlow } from 'genkit';
 import { suggestCopingFlow } from '@/ai/flows';
 
 export async function POST(request: NextRequest) {
@@ -19,8 +20,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call the Genkit flow
-    const result = await suggestCopingFlow({
+    // Call the Genkit flow using runFlow
+    const result = await runFlow(suggestCopingFlow, {
       currentEmotion,
       specificEmotions,
       intensity,
@@ -29,10 +30,14 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating coping suggestions:', error);
+    console.error('Error details:', error.message, error.stack);
     return NextResponse.json(
-      { error: 'Failed to generate coping suggestions' },
+      {
+        error: 'Failed to generate coping suggestions',
+        details: error.message || 'Unknown error'
+      },
       { status: 500 }
     );
   }
