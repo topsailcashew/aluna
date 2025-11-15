@@ -132,10 +132,6 @@ export function CheckInForm() {
     return [];
   }, [selectedLevel2Emotion]);
 
-  React.useEffect(() => {
-    form.setValue("specificEmotions", []);
-  }, [selectedLevel2Emotion, form]);
-
 
   const onSubmit = async (data: CheckInFormValues) => {
     const result = await submitLogEntry(data);
