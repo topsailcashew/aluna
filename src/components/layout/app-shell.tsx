@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import {
@@ -82,7 +81,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={user ? '/dashboard' : '/'}
               className="flex items-center gap-2 group"
             >
-              <Image src="/images/logo.svg" alt="Aluna Logo" width={32} height={32} />
+              <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500">
+                <Sparkles className="h-5 w-5 text-white" />
+              </div>
               <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
                 Aluna
               </span>
@@ -116,7 +117,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-2">
-            {!isClient ? (
+            {!isClient || isUserLoading ? (
                <div className="flex items-center gap-2">
                 <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
                 <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
@@ -225,11 +226,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Link>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
