@@ -88,12 +88,16 @@ export function CheckInForm() {
   const thoughtRef = React.useRef<HTMLDivElement>(null);
   const contextRef = React.useRef<HTMLDivElement>(null);
   const journalRef = React.useRef<HTMLDivElement>(null);
+  const copingRef = React.useRef<HTMLDivElement>(null);
 
   const [currentSensation, setCurrentSensation] = React.useState({
     location: '',
     intensity: 5,
     notes: '',
   });
+
+  const [copingSuggestions, setCopingSuggestions] = React.useState<any>(null);
+  const [isLoadingCoping, setIsLoadingCoping] = React.useState(false);
 
   const form = useForm<CheckInFormValues>({
     resolver: zodResolver(formSchema),
@@ -167,6 +171,45 @@ export function CheckInForm() {
     });
     // Reset for next entry
     setCurrentSensation({ location: '', intensity: 5, notes: '' });
+  };
+
+  const generateCopingSuggestions = async () => {
+    const formValues = form.getValues();
+
+    // Calculate average intensity
+    const avgIntensity = formValues.sensations.length > 0
+      ? Math.round(formValues.sensations.reduce((sum, s) => sum + s.intensity, 0) / formValues.sensations.length)
+      : 5;
+
+    setIsLoadingCoping(true);
+
+    try {
+      const response = await fetch('/api/ai/coping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentEmotion: formValues.emotion,
+          specificEmotions: formValues.specificEmotions,
+          intensity: avgIntensity,
+          contextTags: formValues.contextTags,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate coping suggestions');
+      }
+
+      const data = await response.json();
+      setCopingSuggestions(data);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not generate coping suggestions. You can still complete your check-in.',
+      });
+    } finally {
+      setIsLoadingCoping(false);
+    }
   };
 
 
@@ -526,6 +569,125 @@ export function CheckInForm() {
                   </div>
               </div>
               <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
+                  <Button
+                      type="button"
+                      size="lg"
+                      className="rounded-full px-8 shadow-lg"
+                      onClick={() => {
+                        generateCopingSuggestions();
+                        scrollTo(copingRef);
+                      }}
+                  >
+                      <ArrowDown className="h-5 w-5 mr-2" />
+                      Get Coping Suggestions
+                  </Button>
+              </div>
+          </StepSection>
+
+          {/* Step 6: Coping Suggestions */}
+          <StepSection ref={copingRef}>
+              <div className="flex flex-col items-center justify-center h-full relative overflow-y-auto">
+                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="relative w-full max-w-lg h-96">
+                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-full blur-3xl opacity-50"></div>
+                      </div>
+                  </div>
+                  <div className="relative z-10 w-full px-4 py-8 max-w-4xl mx-auto">
+                      <h2 className="text-3xl font-bold mb-2 text-center">Coping Strategies</h2>
+                      <p className="text-muted-foreground text-center mb-6">
+                          Personalized suggestions to help you manage what you're feeling
+                      </p>
+
+                      {isLoadingCoping ? (
+                          <Card className="bg-background/80 backdrop-blur-sm">
+                              <CardContent className="p-8">
+                                  <div className="space-y-4">
+                                      {[...Array(3)].map((_, i) => (
+                                          <div key={i} className="space-y-2">
+                                              <div className="h-5 bg-muted animate-pulse rounded w-2/3" />
+                                              <div className="h-4 bg-muted animate-pulse rounded w-full" />
+                                              <div className="h-4 bg-muted animate-pulse rounded w-5/6" />
+                                          </div>
+                                      ))}
+                                  </div>
+                              </CardContent>
+                          </Card>
+                      ) : copingSuggestions ? (
+                          <div className="space-y-4">
+                              {/* Priority Tip */}
+                              <Card className="bg-pink-50 dark:bg-pink-950/20 border-pink-200 dark:border-pink-800">
+                                  <CardContent className="p-4">
+                                      <div className="flex items-start gap-2">
+                                          <span className="text-2xl">⚡</span>
+                                          <div>
+                                              <p className="font-medium text-sm mb-1">Start Here</p>
+                                              <p className="text-sm text-muted-foreground">
+                                                  {copingSuggestions.priorityTip}
+                                              </p>
+                                          </div>
+                                      </div>
+                                  </CardContent>
+                              </Card>
+
+                              {/* Strategies */}
+                              <ScrollArea className="h-[400px]">
+                                  <div className="space-y-3 pr-4">
+                                      {copingSuggestions.strategies.slice(0, 4).map((strategy: any, index: number) => (
+                                          <Card key={index} className="bg-background/80 backdrop-blur-sm">
+                                              <CardContent className="p-4">
+                                                  <div className="flex items-start gap-3">
+                                                      <div className="text-2xl">
+                                                          {strategy.category === 'immediate' && '⚡'}
+                                                          {strategy.category === 'grounding' && '❤️'}
+                                                          {strategy.category === 'physical' && '🏃'}
+                                                          {strategy.category === 'cognitive' && '🧠'}
+                                                          {strategy.category === 'social' && '👥'}
+                                                          {strategy.category === 'creative' && '🎨'}
+                                                      </div>
+                                                      <div className="flex-1 space-y-2">
+                                                          <div className="flex items-start justify-between gap-2">
+                                                              <h4 className="font-semibold text-sm">{strategy.title}</h4>
+                                                              <Badge variant="outline" className="text-xs capitalize shrink-0">
+                                                                  {strategy.category}
+                                                              </Badge>
+                                                          </div>
+                                                          <p className="text-sm text-muted-foreground">
+                                                              {strategy.description}
+                                                          </p>
+                                                          <div className="flex gap-2 text-xs text-muted-foreground">
+                                                              <span>⏱️ {strategy.duration}</span>
+                                                              <span>•</span>
+                                                              <span className="capitalize">{strategy.intensity} effort</span>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </CardContent>
+                                          </Card>
+                                      ))}
+                                  </div>
+                              </ScrollArea>
+                          </div>
+                      ) : (
+                          <Card className="bg-background/80 backdrop-blur-sm">
+                              <CardContent className="p-8 text-center">
+                                  <p className="text-muted-foreground">
+                                      Unable to load coping suggestions. You can still complete your check-in.
+                                  </p>
+                              </CardContent>
+                          </Card>
+                      )}
+                  </div>
+              </div>
+              <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-between px-4 sm:px-6">
+                  <Button
+                      type="submit"
+                      size="lg"
+                      variant="outline"
+                      disabled={form.formState.isSubmitting}
+                      className="rounded-full px-8"
+                  >
+                      Skip & Complete
+                  </Button>
                   <Button
                       type="submit"
                       size="lg"
