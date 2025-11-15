@@ -7,6 +7,8 @@ import { WellnessCharts } from "./wellness-charts";
 import { TimeHeatmap } from "./time-heatmap";
 import { TrendLinesChart } from "./trend-lines-chart";
 import { MonthlyComparison } from "./monthly-comparison";
+import { AIInsightsCard } from "@/components/ai-insights-card";
+import { PatternInsights } from "@/components/pattern-insights";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -45,6 +47,12 @@ export default function DashboardPage() {
 
         {/* Stat Cards */}
         <StatCards />
+
+        {/* AI Insights - Side by Side */}
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+          <AIInsightsCard daysBack={7} />
+          <PatternInsights daysBack={30} />
+        </div>
 
         {/* Time Heatmap - Full Width */}
         <TimeHeatmap entries={logEntries} daysBack={90} />
