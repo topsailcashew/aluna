@@ -41,6 +41,7 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { ContextTagsSelector } from "./context-tags-selector";
 import { JournalEntryEditor } from "./journal-entry-editor";
+import { InteractiveBodyMap } from "./interactive-body-map";
 import type { ContextTags } from "@/lib/types";
 
 const sensationSchema = z.object({
@@ -229,29 +230,25 @@ export function CheckInForm() {
                       <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                           Scan your body. Note any physical sensations, their location, and intensity.
                       </p>
-                      <Card className="w-full max-w-4xl mx-auto bg-background/80 backdrop-blur-sm rounded-2xl flex flex-col h-auto max-h-[60vh]">
+                      <Card className="w-full max-w-4xl mx-auto bg-background/80 backdrop-blur-sm rounded-2xl flex flex-col h-auto max-h-[70vh]">
                           <CardContent className="flex-1 grid md:grid-cols-2 gap-x-8 gap-y-4 p-6 overflow-hidden">
-                            {/* Left: Editor */}
+                            {/* Left: Interactive Body Map */}
+                            <div className="flex flex-col gap-4">
+                              <h3 className="font-semibold text-lg text-center">Select body part</h3>
+                              <InteractiveBodyMap
+                                selectedPart={currentSensation.location}
+                                onPartSelect={(part) => setCurrentSensation(p => ({...p, location: part}))}
+                              />
+                            </div>
+
+                            {/* Right: Sensation Details */}
                             <div className="flex flex-col gap-4 text-left">
-                              <h3 className="font-semibold text-lg">Log a new sensation</h3>
-                               <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <Select 
-                                    value={currentSensation.location} 
-                                    onValueChange={(val) => setCurrentSensation(p => ({...p, location: val}))}
-                                  >
-                                      <SelectTrigger className="bg-white/50">
-                                          <SelectValue placeholder="Select a body part" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                          {bodyParts.map((part) => (
-                                              <SelectItem key={part} value={part}>
-                                                  {part}
-                                              </SelectItem>
-                                          ))}
-                                      </SelectContent>
-                                  </Select>
-                              </FormItem>
+                              <h3 className="font-semibold text-lg">Sensation details</h3>
+                              {currentSensation.location && (
+                                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                                  <p className="text-sm font-medium">Selected: {currentSensation.location}</p>
+                                </div>
+                              )}
                               <FormItem>
                                  <FormLabel>Intensity: {currentSensation.intensity}</FormLabel>
                                  <Slider
