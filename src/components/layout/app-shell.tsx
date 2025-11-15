@@ -1,7 +1,9 @@
+
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import {
@@ -24,7 +26,8 @@ import {
   Moon,
   Sun,
   LogIn,
-  UserPlus
+  UserPlus,
+  UserCircle,
 } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import { useAuth, useUser } from '@/firebase';
@@ -72,23 +75,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col">
       {/* Modern Navbar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between">
+        <div className="container flex h-14 items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6">
             <Link
               href={user ? '/dashboard' : '/'}
               className="flex items-center gap-2 group"
             >
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
+              <Image src="/images/logo.svg" alt="Aluna Logo" width={32} height={32} />
               <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
                 Aluna
               </span>
             </Link>
 
             {/* Navigation Links (logged in only) */}
-            {user && (
+            {isClient && user && (
               <nav className="hidden md:flex items-center gap-1">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
@@ -115,22 +116,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-2">
-            {!isClient || isUserLoading ? (
-              <div className="h-9 w-9 animate-pulse rounded-full bg-muted" />
+            {!isClient ? (
+               <div className="flex items-center gap-2">
+                <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+                <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+              </div>
             ) : !user ? (
               <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
-                  </Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/signup">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Sign Up
-                  </Link>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <UserCircle className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/login">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Sign In
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/signup">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Sign Up
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
                 <div className="h-4 w-px bg-border mx-1" />
                 <EmergencyResourcesButton
                   position="inline"
