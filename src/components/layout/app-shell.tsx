@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useTheme } from 'next-themes';
 import { signOut } from 'firebase/auth';
+import { EmergencyResourcesButton } from '../emergency-resources-button';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -131,6 +132,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </Link>
                 </Button>
                 <div className="h-4 w-px bg-border mx-1" />
+                <EmergencyResourcesButton
+                  position="inline"
+                  variant="outline"
+                  size="sm"
+                  showLabel={false}
+                  className="hidden sm:flex"
+                />
                 <ThemeToggle />
               </>
             ) : (
@@ -144,6 +152,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </Link>
                   </Button>
                 )}
+
+                {/* Need Help Now Button */}
+                <EmergencyResourcesButton
+                  position="inline"
+                  variant="outline"
+                  size="sm"
+                  showLabel={false}
+                  className="hidden sm:flex"
+                />
 
                 {/* Theme Toggle */}
                 <ThemeToggle />
@@ -221,7 +238,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="flex-1 flex flex-col">{children}</main>
+      <main className="flex-1 flex flex-col pt-0">{children}</main>
     </div>
   );
 }
