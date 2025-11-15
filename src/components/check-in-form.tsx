@@ -230,146 +230,145 @@ export function CheckInForm() {
                       <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                           Scan your body. Note any physical sensations, their location, and intensity.
                       </p>
-                      <div className="w-full max-w-3xl mx-auto space-y-6">
-                          {/* Interactive Body Map - Prominent */}
-                          <Card className="bg-background/80 backdrop-blur-sm">
-                              <CardContent className="p-6">
-                                  <InteractiveBodyMap
-                                    selectedPart={currentSensation.location}
-                                    onPartSelect={(part) => setCurrentSensation(p => ({...p, location: part}))}
-                                  />
-                              </CardContent>
-                          </Card>
+                      <Card className="w-full max-w-6xl mx-auto bg-background/80 backdrop-blur-sm">
+                        <CardContent className="p-6">
+                          <div className="grid md:grid-cols-2 gap-6">
+                            {/* Left: Body Map */}
+                            <div className="flex flex-col items-center">
+                              <InteractiveBodyMap
+                                selectedPart={currentSensation.location}
+                                onPartSelect={(part) => setCurrentSensation(p => ({...p, location: part}))}
+                              />
+                            </div>
 
-                          {/* Inline Sensation Form - Shows when part selected */}
-                          {currentSensation.location && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              <Card className="bg-background/90 backdrop-blur-sm border-primary/50 shadow-lg">
-                                <CardContent className="p-6 space-y-4">
-                                  {/* Selected Part Header */}
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <h3 className="text-lg font-semibold">Selected</h3>
-                                      <p className="text-2xl font-bold text-primary">{currentSensation.location}</p>
-                                    </div>
-                                    <Badge variant="outline" className="text-sm">
-                                      {currentSensation.intensity}/10
-                                    </Badge>
-                                  </div>
-
-                                  {/* Intensity Slider */}
-                                  <FormItem>
-                                    <FormLabel>Intensity: {currentSensation.intensity}</FormLabel>
-                                    <Slider
-                                      value={[currentSensation.intensity]}
-                                      max={10}
-                                      step={1}
-                                      onValueChange={(vals) => setCurrentSensation(p => ({...p, intensity: vals[0]}))}
-                                      className="py-2"
-                                    />
-                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                      <span>Mild</span>
-                                      <span>Moderate</span>
-                                      <span>Intense</span>
-                                    </div>
-                                  </FormItem>
-
-                                  {/* Notes Input */}
-                                  <FormItem>
-                                    <FormLabel>How does it feel? (optional)</FormLabel>
-                                    <Input
-                                      placeholder="e.g., tingling, warmth, pressure, aching"
-                                      value={currentSensation.notes}
-                                      onChange={(e) => setCurrentSensation(p => ({...p, notes: e.target.value}))}
-                                      className="bg-background"
-                                    />
-                                  </FormItem>
-
-                                  {/* Add Button */}
-                                  <div className="flex gap-2">
-                                    <Button
-                                      type="button"
-                                      onClick={addNewSensation}
-                                      className="flex-1"
-                                      size="lg"
-                                    >
-                                      <Plus className="h-5 w-5 mr-2" />
-                                      Add Sensation
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => setCurrentSensation({ location: '', intensity: 5, notes: '' })}
-                                      size="lg"
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          )}
-
-                          {/* Logged Sensations */}
-                          {fields.length > 0 && (
-                            <Card className="bg-background/80 backdrop-blur-sm">
-                              <CardContent className="p-6">
-                                <h3 className="font-semibold text-lg mb-4">Logged Sensations ({fields.length})</h3>
-                                <div className="space-y-3">
-                                  <AnimatePresence>
-                                    {fields.map((field, index) => (
-                                      <motion.div
-                                        key={field.id}
-                                        layout
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 20 }}
-                                        className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border"
-                                      >
-                                        <div className="flex-1">
-                                          <div className="flex items-center gap-3">
-                                            <Badge variant="default" className="font-semibold">
-                                              {field.location}
-                                            </Badge>
-                                            <span className="text-sm font-medium">
-                                              Intensity: {field.intensity}/10
-                                            </span>
-                                          </div>
-                                          {field.notes && (
-                                            <p className="text-sm text-muted-foreground mt-1 italic">
-                                              "{field.notes}"
-                                            </p>
-                                          )}
+                            {/* Right: Form + Logged Sensations */}
+                            <div className="flex flex-col gap-4 overflow-y-auto max-h-[600px]">
+                              {/* Inline Sensation Form */}
+                              {currentSensation.location ? (
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0.95 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <Card className="border-primary/50 shadow-lg">
+                                    <CardContent className="p-4 space-y-4">
+                                      {/* Selected Part Header */}
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <h3 className="text-sm font-semibold text-muted-foreground">Selected</h3>
+                                          <p className="text-xl font-bold text-primary">{currentSensation.location}</p>
                                         </div>
+                                        <Badge variant="outline" className="text-sm">
+                                          {currentSensation.intensity}/10
+                                        </Badge>
+                                      </div>
+
+                                      {/* Intensity Slider */}
+                                      <FormItem>
+                                        <FormLabel>Intensity: {currentSensation.intensity}</FormLabel>
+                                        <Slider
+                                          value={[currentSensation.intensity]}
+                                          max={10}
+                                          step={1}
+                                          onValueChange={(vals) => setCurrentSensation(p => ({...p, intensity: vals[0]}))}
+                                        />
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                          <span>Mild</span>
+                                          <span>Moderate</span>
+                                          <span>Intense</span>
+                                        </div>
+                                      </FormItem>
+
+                                      {/* Notes Input */}
+                                      <FormItem>
+                                        <FormLabel>How does it feel? (optional)</FormLabel>
+                                        <Input
+                                          placeholder="e.g., tingling, warmth, pressure"
+                                          value={currentSensation.notes}
+                                          onChange={(e) => setCurrentSensation(p => ({...p, notes: e.target.value}))}
+                                        />
+                                      </FormItem>
+
+                                      {/* Buttons */}
+                                      <div className="flex gap-2">
                                         <Button
                                           type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => remove(index)}
-                                          className="ml-4"
+                                          onClick={addNewSensation}
+                                          className="flex-1"
                                         >
-                                          <XIcon className="h-4 w-4" />
-                                          <span className="sr-only">Remove {field.location}</span>
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Add
                                         </Button>
-                                      </motion.div>
-                                    ))}
-                                  </AnimatePresence>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          onClick={() => setCurrentSensation({ location: '', intensity: 5, notes: '' })}
+                                        >
+                                          Cancel
+                                        </Button>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </motion.div>
+                              ) : (
+                                <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">
+                                  <p className="text-sm text-muted-foreground text-center px-4">
+                                    👈 Click on the body to select a part
+                                  </p>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          )}
+                              )}
 
-                          {/* Helper Text */}
-                          {!currentSensation.location && fields.length === 0 && (
-                            <p className="text-sm text-muted-foreground text-center">
-                              👆 Click on the body diagram above to select where you feel sensations
-                            </p>
-                          )}
-                      </div>
+                              {/* Logged Sensations */}
+                              {fields.length > 0 && (
+                                <div>
+                                  <h3 className="font-semibold text-sm mb-3 text-muted-foreground">
+                                    Logged Sensations ({fields.length})
+                                  </h3>
+                                  <div className="space-y-2">
+                                    <AnimatePresence>
+                                      {fields.map((field, index) => (
+                                        <motion.div
+                                          key={field.id}
+                                          layout
+                                          initial={{ opacity: 0, x: 20 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          exit={{ opacity: 0, x: -20 }}
+                                          className="flex items-start justify-between p-3 rounded-lg bg-muted/50 border text-sm"
+                                        >
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <Badge variant="default" className="text-xs">
+                                                {field.location}
+                                              </Badge>
+                                              <span className="text-xs font-medium">
+                                                {field.intensity}/10
+                                              </span>
+                                            </div>
+                                            {field.notes && (
+                                              <p className="text-xs text-muted-foreground italic truncate">
+                                                "{field.notes}"
+                                              </p>
+                                            )}
+                                          </div>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => remove(index)}
+                                            className="ml-2 h-6 w-6 p-0 shrink-0"
+                                          >
+                                            <XIcon className="h-3 w-3" />
+                                          </Button>
+                                        </motion.div>
+                                      ))}
+                                    </AnimatePresence>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                   </div>
               </div>
               <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center">
