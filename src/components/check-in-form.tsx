@@ -72,7 +72,7 @@ type CheckInFormValues = z.infer<typeof formSchema>;
 const StepSection = React.forwardRef<HTMLDivElement, { children: React.ReactNode, className?: string }>(
     ({ children, className }, ref) => {
     return (
-        <section ref={ref} className={`h-screen w-screen flex flex-col p-4 sm:p-6 snap-start relative ${className}`}>
+        <section ref={ref} className={`min-h-screen w-screen flex flex-col p-4 sm:p-6 snap-start snap-always relative ${className}`}>
             {children}
         </section>
     )
@@ -228,7 +228,7 @@ export function CheckInForm() {
                       </div>
                   </div>
                   <div className="relative z-10 w-full px-4">
-                      <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">Where Do You Feel It?</h1>
+                      <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tighter text-foreground mb-4">Where Do You Feel It?</h1>
                       <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                           Scan your body. Note any physical sensations, their location, and intensity.
                       </p>
@@ -436,7 +436,7 @@ export function CheckInForm() {
 
                   <div className="relative z-10 flex flex-col h-full w-full">
                     <div className="text-center pt-8">
-                        <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">How Do You Feel?</h1>
+                        <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tighter text-foreground mb-4">How Do You Feel?</h1>
                         <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
                             First, pick a broad category from the outer wheel, then a specific feeling from the inner wheel.
                         </p>
@@ -545,7 +545,7 @@ export function CheckInForm() {
                       </div>
                   </div>
                   <div className="relative z-10 w-full px-4">
-                      <h1 className="font-extrabold text-5xl sm:text-7xl md:text-8xl tracking-tighter text-foreground mb-4">
+                      <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tighter text-foreground mb-4">
                           What's On Your Mind?
                       </h1>
                       <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">

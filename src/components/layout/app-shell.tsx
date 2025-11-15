@@ -1,9 +1,8 @@
-
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -11,111 +10,211 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { Paintbrush, WandSparkles, UserCircle, LogIn, UserPlus } from 'lucide-react';
+import {
+  Home,
+  Plus,
+  LayoutDashboard,
+  Wind,
+  User,
+  LogOut,
+  Settings,
+  Sparkles,
+  Moon,
+  Sun,
+  LogIn,
+  UserPlus
+} from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import { useUser } from '@/firebase';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { useTheme } from 'next-themes';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/firebase/config';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const pathname = usePathname();
-  const mainActionPath = user ? '/dashboard' : '/';
+  const router = useRouter();
   const [isClient, setIsClient] = React.useState(false);
+  const { theme, setTheme } = useTheme();
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
 
-  // Hide check-in button on the form page itself
-  const showCheckInButton = user && !pathname.startsWith('/check-in');
+  const getUserInitials = () => {
+    if (!user?.displayName) return 'U';
+    return user.displayName
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const navLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/tools', label: 'Tools', icon: Wind },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <Button
-              asChild
-              variant="link"
-              className="px-0 font-bold text-lg tracking-tight text-foreground hover:no-underline"
+      {/* Modern Navbar */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center justify-between">
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-6">
+            <Link
+              href={user ? '/dashboard' : '/'}
+              className="flex items-center gap-2 group"
             >
-              <Link href={mainActionPath}>Aluna</Link>
-            </Button>
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
+                Aluna
+              </span>
+            </Link>
+
+            {/* Navigation Links (logged in only) */}
+            {user && (
+              <nav className="hidden md:flex items-center gap-1">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
           </div>
 
+          {/* Right Side Actions */}
           <div className="flex items-center gap-2">
             {!isClient || isUserLoading ? (
-               <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
+              <div className="h-9 w-9 animate-pulse rounded-full bg-muted" />
             ) : !user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <UserCircle className="h-6 w-6" />
-                    <span className="sr-only">User Menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href="/login">
-                      <LogIn className="mr-2 h-4 w-4" />
-                      <span>Sign In</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/signup">
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      <span>Sign Up</span>
-                    </Link>
-                  </DropdownMenuItem>
-                   <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      <Paintbrush className="mr-2 h-4 w-4" />
-                      <span>Theme</span>
-                      <div className="ml-auto">
-                        <ThemeToggle />
-                      </div>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/login">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/signup">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Sign Up
+                  </Link>
+                </Button>
+                <div className="h-4 w-px bg-border mx-1" />
+                <ThemeToggle />
+              </>
             ) : (
-                <div className="flex items-center gap-2">
-                  {showCheckInButton && (
-                    <Button asChild>
-                      <Link href="/check-in">New Check-in</Link>
+              <>
+                {/* New Check-in Button */}
+                {!pathname.startsWith('/check-in') && (
+                  <Button size="sm" asChild className="hidden sm:flex">
+                    <Link href="/check-in">
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Check-in
+                    </Link>
+                  </Button>
+                )}
+
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="gap-2 px-2">
+                      <Avatar className="h-7 w-7">
+                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden lg:inline-block text-sm font-medium">
+                        {user.displayName || 'User'}
+                      </span>
                     </Button>
-                  )}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <UserCircle className="h-6 w-6" />
-                        <span className="sr-only">User Menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">{user.displayName || 'User'}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    {/* Mobile Navigation Links */}
+                    <div className="md:hidden">
                       <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                          <UserCircle className="mr-2 h-4 w-4" />
-                          <span>Profile</span>
+                        <Link href="/dashboard">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          Dashboard
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href="/tools">
-                          <WandSparkles className="mr-2 h-4 w-4" />
-                          <span>Breathing Tools</span>
+                          <Wind className="mr-2 h-4 w-4" />
+                          Breathing Tools
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <Paintbrush className="mr-2 h-4 w-4" />
-                        <span>Theme</span>
-                        <div className="ml-auto">
-                          <ThemeToggle />
-                        </div>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                    </div>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Mobile New Check-in FAB */}
+                {!pathname.startsWith('/check-in') && (
+                  <Link href="/check-in" className="sm:hidden">
+                    <Button size="icon" className="h-9 w-9">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
+              </>
             )}
           </div>
         </div>
