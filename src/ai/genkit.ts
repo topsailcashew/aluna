@@ -18,5 +18,6 @@ export const ai = genkit({
   ],
   // Using Gemini 1.5 Flash for better free tier quotas and stability
   // Free tier: 15 RPM (requests per minute), 1M TPM (tokens per minute)
-  model: 'googleai/gemini-1.5-flash',
+  // The model identifier for v1beta is 'gemini-1.5-flash-latest'.
+  model: 'googleai/gemini-1.5-flash-latest',
 });

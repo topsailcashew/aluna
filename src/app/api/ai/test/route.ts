@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
 
     // Call the AI
     const result = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-exp',
       prompt: testPrompt,
     });
 
@@ -32,7 +31,7 @@ export async function GET(request: NextRequest) {
       success: true,
       message: 'Google AI API is working correctly!',
       apiKeyConfigured: true,
-      model: 'gemini-2.0-flash-exp',
+      model: ai.model, // Use the model from the central config
       testResponse: result.text,
     });
   } catch (error: any) {

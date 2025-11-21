@@ -21,7 +21,19 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import type { Insight, InsightsOutput } from '@/ai/flows';
+// Define types inline to match API response schema
+type Insight = {
+  type: 'positive' | 'neutral' | 'concern';
+  title: string;
+  description: string;
+  evidence: string;
+  suggestion?: string;
+};
+
+type InsightsOutput = {
+  insights: Insight[];
+  summary: string;
+};
 
 interface AIInsightsCardProps {
   daysBack?: number;
@@ -63,12 +75,21 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate insights');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.details || errorData.error || 'Failed to generate insights';
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+
+      // Validate response structure
+      if (!data.insights || !Array.isArray(data.insights)) {
+        throw new Error('Invalid response format from AI');
+      }
+
       setInsights(data);
     } catch (err) {
+      console.error('AI Insights Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate insights');
     } finally {
       setIsLoading(false);

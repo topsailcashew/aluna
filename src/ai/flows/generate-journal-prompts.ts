@@ -42,7 +42,6 @@ export const generateJournalPromptsFlow = ai.defineFlow(
 
     // Call the LLM
     const result = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
       prompt,
       output: {
         schema: JournalPromptsOutputSchema,

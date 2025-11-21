@@ -156,7 +156,6 @@ Generate your response now as a JSON object with keys: synthesis, reflections (a
 
     // Generate AI response
     const result = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
       prompt,
       output: { schema: ReflectionSchema },
     });
