@@ -1,4 +1,4 @@
-# Aluna
+a# Aluna
 
 Aluna is a modern, cloud-based wellness application designed to help you cultivate self-awareness and track your emotional and physical well-being over time. By providing a simple yet powerful interface for daily check-ins, the app empowers you to notice patterns, understand your feelings, and build a healthier relationship with your inner world.
 

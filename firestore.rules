@@ -126,6 +126,36 @@ service cloud.firestore {
       match /profile/userProfile {
         allow read, write: if isOwner(userId);
       }
+
+      /**
+       * Life Messages Sessions Subcollection
+       *
+       * Rules:
+       * - Users can CRUD their own life messages sessions
+       * - Sessions contain sensitive therapeutic content
+       */
+      match /lifeMessageSessions/{sessionId} {
+        allow read, list: if isOwner(userId);
+        allow create: if isOwner(userId)
+                      && request.resource.data.userId == userId;
+        allow update: if isOwner(userId)
+                      && resource.data.userId == userId;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    /**
+     * AI Usage Tracking Collection
+     *
+     * Rules:
+     * - Users can read their own AI usage logs
+     * - Only authenticated users can create usage logs
+     * - No updates or deletes (append-only for rate limiting)
+     */
+    match /aiUsage/{usageId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // Append-only
     }
 
     /**

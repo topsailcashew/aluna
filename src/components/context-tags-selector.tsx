@@ -160,6 +160,7 @@ export function ContextTagsSelector({
                 {LOCATION_OPTIONS.map((location) => (
                   <Button
                     key={location.id}
+                    type="button"
                     variant={
                       value.location === location.id ? "default" : "outline"
                     }
@@ -403,6 +404,7 @@ export function ContextTagsSelector({
                 {PEOPLE_OPTIONS.map((people) => (
                   <Button
                     key={people.id}
+                    type="button"
                     variant={value.people === people.id ? "default" : "outline"}
                     className="justify-start h-auto py-3"
                     onClick={() => updateContext({ people: people.id })}

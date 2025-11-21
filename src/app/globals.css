@@ -73,3 +73,47 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for PDF export */
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  /* Hide non-printable elements */
+  nav,
+  header,
+  footer,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure content is visible */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Prevent page breaks inside important elements */
+  .print-avoid-break,
+  #summary-canvas section,
+  .card {
+    page-break-inside: avoid;
+  }
+
+  /* Add page breaks where needed */
+  .print-page-break {
+    page-break-before: always;
+  }
+
+  /* Improve contrast for printing */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+  }
+
+  /* Show borders clearly */
+  .border {
+    border-color: #ccc !important;
+  }
+}

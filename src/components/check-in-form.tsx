@@ -215,7 +215,15 @@ export function CheckInForm() {
   return (
     <div className="h-screen snap-y snap-mandatory overflow-y-scroll overflow-x-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onKeyDown={(e) => {
+            // Prevent form submission on Enter key
+            if (e.key === 'Enter' && e.target instanceof HTMLElement && e.target.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+            }
+          }}
+        >
           <StepSection ref={sensationRef}>
               <div className="flex flex-col items-center justify-center h-full text-center relative">
                    <div className="absolute inset-0 flex items-center justify-center">
