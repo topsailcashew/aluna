@@ -142,7 +142,7 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
-            AI Insights
+            Key Insight
           </CardTitle>
           <CardDescription>
             Personalized insights from your check-ins
@@ -165,7 +165,7 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-purple-500" />
-              AI Insights
+              Key Insight
             </CardTitle>
             <CardDescription>
               Based on your last {daysBack} days ({recentEntries.length} check-ins)
