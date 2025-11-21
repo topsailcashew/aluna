@@ -1,3 +1,4 @@
+
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
@@ -16,8 +17,6 @@ export const ai = genkit({
       apiKey: process.env.GOOGLE_GENAI_API_KEY,
     })
   ],
-  // Using Gemini 1.5 Flash for better free tier quotas and stability
-  // Free tier: 15 RPM (requests per minute), 1M TPM (tokens per minute)
-  // The model identifier for v1beta is 'gemini-1.5-flash-preview-0514'.
-  model: 'googleai/gemini-1.5-flash-preview-0514',
+  // Using a more powerful model for better insights
+  model: 'googleai/gemini-pro',
 });
