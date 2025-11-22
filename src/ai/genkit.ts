@@ -18,5 +18,5 @@ export const ai = genkit({
     })
   ],
   // Using a more powerful model for better insights
-  model: 'googleai/gemini-pro',
+  model: 'googleai/gemini-1.5-flash-preview-0514',
 });
