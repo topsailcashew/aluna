@@ -1,11 +1,25 @@
+
+'use server';
+
 /**
- * Generate Insights Flow
- * Analyzes wellness log entries and generates personalized insights
+ * @fileOverview AI flow for generating wellness insights from log entries.
+ *
+ * - generateInsights - A Server Action to generate personalized insights.
+ * - InsightsInput - The input type for the generateInsights function.
+ * - InsightsOutput - The return type for the generateInsights function.
  */
 
 import { ai } from '../genkit';
-import { buildInsightsPrompt, type InsightsInput } from '../prompts/insights-prompt';
+import { buildInsightsPrompt } from '../prompts/insights-prompt';
 import { z } from 'zod';
+
+// Input schema for insights
+const InsightsInputSchema = z.object({
+  entries: z.array(z.any()), // LogEntry array
+  daysAnalyzed: z.number().default(7),
+  userName: z.string().optional(),
+});
+export type InsightsInput = z.infer<typeof InsightsInputSchema>;
 
 // Output schema for insights
 const InsightSchema = z.object({
@@ -24,17 +38,23 @@ const InsightsOutputSchema = z.object({
 export type Insight = z.infer<typeof InsightSchema>;
 export type InsightsOutput = z.infer<typeof InsightsOutputSchema>;
 
+
 /**
- * Generate personalized insights from log entries
+ * Server Action to generate personalized insights from log entries.
+ * This function can be called directly from client components.
  */
-export const generateInsightsFlow = ai.defineFlow(
+export async function generateInsights(input: InsightsInput): Promise<InsightsOutput> {
+  return generateInsightsFlow(input);
+}
+
+
+/**
+ * Genkit flow to generate personalized insights from log entries
+ */
+const generateInsightsFlow = ai.defineFlow(
   {
-    name: 'generateInsights',
-    inputSchema: z.object({
-      entries: z.array(z.any()), // LogEntry array
-      daysAnalyzed: z.number().default(7),
-      userName: z.string().optional(),
-    }),
+    name: 'generateInsightsFlow',
+    inputSchema: InsightsInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {

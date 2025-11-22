@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import {
   Card,
   CardContent,
@@ -21,19 +22,7 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-// Define types inline to match API response schema
-type Insight = {
-  type: 'positive' | 'neutral' | 'concern';
-  title: string;
-  description: string;
-  evidence: string;
-  suggestion?: string;
-};
-
-type InsightsOutput = {
-  insights: Insight[];
-  summary: string;
-};
+import { generateInsights, type InsightsOutput, type Insight } from '@/ai/flows/generate-insights';
 
 interface AIInsightsCardProps {
   daysBack?: number;
@@ -42,7 +31,7 @@ interface AIInsightsCardProps {
 export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
   const { logEntries } = useWellnessLog();
   const [insights, setInsights] = useState<InsightsOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [expandedInsights, setExpandedInsights] = useState<Set<number>>(new Set());
 
@@ -55,51 +44,43 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
   });
 
   // Generate insights
-  const generateInsights = async () => {
+  const handleGenerateInsights = () => {
     if (recentEntries.length === 0) {
       setError('Need at least one check-in to generate insights');
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/ai/insights', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    startTransition(async () => {
+      setError(null);
+      try {
+        const data = await generateInsights({
           entries: recentEntries,
           daysAnalyzed: daysBack,
-        }),
-      });
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.details || errorData.error || 'Failed to generate insights';
-        throw new Error(errorMessage);
+        if (!data.insights || !Array.isArray(data.insights)) {
+          throw new Error('Invalid response format from AI');
+        }
+
+        setInsights(data);
+      } catch (err) {
+        console.error('AI Insights Error:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to generate insights';
+        
+        // Check for specific model not found error
+        if (errorMessage.includes('is not found for API version v1beta') || errorMessage.includes('404 Not Found')) {
+          setError('The configured AI model is currently unavailable. Please try again later.');
+        } else {
+          setError(errorMessage);
+        }
       }
-
-      const data = await response.json();
-
-      // Validate response structure
-      if (!data.insights || !Array.isArray(data.insights)) {
-        throw new Error('Invalid response format from AI');
-      }
-
-      setInsights(data);
-    } catch (err) {
-      console.error('AI Insights Error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate insights');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   // Auto-generate on mount if we have data
   useEffect(() => {
     if (recentEntries.length > 0 && !insights && !error) {
-      generateInsights();
+      handleGenerateInsights();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -174,16 +155,16 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={generateInsights}
-            disabled={isLoading}
+            onClick={handleGenerateInsights}
+            disabled={isPending}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isPending ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading && (
+        {isPending && (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="space-y-2">
@@ -202,7 +183,7 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={generateInsights}
+              onClick={handleGenerateInsights}
               className="mt-4"
             >
               Try Again
@@ -210,7 +191,7 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
           </div>
         )}
 
-        {insights && !isLoading && (
+        {insights && !isPending && (
           <div className="space-y-6">
             {/* Summary */}
             <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800">
