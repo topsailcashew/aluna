@@ -72,7 +72,7 @@ type CheckInFormValues = z.infer<typeof formSchema>;
 const StepSection = React.forwardRef<HTMLDivElement, { children: React.ReactNode, className?: string }>(
     ({ children, className }, ref) => {
     return (
-        <section ref={ref} className={`min-h-screen w-screen flex flex-col p-4 sm:p-6 snap-start snap-always relative ${className}`}>
+        <section ref={ref} className={cn(`min-h-screen w-screen flex flex-col p-4 sm:p-6 snap-start snap-always relative`, className)}>
             {children}
         </section>
     )
@@ -653,23 +653,24 @@ export function CheckInForm() {
           </StepSection>
 
           {/* Step 5: Journal Entry */}
-          <StepSection ref={journalRef}>
-              <div className="flex flex-col items-center justify-center h-full relative overflow-y-auto">
-                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="relative w-full max-w-lg h-96">
-                          <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-full blur-3xl opacity-50"></div>
+          <StepSection ref={journalRef} className="p-0 sm:p-0">
+              <div className="flex flex-col h-full relative">
+                   <div className="absolute inset-0 pointer-events-none">
+                      <div className="relative w-full h-full">
+                          <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-none blur-3xl opacity-30"></div>
                       </div>
                   </div>
-                  <div className="relative z-10 w-full px-4 py-8 max-w-3xl mx-auto">
+                  <div className="relative z-10 w-full h-full flex flex-col">
                       <FormField
                           control={form.control}
                           name="journalEntry"
                           render={({ field }) => (
-                              <FormItem>
-                                  <FormControl>
+                              <FormItem className="flex-1 flex flex-col">
+                                  <FormControl className="flex-1">
                                       <JournalEntryEditor
                                           value={field.value || ""}
                                           onChange={field.onChange}
+                                          className="h-full"
                                       />
                                   </FormControl>
                                   <FormMessage />
@@ -678,7 +679,7 @@ export function CheckInForm() {
                       />
                   </div>
               </div>
-              <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6">
+              <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20">
                   <Button
                       type="button"
                       size="lg"

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -63,56 +64,58 @@ export function JournalEntryEditor({
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-2xl font-semibold">Journal Entry</h2>
-            <Badge variant="outline" className="text-xs">
-              Optional
-            </Badge>
+    <div className={cn("flex flex-col h-full", className)}>
+      <div className="p-4 sm:p-6 w-full max-w-3xl mx-auto">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-muted-foreground" />
+              <h2 className="text-2xl font-semibold">Journal Entry</h2>
+              <Badge variant="outline" className="text-xs">
+                Optional
+              </Badge>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowPrompts(!showPrompts)}
+              className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
+            >
+              <Lightbulb className="h-4 w-4" />
+              {showPrompts ? "Hide" : "Show"} Prompts
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowPrompts(!showPrompts)}
-            className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
-          >
-            <Lightbulb className="h-4 w-4" />
-            {showPrompts ? "Hide" : "Show"} Prompts
-          </button>
+          <p className="text-muted-foreground">
+            Take a moment to reflect on your experience. What's on your mind?
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Take a moment to reflect on your experience. What&apos;s on your mind?
-        </p>
+
+        {showPrompts && (
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle className="text-base">Writing Prompts</CardTitle>
+              <CardDescription>
+                Click a prompt to add it to your journal
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {prompts.map((prompt, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handlePromptClick(prompt)}
+                    className="text-left p-3 text-sm rounded-lg border border-border hover:border-primary hover:bg-accent transition-colors"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      {showPrompts && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Writing Prompts</CardTitle>
-            <CardDescription>
-              Click a prompt to add it to your journal
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {prompts.map((prompt, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handlePromptClick(prompt)}
-                  className="text-left p-3 text-sm rounded-lg border border-border hover:border-primary hover:bg-accent transition-colors"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-2">
+      <div className="flex-1 flex flex-col p-4 sm:p-6 pt-0">
         <Label htmlFor="journal-entry" className="sr-only">
           Journal entry
         </Label>
@@ -127,11 +130,13 @@ export function JournalEntryEditor({
           }}
           placeholder="Write freely here... This is your space to explore your thoughts, feelings, and insights. There are no rules - just let your thoughts flow."
           className={cn(
-            "min-h-[200px] resize-none text-base leading-relaxed",
+            "flex-1 w-full max-w-3xl mx-auto resize-none text-base leading-relaxed p-6 rounded-lg border-none bg-background/50 focus-visible:ring-0 focus-visible:ring-offset-0",
             isOverLimit && "border-destructive focus-visible:ring-destructive"
           )}
         />
-
+      </div>
+      
+      <div className="p-4 sm:p-6 pt-2 w-full max-w-3xl mx-auto">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
             <span>
@@ -153,28 +158,6 @@ export function JournalEntryEditor({
           </span>
         </div>
       </div>
-
-      {value.trim() && (
-        <Card className="bg-muted">
-          <CardContent className="pt-4 space-y-2">
-            <h4 className="text-sm font-medium">💡 Journal Tips:</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Be honest and authentic - this is for you</li>
-              <li>• Notice patterns in your thoughts and feelings</li>
-              <li>• Practice self-compassion in your writing</li>
-              <li>• There&apos;s no right or wrong way to journal</li>
-            </ul>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Show gentle encouragement for longer entries */}
-      {wordCount > 50 && (
-        <div className="flex items-center gap-2 text-sm text-green-600">
-          <span>✓</span>
-          <span>Great reflection! Your insights are valuable.</span>
-        </div>
-      )}
     </div>
   );
 }
