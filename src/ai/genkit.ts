@@ -17,6 +17,7 @@ export const ai = genkit({
       apiKey: process.env.GOOGLE_GENAI_API_KEY,
     })
   ],
-  // Using a more powerful model for better insights
-  model: 'googleai/gemini-1.5-flash-preview-0514',
+  // Using Gemini 2.5 Flash - latest stable model for generateContent
+  // Free tier: 15 RPM (requests per minute), 1M TPM (tokens per minute)
+  model: 'googleai/gemini-2.5-flash',
 });
