@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -14,27 +13,22 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import {
-  Home,
-  Plus,
   LayoutDashboard,
   Wind,
   User,
   LogOut,
   Settings,
-  Sparkles,
-  Moon,
-  Sun,
   LogIn,
   UserPlus,
   UserCircle,
+  Plus,
 } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
-import { useTheme } from 'next-themes';
 import { signOut } from 'firebase/auth';
-import { EmergencyResourcesButton } from '../emergency-resources-button';
+import { Icons } from '../icons';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -42,7 +36,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = React.useState(false);
-  const { theme, setTheme } = useTheme();
 
   React.useEffect(() => {
     setIsClient(true);
@@ -67,31 +60,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/check-in', label: 'Check-in', icon: Plus },
     { href: '/tools', label: 'Tools', icon: Wind },
   ];
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Modern Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6">
             <Link
               href={user ? '/dashboard' : '/'}
               className="flex items-center gap-2 group"
             >
-              <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
+              <Icons.logo className="h-7 w-7 text-primary" />
+              <span className="font-bold text-xl tracking-tight text-foreground">
                 Aluna
               </span>
             </Link>
 
             {/* Navigation Links (logged in only) */}
             {isClient && user && (
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden md:flex items-center gap-2">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href;
@@ -147,36 +139,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </DropdownMenu>
                 
                 <div className="h-4 w-px bg-border mx-1" />
-                <EmergencyResourcesButton
-                  position="inline"
-                  variant="outline"
-                  size="sm"
-                  showLabel={false}
-                  className="hidden sm:flex"
-                />
                 <ThemeToggle />
               </>
             ) : (
               <>
-                {/* New Check-in Button */}
-                {!pathname.startsWith('/check-in') && (
-                  <Button size="sm" asChild className="hidden sm:flex">
-                    <Link href="/check-in">
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Check-in
-                    </Link>
-                  </Button>
-                )}
-
-                {/* Need Help Now Button */}
-                <EmergencyResourcesButton
-                  position="inline"
-                  variant="outline"
-                  size="sm"
-                  showLabel={false}
-                  className="hidden sm:flex"
-                />
-
                 {/* Theme Toggle */}
                 <ThemeToggle />
 
@@ -184,7 +150,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="gap-2 px-2">
-                      <Avatar className="h-7 w-7">
+                      <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
                           {getUserInitials()}
                         </AvatarFallback>
@@ -205,18 +171,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
                     {/* Mobile Navigation Links */}
                     <div className="md:hidden">
-                      <DropdownMenuItem asChild>
-                        <Link href="/dashboard">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/tools">
-                          <Wind className="mr-2 h-4 w-4" />
-                          Breathing Tools
-                        </Link>
-                      </DropdownMenuItem>
+                      {navLinks.map((link) => (
+                        <DropdownMenuItem key={link.href} asChild>
+                           <Link href={link.href}>
+                            <link.icon className="mr-2 h-4 w-4" />
+                            {link.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
                       <DropdownMenuSeparator />
                     </div>
 
@@ -237,15 +199,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Mobile New Check-in FAB */}
-                {!pathname.startsWith('/check-in') && (
-                  <Link href="/check-in" className="sm:hidden">
-                    <Button size="icon" className="h-9 w-9">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                )}
               </>
             )}
           </div>
