@@ -130,7 +130,7 @@ export function JournalEntryEditor({
           }}
           placeholder="Write freely here... This is your space to explore your thoughts, feelings, and insights. There are no rules - just let your thoughts flow."
           className={cn(
-            "flex-1 w-full max-w-3xl mx-auto resize-none text-base leading-relaxed p-6 rounded-lg border-none bg-background/50 focus-visible:ring-0 focus-visible:ring-offset-0",
+            "flex-1 w-full max-w-3xl mx-auto resize-none text-base leading-relaxed p-6 rounded-lg border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
             isOverLimit && "border-destructive focus-visible:ring-destructive"
           )}
         />

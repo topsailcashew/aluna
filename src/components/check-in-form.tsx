@@ -654,45 +654,45 @@ export function CheckInForm() {
 
           {/* Step 5: Journal Entry */}
           <StepSection ref={journalRef} className="p-0 sm:p-0">
-              <div className="flex flex-col h-full relative">
-                   <div className="absolute inset-0 pointer-events-none">
-                      <div className="relative w-full h-full">
-                          <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-none blur-3xl opacity-30"></div>
-                      </div>
-                  </div>
-                  <div className="relative z-10 w-full h-full flex flex-col">
-                      <FormField
-                          control={form.control}
-                          name="journalEntry"
-                          render={({ field }) => (
-                              <FormItem className="flex-1 flex flex-col">
-                                  <FormControl className="flex-1">
-                                      <JournalEntryEditor
-                                          value={field.value || ""}
-                                          onChange={field.onChange}
-                                          className="h-full"
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                  </div>
+            <div className="flex flex-col h-full relative">
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="relative w-full h-full">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-none blur-3xl opacity-30"></div>
+                </div>
               </div>
-              <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20">
-                  <Button
-                      type="button"
-                      size="lg"
-                      className="rounded-full px-8 shadow-lg"
-                      onClick={() => {
-                        generateCopingSuggestions();
-                        scrollTo(copingRef);
-                      }}
-                  >
-                      <ArrowDown className="h-5 w-5 mr-2" />
-                      Get Coping Suggestions
-                  </Button>
+              <div className="relative z-10 w-full h-full flex flex-col">
+                <FormField
+                  control={form.control}
+                  name="journalEntry"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 flex flex-col">
+                      <FormControl>
+                        <JournalEntryEditor
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          className="h-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
+            </div>
+            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20">
+              <Button
+                type="button"
+                size="lg"
+                className="rounded-full px-8 shadow-lg"
+                onClick={() => {
+                  generateCopingSuggestions();
+                  scrollTo(copingRef);
+                }}
+              >
+                <ArrowDown className="h-5 w-5 mr-2" />
+                Get Coping Suggestions
+              </Button>
+            </div>
           </StepSection>
 
           {/* Step 6: Coping Suggestions */}
