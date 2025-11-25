@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -101,12 +102,6 @@ export function InteractiveBodyMap({
         </div>
       )}
 
-      {/* Instructions */}
-      {!selectedPart && (
-        <p className="text-xs text-muted-foreground text-center">
-          Click on the body to select an area
-        </p>
-      )}
     </div>
   );
 }
