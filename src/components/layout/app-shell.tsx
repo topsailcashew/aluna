@@ -22,6 +22,8 @@ import {
   UserPlus,
   UserCircle,
   Plus,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import { useAuth, useUser } from '@/firebase';
@@ -29,6 +31,8 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { signOut } from 'firebase/auth';
 import { Icons } from '../icons';
+import { useTheme } from 'next-themes';
+import { Switch } from '../ui/switch';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -36,6 +40,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = React.useState(false);
+  const { theme, setTheme } = useTheme();
+
 
   React.useEffect(() => {
     setIsClient(true);
@@ -60,14 +66,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/check-in', label: 'Check-in', icon: Plus },
+    { href: '/check-in', label: 'New Check-in', icon: Plus },
     { href: '/tools', label: 'Tools', icon: Wind },
   ];
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Modern Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6">
@@ -76,7 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-2 group"
             >
               <Icons.logo className="h-7 w-7 text-primary" />
-              <span className="font-bold text-xl tracking-tight text-foreground">
+              <span className="font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
                 Aluna
               </span>
             </Link>
@@ -116,55 +122,36 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             ) : !user ? (
               <>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <UserCircle className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href="/login">
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Sign In
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/signup">
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Sign Up
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                
+                 <Button variant="ghost" asChild>
+                    <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
+                    <Link href="/signup">Sign Up</Link>
+                </Button>
                 <div className="h-4 w-px bg-border mx-1" />
                 <ThemeToggle />
               </>
             ) : (
               <>
-                {/* Theme Toggle */}
-                <ThemeToggle />
-
-                {/* User Menu */}
+                {/* User & Settings Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="gap-2 px-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="hidden lg:inline-block text-sm font-medium">
-                        {user.displayName || 'User'}
-                      </span>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <Settings className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium">{user.displayName || 'User'}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <div className="flex items-center gap-3">
+                         <Avatar className="h-9 w-9">
+                          <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
+                            {getUserInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium">{user.displayName || 'User'}</p>
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        </div>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -188,10 +175,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                    
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      {theme === 'dark' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                      <span>Dark Mode</span>
+                      <Switch
+                        checked={theme === 'dark'}
+                        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                        className="ml-auto"
+                      />
                     </DropdownMenuItem>
+                    
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
