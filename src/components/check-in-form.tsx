@@ -72,15 +72,9 @@ type CheckInFormValues = z.infer<typeof formSchema>;
 const StepSection = React.forwardRef<HTMLDivElement, { children: React.ReactNode, className?: string }>(
   ({ children, className }, ref) => {
     return (
-<<<<<<< HEAD
         <section ref={ref} className={cn(`min-h-screen w-screen flex flex-col p-4 sm:p-6 snap-start snap-always relative`, className)}>
             {children}
         </section>
-=======
-      <section ref={ref} className={`min-h-[calc(100vh-3.5rem)] w-full flex flex-col p-4 sm:p-6 snap-start snap-always relative ${className}`}>
-        {children}
-      </section>
->>>>>>> 35d95f6 (feat: Implement interactive mobile check-in form with body map, integrate OpenAI, and add Playwright visual tests.)
     )
   });
 StepSection.displayName = 'StepSection';
@@ -660,7 +654,6 @@ export function CheckInForm() {
           </StepSection>
 
           {/* Step 5: Journal Entry */}
-<<<<<<< HEAD
           <StepSection ref={journalRef} className="p-0 sm:p-0">
             <div className="flex flex-col h-full relative">
                 <div className="absolute inset-0 pointer-events-none">
@@ -689,38 +682,6 @@ export function CheckInForm() {
                 type="button"
                 size="lg"
                 className="rounded-full px-8 shadow-lg"
-=======
-          <StepSection ref={journalRef}>
-            <div className="flex flex-col items-center justify-start py-8 h-full relative overflow-y-auto">
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="relative w-full max-w-lg h-96">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-full blur-3xl opacity-50"></div>
-                </div>
-              </div>
-              <div className="relative z-10 w-full px-4 pb-24 max-w-3xl mx-auto">
-                <FormField
-                  control={form.control}
-                  name="journalEntry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <JournalEntryEditor
-                          value={field.value || ""}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 flex justify-center px-4 sm:px-6 pointer-events-none">
-              <Button
-                type="button"
-                size="lg"
-                className="rounded-full px-8 shadow-lg w-full sm:w-auto pointer-events-auto"
->>>>>>> 35d95f6 (feat: Implement interactive mobile check-in form with body map, integrate OpenAI, and add Playwright visual tests.)
                 onClick={() => {
                   generateCopingSuggestions();
                   scrollTo(copingRef);
