@@ -125,10 +125,18 @@ export const thoughtPatterns = [
   { id: "past_rumination", label: "Dwelling on the past" },
   { id: "self_criticism", label: "Engaging in self-criticism" },
   { id: "black_and_white", label: "Black-and-white thinking" },
+  { id: "catastrophizing", label: "Catastrophizing" },
+  { id: "personalization", label: "Taking things personally" },
+  { id: "mind_reading", label: "Assuming what others think" },
+  { id: "should_statements", label: "Using 'should' statements" },
   { id: "gratitude", label: "Feeling grateful or appreciative" },
   { id: "problem_solving", label: "Planning or problem-solving" },
   { id: "observational", label: "Simply observing the present" },
   { id: "daydreaming", label: "Mind wandering or daydreaming" },
+  { id: "curiosity", label: "Feeling curious or inquisitive" },
+  { id: "replaying_conversations", label: "Replaying conversations" },
+  { id: "making_comparisons", label: "Making comparisons to others" },
+  { id: "self_doubt", label: "Experiencing self-doubt" },
 ];
 
 export const initialLogEntries: LogEntry[] = [
