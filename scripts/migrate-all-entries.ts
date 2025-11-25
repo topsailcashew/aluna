@@ -9,7 +9,7 @@
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
-import { migrateLogEntry, validateMigrated Entry, needsMigration, CURRENT_VERSION, logMigrationStats } from '../src/lib/migrations/migration-runner';
+import { migrateLogEntry, validateMigratedEntry, needsMigration, CURRENT_VERSION, logMigrationStats } from '../src/lib/migrations/migration-runner';
 import type { MigrationStats } from '../src/lib/migrations/migration-runner';
 import * as dotenv from 'dotenv';
 

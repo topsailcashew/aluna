@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs, Timestamp } from 'firebase/firestore';
-import { initializeApp, getApps } from 'firebase/app';
-import { firebaseConfig } from '@/firebase/config';
-
-// Initialize Firebase (server-side)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const db = getFirestore(app);
+import { withAuth } from '@/lib/auth-middleware';
 
 // Crisis keywords to detect
 const CRISIS_KEYWORDS = [
@@ -33,50 +27,6 @@ function detectCrisis(text: string): boolean {
   return CRISIS_KEYWORDS.some((keyword) => lowerText.includes(keyword));
 }
 
-/**
- * Check rate limiting for AI usage
- */
-async function checkRateLimit(userId: string): Promise<boolean> {
-  try {
-    const usageRef = collection(db, 'aiUsage');
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-
-    const q = query(
-      usageRef,
-      where('userId', '==', userId),
-      where('timestamp', '>=', Timestamp.fromDate(oneHourAgo)),
-      where('endpoint', '==', 'reflect')
-    );
-
-    const snapshot = await getDocs(q);
-    const usageCount = snapshot.size;
-
-    // Limit to 10 requests per hour
-    return usageCount < 10;
-  } catch (error) {
-    console.error('Error checking rate limit:', error);
-    return true; // Allow on error
-  }
-}
-
-/**
- * Log AI usage for rate limiting
- */
-async function logUsage(userId: string, sessionId: string, success: boolean, hadCrisis: boolean) {
-  try {
-    const usageRef = collection(db, 'aiUsage');
-    await addDoc(usageRef, {
-      userId,
-      sessionId,
-      endpoint: 'reflect',
-      success,
-      hadCrisis,
-      timestamp: serverTimestamp(),
-    });
-  } catch (error) {
-    console.error('Error logging AI usage:', error);
-  }
-}
 
 // Output schema for AI response
 const ReflectionSchema = z.object({
@@ -89,41 +39,29 @@ const ReflectionSchema = z.object({
  * POST /api/ai/reflect
  * Generate trauma-informed reflections and experiments
  */
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { messages, patterns, sessionId } = body;
+export const POST = withAuth(
+  async (request: NextRequest, { userId }) => {
+    try {
+      const body = await request.json();
+      const { messages, patterns, sessionId } = body;
 
-    // Note: We use sessionId for rate limiting but don't store message content
-    const userId = sessionId || 'anonymous';
+      // Validation
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return NextResponse.json(
+          { error: 'Messages array is required' },
+          { status: 400 }
+        );
+      }
 
-    // Validation
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json(
-        { error: 'Messages array is required' },
-        { status: 400 }
-      );
-    }
-
-    // Check rate limit
-    const canProceed = await checkRateLimit(userId);
-    if (!canProceed) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
-    // Crisis detection
-    const allText = messages.map((m: any) => m.message).join(' ');
-    if (detectCrisis(allText)) {
-      await logUsage(userId, sessionId, true, true);
-      return NextResponse.json({
-        crisis: true,
-        crisisMessage:
-          'If you are in immediate danger, contact local emergency services or call 988 (Suicide & Crisis Lifeline).',
-      });
-    }
+      // Crisis detection
+      const allText = messages.map((m: any) => m.message).join(' ');
+      if (detectCrisis(allText)) {
+        return NextResponse.json({
+          crisis: true,
+          crisisMessage:
+            'If you are in immediate danger, contact local emergency services or call 988 (Suicide & Crisis Lifeline).',
+        });
+      }
 
     // Build prompt for AI
     const prompt = `You are a compassionate, trauma-informed mental health support AI. A user has completed a life messages exercise where they identified negative self-talk, mapped it to core beliefs, and recognized behavioral patterns.
@@ -154,30 +92,21 @@ Provide:
 
 Generate your response now as a JSON object with keys: synthesis, reflections (array of 3 strings), experiments (array of 3 strings).`;
 
-    // Generate AI response
-    const result = await ai.generate({
-      prompt,
-      output: { schema: ReflectionSchema },
-    });
+      // Generate AI response
+      const result = await ai.generate({
+        prompt,
+        output: { schema: ReflectionSchema },
+      });
 
-    // Log successful usage (without storing content)
-    await logUsage(userId, sessionId, true, false);
+      return NextResponse.json(result.output);
+    } catch (error: any) {
+      console.error('Error generating AI reflections:', error);
 
-    return NextResponse.json(result.output);
-  } catch (error: any) {
-    console.error('Error generating AI reflections:', error);
-
-    // Log failed usage
-    try {
-      const { sessionId } = await request.json();
-      await logUsage(sessionId || 'anonymous', sessionId, false, false);
-    } catch {
-      // Ignore logging errors
+      return NextResponse.json(
+        { error: 'Failed to generate reflections', details: error.message },
+        { status: 500 }
+      );
     }
-
-    return NextResponse.json(
-      { error: 'Failed to generate reflections', details: error.message },
-      { status: 500 }
-    );
-  }
-}
+  },
+  { rateLimit: 'ai-reflect' }
+);

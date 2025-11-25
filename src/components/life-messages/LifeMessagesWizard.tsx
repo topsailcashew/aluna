@@ -17,6 +17,7 @@ import { LifeMessageSession, LifeMessage, Pattern, MicroGoal, AIReflectResponse 
 import { saveDraftToLocal, loadDraftFromLocal } from '@/lib/utils/local-storage';
 import { Download, Share2, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
 interface LifeMessagesWizardProps {
   sessionId: string;
@@ -127,10 +128,9 @@ export function LifeMessagesWizard({
     setIsLoadingAI(true);
 
     try {
-      const response = await fetch('/api/ai/reflect', {
+      const data: AIReflectResponse = await authenticatedJsonRequest('/api/ai/reflect', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           sessionId,
           messages: messages.map((m) => ({
             message: m.message,
@@ -139,10 +139,8 @@ export function LifeMessagesWizard({
             belief: m.belief,
           })),
           patterns: patterns.map((p) => p.label),
-        }),
+        },
       });
-
-      const data: AIReflectResponse = await response.json();
 
       if (data.crisis) {
         setShowCrisisModal(true);
@@ -157,9 +155,19 @@ export function LifeMessagesWizard({
       });
     } catch (error) {
       console.error('Failed to fetch AI insights:', error);
+
+      let errorMessage = 'Failed to generate AI insights. Please try again.';
+      if (error instanceof AuthenticationError) {
+        errorMessage = 'Please sign in to generate AI insights.';
+      } else if (error instanceof RateLimitError) {
+        errorMessage = `Rate limit exceeded. Try again in ${error.retryAfter} seconds.`;
+      } else if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: 'Error',
-        description: 'Failed to generate AI insights. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

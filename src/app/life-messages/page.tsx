@@ -9,6 +9,7 @@ import { LifeMessageSession } from '@/lib/types/life-messages';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
 /**
  * Life Messages Exercise Page
@@ -45,42 +46,49 @@ export default function LifeMessagesPage() {
     try {
       if (!sessionCreated) {
         // First save: create the session
-        const response = await fetch('/api/lifemessages', {
+        await authenticatedJsonRequest('/api/lifemessages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.uid,
+          body: {
             sessionData: {
               ...sessionData,
               id: sessionId,
             },
-          }),
+          },
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Failed to create session');
-        }
 
         setSessionCreated(true);
       } else {
         // Subsequent saves: update the session
-        const response = await fetch(`/api/lifemessages/${sessionId}`, {
+        await authenticatedJsonRequest(`/api/lifemessages/${sessionId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.uid,
+          body: {
             updates: sessionData,
-          }),
+          },
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Failed to update session');
-        }
       }
     } catch (error) {
       console.error('Error saving session:', error);
+
+      if (error instanceof AuthenticationError) {
+        toast({
+          title: 'Authentication Error',
+          description: 'Please sign in to save your session.',
+          variant: 'destructive',
+        });
+      } else if (error instanceof RateLimitError) {
+        toast({
+          title: 'Rate Limit',
+          description: `Too many saves. Try again in ${error.retryAfter} seconds.`,
+          variant: 'destructive',
+        });
+      } else if (error instanceof ApiError) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
+
       throw error;
     }
   };

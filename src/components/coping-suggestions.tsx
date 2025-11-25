@@ -22,6 +22,7 @@ import {
   Clock
 } from 'lucide-react';
 import type { CopingStrategy, CopingOutput } from '@/ai/flows';
+import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
 interface CopingSuggestionsProps {
   currentEmotion: string;
@@ -52,26 +53,28 @@ export function CopingSuggestions({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/coping', {
+      const data = await authenticatedJsonRequest<CopingOutput>('/api/ai/coping', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           currentEmotion,
           specificEmotions,
           intensity,
           contextTags,
           recentEntries,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate coping suggestions');
-      }
-
-      const data = await response.json();
       setSuggestions(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate suggestions');
+      if (err instanceof AuthenticationError) {
+        setError('Please sign in to generate coping suggestions');
+      } else if (err instanceof RateLimitError) {
+        setError(`Rate limit exceeded. Please try again in ${err.retryAfter} seconds`);
+      } else if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to generate suggestions');
+      }
     } finally {
       setIsLoading(false);
     }

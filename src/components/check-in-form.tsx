@@ -43,6 +43,7 @@ import { ContextTagsSelector } from "./context-tags-selector";
 import { JournalEntryEditor } from "./journal-entry-editor";
 import { InteractiveBodyMap, bodyPartMapping } from "./interactive-body-map-v2";
 import type { ContextTags } from "@/lib/types";
+import { authenticatedJsonRequest, AuthenticationError, RateLimitError } from "@/lib/api-client";
 
 const sensationSchema = z.object({
   id: z.string(),
@@ -183,28 +184,30 @@ export function CheckInForm() {
     setIsLoadingCoping(true);
 
     try {
-      const response = await fetch('/api/ai/coping', {
+      const data = await authenticatedJsonRequest('/api/ai/coping', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           currentEmotion: formValues.emotion,
           specificEmotions: formValues.specificEmotions,
           intensity: avgIntensity,
           contextTags: formValues.contextTags,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate coping suggestions');
-      }
-
-      const data = await response.json();
       setCopingSuggestions(data);
     } catch (error) {
+      let errorMessage = 'Could not generate coping suggestions. You can still complete your check-in.';
+
+      if (error instanceof AuthenticationError) {
+        errorMessage = 'Please sign in to generate coping suggestions.';
+      } else if (error instanceof RateLimitError) {
+        errorMessage = `Rate limit exceeded. Try again in ${error.retryAfter} seconds.`;
+      }
+
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not generate coping suggestions. You can still complete your check-in.',
+        description: errorMessage,
       });
     } finally {
       setIsLoadingCoping(false);

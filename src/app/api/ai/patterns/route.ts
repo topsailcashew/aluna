@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/ai/genkit';
 import { buildPatternsPrompt } from '@/ai/prompts/patterns-prompt';
 import { z } from 'zod';
+import { withAuth } from '@/lib/auth-middleware';
 
 // Output schema for patterns
 const PatternSchema = z.object({
@@ -19,41 +20,44 @@ const PatternsOutputSchema = z.object({
   keyTakeaway: z.string(),
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { entries, daysAnalyzed } = body;
+export const POST = withAuth(
+  async (request: NextRequest) => {
+    try {
+      const body = await request.json();
+      const { entries, daysAnalyzed } = body;
 
-    if (!entries || entries.length < 3) {
+      if (!entries || entries.length < 3) {
+        return NextResponse.json(
+          { error: 'Need at least 3 entries to identify patterns' },
+          { status: 400 }
+        );
+      }
+
+      // Build prompt and call AI directly
+      const prompt = buildPatternsPrompt({
+        entries,
+        daysAnalyzed: daysAnalyzed || 30,
+      });
+
+      const result = await ai.generate({
+        prompt,
+        output: {
+          schema: PatternsOutputSchema,
+        },
+      });
+
+      return NextResponse.json(result.output);
+    } catch (error: any) {
+      console.error('Error recognizing patterns:', error);
+      console.error('Error details:', error.message, error.stack);
       return NextResponse.json(
-        { error: 'Need at least 3 entries to identify patterns' },
-        { status: 400 }
+        {
+          error: 'Failed to recognize patterns',
+          details: error.message || 'Unknown error'
+        },
+        { status: 500 }
       );
     }
-
-    // Build prompt and call AI directly
-    const prompt = buildPatternsPrompt({
-      entries,
-      daysAnalyzed: daysAnalyzed || 30,
-    });
-
-    const result = await ai.generate({
-      prompt,
-      output: {
-        schema: PatternsOutputSchema,
-      },
-    });
-
-    return NextResponse.json(result.output);
-  } catch (error: any) {
-    console.error('Error recognizing patterns:', error);
-    console.error('Error details:', error.message, error.stack);
-    return NextResponse.json(
-      {
-        error: 'Failed to recognize patterns',
-        details: error.message || 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  { rateLimit: 'ai-patterns' }
+);

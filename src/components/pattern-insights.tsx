@@ -23,8 +23,8 @@ import {
   ChevronUp,
   AlertCircle,
 } from 'lucide-react';
-import { recognizePatterns } from '@/actions/recognize-patterns';
-import type { Pattern, PatternsOutput } from '@/ai/flows/recognize-patterns';
+import type { Pattern, PatternsOutput } from '@/ai/flows';
+import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
 interface PatternInsightsProps {
   daysBack?: number;
@@ -54,14 +54,25 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
     startTransition(async () => {
       setError(null);
       try {
-        const data = await recognizePatterns({
-          entries: recentEntries,
-          daysAnalyzed: daysBack,
+        const data = await authenticatedJsonRequest<PatternsOutput>('/api/ai/patterns', {
+          method: 'POST',
+          body: {
+            entries: recentEntries,
+            daysAnalyzed: daysBack,
+          },
         });
+
         setPatterns(data);
       } catch (err) {
-        console.error('Pattern Recognition Error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to recognize patterns');
+        if (err instanceof AuthenticationError) {
+          setError('Please sign in to use pattern recognition');
+        } else if (err instanceof RateLimitError) {
+          setError(`Rate limit exceeded. Please try again in ${err.retryAfter} seconds`);
+        } else if (err instanceof ApiError) {
+          setError(err.message);
+        } else {
+          setError(err instanceof Error ? err.message : 'Failed to recognize patterns');
+        }
       }
     });
   };
