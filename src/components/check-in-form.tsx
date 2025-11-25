@@ -655,29 +655,26 @@ export function CheckInForm() {
           {/* Step 5: Journal Entry */}
           <StepSection ref={journalRef} className="p-0 sm:p-0">
             <div className="flex flex-col h-full relative">
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-none blur-3xl opacity-30"></div>
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="relative w-full h-full">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-indigo-500 rounded-none blur-3xl opacity-30"></div>
+                    </div>
                 </div>
-              </div>
-              <div className="relative z-10 w-full h-full flex flex-col">
                 <FormField
-                  control={form.control}
-                  name="journalEntry"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 flex flex-col">
-                      <FormControl>
+                    control={form.control}
+                    name="journalEntry"
+                    render={({ field }) => (
+                    <FormItem className="relative z-10 w-full h-full flex flex-col">
+                        <FormControl>
                         <JournalEntryEditor
-                          value={field.value || ""}
-                          onChange={field.onChange}
-                          className="h-full"
+                            value={field.value || ""}
+                            onChange={field.onChange}
                         />
-                      </FormControl>
-                      <FormMessage />
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
-                  )}
+                    )}
                 />
-              </div>
             </div>
             <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20">
               <Button
