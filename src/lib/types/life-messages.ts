@@ -47,6 +47,14 @@ export const FEELING_SUGGESTIONS = [
   'Guilty',
   'Invisible',
   'Broken',
+  'Empty',
+  'Numb',
+  'Resentful',
+  'Bitter',
+  'Jealous',
+  'Insecure',
+  'Vulnerable',
+  'Exhausted',
 ] as const;
 
 /**
@@ -63,6 +71,12 @@ export const BELIEF_SUGGESTIONS = [
   'I am powerless',
   'I am alone',
   'I am undeserving',
+  'I am a burden',
+  'I am invisible',
+  'I am unsafe',
+  'I am defective',
+  'I cannot trust anyone',
+  'I must be perfect',
 ] as const;
 
 /**
@@ -92,6 +106,12 @@ export const PATTERN_SUGGESTIONS = [
   'Self-sabotage',
   'Seeking external validation',
   'Rumination',
+  'Procrastination',
+  'Substance use',
+  'Defensiveness',
+  'Passive-aggression',
+  'Control issues',
+  'Dissociation',
 ] as const;
 
 /**

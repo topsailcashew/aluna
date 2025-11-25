@@ -7,9 +7,10 @@ import { WellnessCharts } from "./wellness-charts";
 import { TimeHeatmap } from "./time-heatmap";
 import { AIInsightsCard } from "@/components/ai-insights-card";
 import { PatternInsights } from "@/components/pattern-insights";
+import { SwipeableCardContainer } from "@/components/swipeable-card-container";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useWellnessLog } from "@/context/wellness-log-provider";
 import { NoEntries } from "./no-entries";
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
   const { logEntries, isLoading } = useWellnessLog();
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -25,7 +27,21 @@ export default function DashboardPage() {
     }
   }, [user, isUserLoading, router]);
 
+<<<<<<< HEAD
   if (isUserLoading || !user || isLoading) {
+=======
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (isUserLoading || !user) {
+>>>>>>> 35d95f6 (feat: Implement interactive mobile check-in form with body map, integrate OpenAI, and add Playwright visual tests.)
     return (
       <div className="flex items-center justify-center h-full flex-1">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -33,11 +49,16 @@ export default function DashboardPage() {
     );
   }
 
+<<<<<<< HEAD
   if (logEntries.length === 0) {
     return <NoEntries />;
   }
 
   return (
+=======
+  // Desktop view - original layout
+  const desktopView = (
+>>>>>>> 35d95f6 (feat: Implement interactive mobile check-in form with body map, integrate OpenAI, and add Playwright visual tests.)
     <div className="relative overflow-hidden flex-1">
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-full blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
@@ -69,4 +90,25 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+
+  // Mobile view - swipeable cards
+  const mobileView = (
+    <div className="relative flex-1 h-[calc(100vh-3.5rem)]">
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full blur-3xl opacity-30 translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+      <SwipeableCardContainer>
+        <StatCards />
+        <AIInsightsCard daysBack={7} />
+        <PatternInsights daysBack={30} />
+        <TimeHeatmap entries={logEntries} daysBack={90} />
+        <TrendLinesChart entries={logEntries} />
+        <MonthlyComparison entries={logEntries} />
+        <WellnessCharts />
+        <RecentCheckIns />
+      </SwipeableCardContainer>
+    </div>
+  );
+
+  return isMobile ? mobileView : desktopView;
 }
