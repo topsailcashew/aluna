@@ -22,7 +22,8 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import { generateInsights, type InsightsOutput, type Insight } from '@/ai/flows/generate-insights';
+import { generateInsights } from '@/actions/generate-insights';
+import type { InsightsOutput, Insight } from '@/ai/flows/generate-insights';
 
 interface AIInsightsCardProps {
   daysBack?: number;

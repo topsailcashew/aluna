@@ -23,7 +23,8 @@ import {
   ChevronUp,
   AlertCircle,
 } from 'lucide-react';
-import { recognizePatternsFlow, type Pattern, type PatternsOutput } from '@/ai/flows/recognize-patterns';
+import { recognizePatterns } from '@/actions/recognize-patterns';
+import type { Pattern, PatternsOutput } from '@/ai/flows/recognize-patterns';
 
 interface PatternInsightsProps {
   daysBack?: number;
@@ -53,7 +54,7 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
     startTransition(async () => {
       setError(null);
       try {
-        const data = await recognizePatternsFlow({
+        const data = await recognizePatterns({
           entries: recentEntries,
           daysAnalyzed: daysBack,
         });
