@@ -34,10 +34,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     // This is to fix a build error for 'async_hooks' module not found
     if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        async_hooks: false,
-      };
+      config.externals = [...config.externals, 'async_hooks'];
     }
     return config;
   }
