@@ -41,16 +41,16 @@ interface EmergencyResourcesButtonProps {
 export function EmergencyResourcesButton({
   position = "fixed",
   variant = "destructive",
-  size = "default",
+  size = "lg", // Changed to lg for a larger button
   className,
-  showLabel = true,
 }: EmergencyResourcesButtonProps) {
   const [open, setOpen] = useState(false);
 
   const buttonClasses = cn(
-    "gap-2 shadow-lg z-50",
+    "shadow-lg z-50 rounded-full h-16 w-16 text-lg font-bold",
+    "flex items-center justify-center",
     position === "fixed" &&
-      "fixed bottom-6 right-6 animate-pulse hover:animate-none",
+      "fixed bottom-24 right-6 animate-pulse hover:animate-none",
     className
   );
 
@@ -63,8 +63,7 @@ export function EmergencyResourcesButton({
         className={buttonClasses}
         aria-label="Emergency resources and crisis support"
       >
-        <AlertCircle className="h-5 w-5" />
-        {showLabel && size !== "icon" && <span>Need Help Now?</span>}
+        SOS
       </Button>
 
       <EmergencyResourcesModal open={open} onOpenChange={setOpen} />
