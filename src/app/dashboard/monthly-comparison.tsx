@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from "react";
@@ -23,7 +24,6 @@ import { getMonthlyComparison } from "@/lib/utils/analytics";
 import { getCurrentMonth, getPreviousMonth } from "@/lib/utils/date-helpers";
 import { format } from "date-fns";
 import type { LogEntry } from "@/lib/types";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface MonthlyComparisonProps {
   entries: LogEntry[];
@@ -75,28 +75,6 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
   const currentMonth = format(getCurrentMonth().start, 'MMMM');
   const previousMonth = format(getPreviousMonth().start, 'MMMM');
 
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp className="h-4 w-4 text-orange-600" />;
-      case 'down':
-        return <TrendingDown className="h-4 w-4 text-green-600" />;
-      default:
-        return <Minus className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
-
-  const getTrendColor = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return 'text-orange-600';
-      case 'down':
-        return 'text-green-600';
-      default:
-        return 'text-muted-foreground';
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -107,7 +85,7 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Check-in Count */}
           <div className="p-4 rounded-lg border bg-card">
             <div className="flex items-center justify-between mb-2">
@@ -134,33 +112,6 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
             </div>
           </div>
 
-          {/* Average Intensity */}
-          <div className="p-4 rounded-lg border bg-card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">
-                Avg Intensity
-              </span>
-              <div className="flex items-center gap-1">
-                {getTrendIcon(comparisonData.comparison.trend)}
-                <span
-                  className={`text-xs ${getTrendColor(
-                    comparisonData.comparison.trend
-                  )}`}
-                >
-                  {Math.abs(comparisonData.comparison.changePercent)}%
-                </span>
-              </div>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold">
-                {comparisonData.current.avgIntensity}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                vs {comparisonData.previous.avgIntensity}
-              </span>
-            </div>
-          </div>
-
           {/* Dominant Emotion */}
           <div className="p-4 rounded-lg border bg-card">
             <div className="flex items-center justify-between mb-2">
@@ -169,7 +120,7 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
               </span>
             </div>
             <div className="space-y-1">
-              <div className="font-semibold">
+              <div className="font-semibold truncate">
                 {comparisonData.current.emotions[0]?.emotion || 'N/A'}
               </div>
               <div className="text-xs text-muted-foreground">
@@ -184,7 +135,7 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
         {chartData.length > 0 && (
           <div>
             <h4 className="text-sm font-medium mb-4">
-              Emotion Frequency Comparison
+              Top 5 Emotion Frequency
             </h4>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -237,56 +188,6 @@ export function MonthlyComparison({ entries }: MonthlyComparisonProps) {
           </div>
         )}
 
-        {/* Change Summary */}
-        <div className="p-4 rounded-lg bg-muted space-y-2">
-          <h4 className="text-sm font-medium">Summary</h4>
-          <div className="text-sm text-muted-foreground space-y-1">
-            {comparisonData.comparison.trend === 'up' && (
-              <p>
-                📈 Your average sensation intensity has <strong>increased</strong>{' '}
-                by {Math.abs(comparisonData.comparison.change)} points (
-                {Math.abs(comparisonData.comparison.changePercent)}%) compared
-                to last month.
-              </p>
-            )}
-            {comparisonData.comparison.trend === 'down' && (
-              <p>
-                📉 Your average sensation intensity has <strong>decreased</strong>{' '}
-                by {Math.abs(comparisonData.comparison.change)} points (
-                {Math.abs(comparisonData.comparison.changePercent)}%) compared
-                to last month.
-              </p>
-            )}
-            {comparisonData.comparison.trend === 'stable' && (
-              <p>
-                ➡️ Your average sensation intensity has remained{' '}
-                <strong>stable</strong> compared to last month.
-              </p>
-            )}
-            {comparisonData.current.count > comparisonData.previous.count && (
-              <p>
-                ✅ You logged{' '}
-                <strong>
-                  {comparisonData.current.count -
-                    comparisonData.previous.count}{' '}
-                  more check-ins
-                </strong>{' '}
-                this month. Great consistency!
-              </p>
-            )}
-            {comparisonData.current.count < comparisonData.previous.count && (
-              <p>
-                📝 You logged{' '}
-                <strong>
-                  {comparisonData.previous.count -
-                    comparisonData.current.count}{' '}
-                  fewer check-ins
-                </strong>{' '}
-                this month. Consider setting a daily reminder.
-              </p>
-            )}
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

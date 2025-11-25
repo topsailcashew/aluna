@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import {
   Card,
   CardContent,
@@ -20,8 +21,9 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
+  AlertCircle,
 } from 'lucide-react';
-import type { Pattern, PatternsOutput } from '@/ai/flows';
+import { recognizePatternsFlow, type Pattern, type PatternsOutput } from '@/ai/flows/recognize-patterns';
 
 interface PatternInsightsProps {
   daysBack?: number;
@@ -30,9 +32,9 @@ interface PatternInsightsProps {
 export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
   const { logEntries } = useWellnessLog();
   const [patterns, setPatterns] = useState<PatternsOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [expandedPatterns, setExpandedPatterns] = useState<Set<number>>(new Set());
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Filter entries by date range
   const recentEntries = logEntries.filter((entry) => {
@@ -42,56 +44,33 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
     return entryDate >= cutoffDate;
   });
 
-  // Generate patterns
-  const generatePatterns = async () => {
+  const handleGeneratePatterns = () => {
     if (recentEntries.length < 3) {
       setError('Need at least 3 check-ins to identify patterns');
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/ai/patterns', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    startTransition(async () => {
+      setError(null);
+      try {
+        const data = await recognizePatternsFlow({
           entries: recentEntries,
           daysAnalyzed: daysBack,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to recognize patterns');
+        });
+        setPatterns(data);
+      } catch (err) {
+        console.error('Pattern Recognition Error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to recognize patterns');
       }
-
-      const data = await response.json();
-      setPatterns(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to recognize patterns');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
-  // Auto-generate on mount if we have data
   useEffect(() => {
     if (recentEntries.length >= 3 && !patterns && !error) {
-      generatePatterns();
+      handleGeneratePatterns();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const togglePattern = (index: number) => {
-    const newExpanded = new Set(expandedPatterns);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedPatterns(newExpanded);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logEntries.length]);
 
   const getPatternIcon = (type: Pattern['type']) => {
     switch (type) {
@@ -103,17 +82,6 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
         return <TrendingUp className="h-4 w-4 text-purple-600" />;
       default:
         return <Target className="h-4 w-4 text-orange-600" />;
-    }
-  };
-
-  const getConfidenceBadgeVariant = (confidence: Pattern['confidence']): 'default' | 'secondary' | 'outline' => {
-    switch (confidence) {
-      case 'high':
-        return 'default';
-      case 'medium':
-        return 'secondary';
-      default:
-        return 'outline';
     }
   };
 
@@ -131,13 +99,15 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            <p>Need at least 3 check-ins to identify patterns</p>
-            <p className="text-sm mt-2">Keep logging to discover your patterns</p>
+            <p>Need at least 3 check-ins to find patterns.</p>
+            <p className="text-sm mt-2">{3 - recentEntries.length} more to go!</p>
           </div>
         </CardContent>
       </Card>
     );
   }
+
+  const displayedPatterns = isExpanded ? patterns?.patterns : patterns?.patterns.slice(0, 1);
 
   return (
     <Card>
@@ -155,34 +125,31 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={generatePatterns}
-            disabled={isLoading}
+            onClick={handleGeneratePatterns}
+            disabled={isPending}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isPending ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading && (
+        {isPending && !patterns && (
           <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-              </div>
-            ))}
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
           </div>
         )}
 
         {error && (
           <div className="text-center py-4 text-destructive">
-            <p>{error}</p>
+            <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+            <p>Could not generate patterns.</p>
             <Button
               variant="outline"
               size="sm"
-              onClick={generatePatterns}
+              onClick={handleGeneratePatterns}
               className="mt-4"
             >
               Try Again
@@ -190,95 +157,33 @@ export function PatternInsights({ daysBack = 30 }: PatternInsightsProps) {
           </div>
         )}
 
-        {patterns && !isLoading && (
-          <div className="space-y-6">
-            {/* Key Takeaway */}
+        {patterns && !isPending && (
+          <div className="space-y-4">
             <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800">
               <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
                 🎯 Key Takeaway: {patterns.keyTakeaway}
               </p>
             </div>
 
-            {/* Individual Patterns */}
-            <div className="space-y-4">
-              {patterns.patterns.map((pattern, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1">{getPatternIcon(pattern.type)}</div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between gap-2 flex-wrap">
-                        <h4 className="font-semibold text-sm">{pattern.title}</h4>
-                        <div className="flex gap-2">
-                          <Badge variant="outline" className="text-xs capitalize">
-                            {pattern.type}
-                          </Badge>
-                          <Badge variant={getConfidenceBadgeVariant(pattern.confidence)} className="text-xs">
-                            {pattern.confidence} confidence
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground">
-                        {pattern.description}
-                      </p>
-
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>Frequency: {pattern.frequency}</span>
-                      </div>
-
-                      {/* Expandable details */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => togglePattern(index)}
-                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                      >
-                        {expandedPatterns.has(index) ? (
-                          <>
-                            <ChevronUp className="h-3 w-3 mr-1" />
-                            Hide details
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown className="h-3 w-3 mr-1" />
-                            Show details
-                          </>
-                        )}
-                      </Button>
-
-                      {expandedPatterns.has(index) && (
-                        <div className="mt-3 space-y-3 pl-4 border-l-2 border-muted">
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground mb-1">
-                              What this means
-                            </p>
-                            <p className="text-sm">{pattern.insight}</p>
-                          </div>
-                          {pattern.dataPoints.length > 0 && (
-                            <div>
-                              <p className="text-xs font-medium text-muted-foreground mb-1">
-                                Examples
-                              </p>
-                              <ul className="text-sm space-y-1">
-                                {pattern.dataPoints.map((point, i) => (
-                                  <li key={i} className="flex items-start gap-2">
-                                    <span className="text-muted-foreground">•</span>
-                                    <span>{point}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+            {displayedPatterns?.map((pattern, index) => (
+              <div key={index} className="border-b pb-3 last:border-b-0">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1">{getPatternIcon(pattern.type)}</div>
+                  <div className="flex-1 space-y-1">
+                    <h4 className="font-semibold text-sm">{pattern.title}</h4>
+                    <p className="text-sm text-muted-foreground">{pattern.description}</p>
+                    <Badge variant="outline" className="text-xs capitalize">{pattern.type}</Badge>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+            
+            {patterns.patterns.length > 1 && (
+              <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="w-full">
+                {isExpanded ? 'Show Less' : `Show ${patterns.patterns.length - 1} More`}
+                {isExpanded ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

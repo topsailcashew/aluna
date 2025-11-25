@@ -33,9 +33,8 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
   const [insights, setInsights] = useState<InsightsOutput | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [expandedInsights, setExpandedInsights] = useState<Set<number>>(new Set());
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Filter entries by date range
   const recentEntries = logEntries.filter((entry) => {
     const entryDate = new Date(entry.date);
     const cutoffDate = new Date();
@@ -43,7 +42,6 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
     return entryDate >= cutoffDate;
   });
 
-  // Generate insights
   const handleGenerateInsights = () => {
     if (recentEntries.length === 0) {
       setError('Need at least one check-in to generate insights');
@@ -66,34 +64,17 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
       } catch (err) {
         console.error('AI Insights Error:', err);
         const errorMessage = err instanceof Error ? err.message : 'Failed to generate insights';
-        
-        // Check for specific model not found error
-        if (errorMessage.includes('is not found for API version v1beta') || errorMessage.includes('404 Not Found')) {
-          setError('The configured AI model is currently unavailable. Please try again later.');
-        } else {
-          setError(errorMessage);
-        }
+        setError(errorMessage);
       }
     });
   };
 
-  // Auto-generate on mount if we have data
   useEffect(() => {
     if (recentEntries.length > 0 && !insights && !error) {
       handleGenerateInsights();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const toggleInsight = (index: number) => {
-    const newExpanded = new Set(expandedInsights);
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedInsights(newExpanded);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logEntries.length]);
 
   const getInsightIcon = (type: Insight['type']) => {
     switch (type) {
@@ -103,17 +84,6 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
         return <AlertCircle className="h-4 w-4 text-orange-600" />;
       default:
         return <Lightbulb className="h-4 w-4 text-blue-600" />;
-    }
-  };
-
-  const getInsightBadgeVariant = (type: Insight['type']): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    switch (type) {
-      case 'positive':
-        return 'default';
-      case 'concern':
-        return 'destructive';
-      default:
-        return 'secondary';
     }
   };
 
@@ -131,13 +101,14 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            <p>Start checking in to get personalized AI insights</p>
-            <p className="text-sm mt-2">We'll analyze your patterns and provide helpful feedback</p>
+            <p>Start checking in to get personalized AI insights.</p>
           </div>
         </CardContent>
       </Card>
     );
   }
+  
+  const displayedInsights = isExpanded ? insights?.insights : insights?.insights.slice(0, 1);
 
   return (
     <Card>
@@ -164,22 +135,18 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        {isPending && (
+        {isPending && !insights && (
           <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-              </div>
-            ))}
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
           </div>
         )}
 
         {error && (
           <div className="text-center py-4 text-destructive">
             <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-            <p>{error}</p>
+            <p>Could not generate insights.</p>
             <Button
               variant="outline"
               size="sm"
@@ -192,74 +159,33 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
         )}
 
         {insights && !isPending && (
-          <div className="space-y-6">
-            {/* Summary */}
+          <div className="space-y-4">
             <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800">
               <p className="text-sm font-medium text-purple-900 dark:text-purple-100">
-                {insights.summary}
+                ✨ Summary: {insights.summary}
               </p>
             </div>
 
-            {/* Individual Insights */}
-            <div className="space-y-4">
-              {insights.insights.map((insight, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1">{getInsightIcon(insight.type)}</div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-semibold text-sm">{insight.title}</h4>
-                        <Badge variant={getInsightBadgeVariant(insight.type)} className="text-xs">
-                          {insight.type}
-                        </Badge>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground">
-                        {insight.description}
-                      </p>
-
-                      {/* Expandable details */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleInsight(index)}
-                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                      >
-                        {expandedInsights.has(index) ? (
-                          <>
-                            <ChevronUp className="h-3 w-3 mr-1" />
-                            Hide details
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown className="h-3 w-3 mr-1" />
-                            Show details
-                          </>
-                        )}
-                      </Button>
-
-                      {expandedInsights.has(index) && (
-                        <div className="mt-3 space-y-3 pl-4 border-l-2 border-muted">
-                          <div>
-                            <p className="text-xs font-medium text-muted-foreground mb-1">Evidence</p>
-                            <p className="text-sm">{insight.evidence}</p>
-                          </div>
-                          {insight.suggestion && (
-                            <div>
-                              <p className="text-xs font-medium text-muted-foreground mb-1">Suggestion</p>
-                              <p className="text-sm">{insight.suggestion}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+            {displayedInsights?.map((insight, index) => (
+              <div key={index} className="border-b pb-3 last:border-b-0">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1">{getInsightIcon(insight.type)}</div>
+                  <div className="flex-1 space-y-1">
+                      <h4 className="font-semibold text-sm">{insight.title}</h4>
+                      <p className="text-sm text-muted-foreground">{insight.description}</p>
+                      <Badge variant="outline" className="text-xs capitalize">{insight.type}</Badge>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+            
+            {insights.insights.length > 1 && (
+               <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="w-full">
+                {isExpanded ? 'Show Less' : `Show ${insights.insights.length - 1} More`}
+                {isExpanded ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+              </Button>
+            )}
+
           </div>
         )}
       </CardContent>

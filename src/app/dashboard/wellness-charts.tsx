@@ -13,32 +13,41 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
-import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
-import { format, parseISO } from "date-fns";
+import { Pie, PieChart } from "recharts";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { emotionCategories } from "@/lib/data";
+import type { ChartConfig } from "@/components/ui/chart";
+
+const emotionLegendConfig = emotionCategories.reduce((acc, category) => {
+    acc[category.name] = {
+        label: category.name,
+        color: category.color,
+    };
+    return acc;
+}, {} as ChartConfig);
 
 export function WellnessCharts() {
   const { logEntries, isLoading } = useWellnessLog();
 
-  const sensationTimeline = useMemo(() => {
+  const emotionDistribution = useMemo(() => {
     if (!logEntries) return [];
-    return logEntries
-      .flatMap((entry) =>
-        entry.sensations.map((sensation) => ({
-          date: entry.date,
-          intensity: sensation.intensity,
-          location: sensation.location,
-        }))
-      )
-      .sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
-      .map((s) => ({
-        ...s,
-        date: format(parseISO(s.date), "MMM d"),
-      }));
+    const emotionCounts = logEntries.reduce((acc, entry) => {
+      const l1Emotion = emotionCategories.find(cat => cat.subCategories.some(sub => sub.name === entry.emotion))?.name || 'Unknown';
+      acc[l1Emotion] = (acc[l1Emotion] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(emotionCounts).map(([name, value]) => ({
+      name,
+      value,
+      fill: emotionLegendConfig[name]?.color,
+    }));
   }, [logEntries]);
-  
+
   if (isLoading) {
     return (
       <Card>
@@ -46,29 +55,8 @@ export function WellnessCharts() {
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
-        <CardContent>
-          <div className="w-full h-[200px] flex items-end gap-2">
-            <Skeleton className="h-full w-8" />
-            <div className="flex-1 h-full flex flex-col justify-between">
-                <Skeleton className="h-px w-full" />
-                <Skeleton className="h-px w-full" />
-                <Skeleton className="h-px w-full" />
-                <Skeleton className="h-px w-full" />
-                <Skeleton className="h-px w-full" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (logEntries.length === 0) {
-    return (
-      <Card className="w-full py-20">
-        <CardContent className="text-center">
-          <p className="text-muted-foreground">
-            No data yet. Start by adding a new check-in entry.
-          </p>
+        <CardContent className="flex items-center justify-center">
+          <Skeleton className="h-48 w-48 rounded-full" />
         </CardContent>
       </Card>
     );
@@ -77,32 +65,31 @@ export function WellnessCharts() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sensation Intensity Over Time</CardTitle>
-        <CardDescription>
-          Intensity of physical sensations you've logged.
-        </CardDescription>
+        <CardTitle>Emotion Distribution</CardTitle>
+        <CardDescription>Your overall emotional landscape based on all check-ins.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{}} className="min-h-[200px] w-full">
-          <LineChart
-            accessibilityLayer
-            data={sensationTimeline}
-            margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="date" />
-            <YAxis domain={[0, 10]} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line
-              type="monotone"
-              dataKey="intensity"
-              stroke="hsl(var(--primary))"
-              strokeWidth={2}
-              dot={{
-                fill: "hsl(var(--primary))",
-              }}
+        <ChartContainer
+          config={emotionLegendConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
             />
-          </LineChart>
+            <Pie
+              data={emotionDistribution}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={60}
+              strokeWidth={5}
+            />
+            <ChartLegend
+              content={<ChartLegendContent nameKey="name" />}
+              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
+          </PieChart>
         </ChartContainer>
       </CardContent>
     </Card>

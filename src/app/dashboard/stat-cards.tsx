@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Activity, Star, TrendingUp, Flame } from 'lucide-react';
+import { Activity, Star, Flame } from 'lucide-react';
 import { useMemo } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { emotionCategories } from '@/lib/data';
@@ -24,7 +24,6 @@ export function StatCards() {
       return {
         lastCheckIn: 'N/A',
         mostFrequentEmotion: 'N/A',
-        weeklyAverageIntensity: 'N/A',
       };
     }
 
@@ -47,64 +46,15 @@ export function StatCards() {
       ? Object.entries(emotionCounts).sort((a, b) => b[1] - a[1])[0][0]
       : 'N/A';
 
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const weeklyEntries = sortedEntries.filter(
-      (entry) => parseISO(entry.date) > oneWeekAgo
-    );
-
-    const totalIntensity = weeklyEntries.reduce((acc, entry) => {
-        return acc + entry.sensations.reduce((sAcc, s) => sAcc + s.intensity, 0)
-    }, 0);
-    const totalSensations = weeklyEntries.reduce((acc, entry) => acc + entry.sensations.length, 0);
-    const weeklyAverageIntensity = totalSensations > 0 ? (totalIntensity / totalSensations).toFixed(1) : 'N/A';
-
-    return { lastCheckIn, mostFrequentEmotion, weeklyAverageIntensity };
+    return { lastCheckIn, mostFrequentEmotion };
   }, [logEntries]);
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Last Check-in</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-1/2" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Dominant Emotion</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-8 w-1/2 mb-2" />
-            <Skeleton className="h-4 w-3/4" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Weekly Sensation Avg.</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-8 w-1/2 mb-2" />
-            <Skeleton className="h-4 w-3/4" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
-            <Flame className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-8 w-1/2 mb-2" />
-            <Skeleton className="h-4 w-3/4" />
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card><CardHeader><Skeleton className="h-8 w-3/4 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-1/2" /></CardContent></Card>
+        <Card><CardHeader><Skeleton className="h-8 w-1/2 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-3/4" /></CardContent></Card>
+        <Card><CardHeader><Skeleton className="h-8 w-1/2 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-3/4" /></CardContent></Card>
       </div>
     );
   }
@@ -119,63 +69,37 @@ export function StatCards() {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Last Check-in
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Last Check-in</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{summary.lastCheckIn}</div>
-          <p className="text-xs text-muted-foreground">
-            Keep up the great work!
-          </p>
+          <p className="text-xs text-muted-foreground">Keep up the great work!</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Dominant Emotion
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Dominant Emotion</CardTitle>
           <Star className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{summary.mostFrequentEmotion}</div>
-          <p className="text-xs text-muted-foreground">
-            Your most logged primary emotion.
-          </p>
+          <p className="text-xs text-muted-foreground">Your most logged primary emotion.</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Weekly Sensation Avg.
-          </CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{summary.weeklyAverageIntensity} / 10</div>
-          <p className="text-xs text-muted-foreground">
-            Average intensity of sensations this week.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Current Streak
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
           <Flame className="h-4 w-4 text-orange-500" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold flex items-center gap-1">
             {streakData.current} {streakData.current > 0 && '🔥'}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {getStreakMessage(streakData.current)}
-          </p>
+          <p className="text-xs text-muted-foreground">{getStreakMessage(streakData.current)}</p>
         </CardContent>
       </Card>
     </div>
