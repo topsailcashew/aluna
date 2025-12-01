@@ -1,0 +1,48 @@
+'use client';
+
+import { useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useWellnessLog } from '@/context/wellness-log-provider';
+import { NoEntries } from '../dashboard/no-entries';
+import { TimeHeatmap } from '../dashboard/time-heatmap';
+import { WellnessCharts } from '../dashboard/wellness-charts';
+import { MonthlyComparison } from '../dashboard/monthly-comparison';
+
+export default function TrendsPage() {
+  const { user, isUserLoading } = useUser();
+  const { logEntries, isLoading } = useWellnessLog();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !user || isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full flex-1">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (logEntries.length === 0) {
+    return <NoEntries />;
+  }
+  
+  return (
+    <div className="container mx-auto flex-1 space-y-6 p-4 md:p-8 pt-6">
+       <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Your Trends</h2>
+        </div>
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <TimeHeatmap entries={logEntries} daysBack={90} />
+        <WellnessCharts />
+        <MonthlyComparison entries={logEntries} />
+      </div>
+    </div>
+  );
+}

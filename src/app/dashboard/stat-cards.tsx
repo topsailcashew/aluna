@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useWellnessLog } from '@/context/wellness-log-provider';
@@ -51,7 +50,7 @@ export function StatCards() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card><CardHeader><Skeleton className="h-8 w-3/4 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-1/2" /></CardContent></Card>
         <Card><CardHeader><Skeleton className="h-8 w-1/2 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-3/4" /></CardContent></Card>
         <Card><CardHeader><Skeleton className="h-8 w-1/2 mb-2" /></CardHeader><CardContent><Skeleton className="h-4 w-3/4" /></CardContent></Card>
@@ -69,7 +68,7 @@ export function StatCards() {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Last Check-in</CardTitle>

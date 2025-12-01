@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useUser } from '@/firebase';
@@ -19,11 +18,17 @@ export default function CheckInPage() {
 
   if (isUserLoading || !user) {
     return (
-      <div className="flex items-center justify-center h-full flex-1">
+      <div className="flex-1 flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  return <CheckInForm />;
+  return (
+    <div className="flex-1 flex flex-col items-center p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-4xl">
+        <CheckInForm />
+      </div>
+    </div>
+  );
 }
