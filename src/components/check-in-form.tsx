@@ -337,15 +337,6 @@ export function CheckInForm() {
                                   <p className="font-medium">{currentSensation.location}</p>
                                    <Badge variant="outline">{currentSensation.intensity}/10</Badge>
                                 </div>
-                                <FormItem>
-                                  <FormLabel>Intensity</FormLabel>
-                                  <Slider
-                                    value={[currentSensation.intensity]}
-                                    max={10}
-                                    step={1}
-                                    onValueChange={(vals) => setCurrentSensation(p => ({ ...p, intensity: vals[0] }))}
-                                  />
-                                </FormItem>
                                  <FormItem>
                                   <FormLabel>Notes (optional)</FormLabel>
                                   <Input
