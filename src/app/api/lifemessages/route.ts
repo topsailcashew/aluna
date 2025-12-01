@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth-middleware';
+import { withAuth, AuthenticatedHandler } from '@/lib/auth-middleware';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
@@ -7,7 +7,7 @@ import { FieldValue } from 'firebase-admin/firestore';
  * POST /api/lifemessages
  * Create a new life messages session
  */
-export const POST = withAuth(
+export const POST: AuthenticatedHandler = withAuth(
   async (request: NextRequest, { userId }) => {
     try {
       const body = await request.json();
@@ -46,7 +46,7 @@ export const POST = withAuth(
  * GET /api/lifemessages
  * Get all sessions for authenticated user
  */
-export const GET = withAuth(
+export const GET: AuthenticatedHandler = withAuth(
   async (request: NextRequest, { userId }) => {
     try {
       const db = getAdminDb();
