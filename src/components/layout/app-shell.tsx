@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -29,7 +30,6 @@ import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { signOut } from 'firebase/auth';
-import { Icons } from '../icons';
 import { useTheme } from 'next-themes';
 import { Switch } from '../ui/switch';
 
@@ -76,14 +76,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col">
       {showNav && (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center justify-between">
-            {/* Logo & Brand */}
-            <div className="flex items-center gap-2">
+          <div className="container grid h-16 grid-cols-3 items-center">
+            {/* Left Section: Logo & Brand */}
+            <div className="flex items-center justify-start">
               <Link
                 href={user ? '/dashboard' : '/'}
                 className="flex items-center gap-2 group"
               >
-                
                 <span className="font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
                   Aluna
                 </span>
@@ -92,36 +91,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             {/* Centered Navigation for Desktop */}
             {isClient && user && (
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2">
-                    <nav className="flex items-center gap-2 rounded-full bg-muted/50 p-1.5">
-                        {navLinks.map((link) => {
-                            const Icon = link.icon;
-                            const isActive = pathname === link.href;
-                            return (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={cn(
-                                'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
-                                isActive
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                )}
-                            >
-                                <Icon className="h-4 w-4" />
-                                {link.label}
-                            </Link>
-                            );
-                        })}
-                    </nav>
-                </div>
+              <div className="hidden md:flex justify-center">
+                <nav className="flex items-center gap-2 rounded-full bg-muted/50 p-1.5">
+                  {navLinks.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={cn(
+                          'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
             )}
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               {!isClient || isUserLoading ? (
                 <div className="flex items-center gap-2">
-                  <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
                   <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
                 </div>
               ) : !user ? (
