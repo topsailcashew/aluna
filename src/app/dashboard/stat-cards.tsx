@@ -27,7 +27,7 @@ export function StatCards() {
     }
 
     const sortedEntries = [...logEntries].sort(
-      (a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
     const lastEntry = sortedEntries[0];
