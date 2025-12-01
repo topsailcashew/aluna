@@ -34,7 +34,8 @@ export interface AuthContext {
  */
 export type AuthenticatedHandler = (
   request: NextRequest,
-  context: AuthContext
+  context: AuthContext,
+  params: any
 ) => Promise<NextResponse>;
 
 /**
@@ -178,7 +179,7 @@ export function withAuth(
     skipCsrf?: boolean;
   }
 ) {
-  return async (request: NextRequest): Promise<NextResponse> => {
+  return async (request: NextRequest, params: any): Promise<NextResponse> => {
     try {
       // CSRF Protection
       if (!options?.skipCsrf && !verifyCsrf(request)) {
@@ -240,7 +241,7 @@ export function withAuth(
       };
 
       // Call the actual handler
-      return await handler(request, authContext);
+      return await handler(request, authContext, params);
     } catch (error) {
       console.error('Authentication middleware error:', error);
       return NextResponse.json(
