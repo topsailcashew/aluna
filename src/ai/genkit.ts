@@ -11,13 +11,15 @@ if (!process.env.GOOGLE_GENAI_API_KEY) {
   );
 }
 
+// Using Gemini 2.5 Flash - latest stable model for generateContent
+// Free tier: 15 RPM (requests per minute), 1M TPM (tokens per minute)
+export const DEFAULT_MODEL = 'googleai/gemini-2.5-flash';
+
 export const ai = genkit({
   plugins: [
     googleAI({
       apiKey: process.env.GOOGLE_GENAI_API_KEY,
     })
   ],
-  // Using Gemini 2.5 Flash - latest stable model for generateContent
-  // Free tier: 15 RPM (requests per minute), 1M TPM (tokens per minute)
-  model: 'googleai/gemini-2.5-flash',
+  model: DEFAULT_MODEL,
 });

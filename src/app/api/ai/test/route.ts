@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ai } from '@/ai/genkit';
+import { ai, DEFAULT_MODEL } from '@/ai/genkit';
 
 /**
  * Test endpoint to verify Google AI API is working
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       success: true,
       message: 'Google AI API is working correctly!',
       apiKeyConfigured: true,
-      model: ai.model, // Use the model from the central config
+      model: DEFAULT_MODEL,
       testResponse: result.text,
     });
   } catch (error: any) {

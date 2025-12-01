@@ -38,7 +38,7 @@ export function TimeHeatmap({ entries, daysBack = 90 }: TimeHeatmapProps) {
 
   // Group by week for display
   const weekData = useMemo(() => {
-    const weeks: typeof heatmapData[][] = [];
+    const weeks: Array<typeof heatmapData> = [];
     let currentWeek: typeof heatmapData = [];
 
     // Pad start to align with Sunday

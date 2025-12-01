@@ -4,20 +4,31 @@
  */
 
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isYesterday, differenceInDays, differenceInHours, differenceInMinutes, startOfMonth, endOfMonth, subDays, subMonths, isSameDay, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { Timestamp } from 'firebase/firestore';
+
+/**
+ * Helper to convert various date types to Date object
+ */
+function toDate(date: Date | string | Timestamp): Date {
+  if (date instanceof Date) return date;
+  if (typeof date === 'string') return parseISO(date);
+  if (date && typeof date === 'object' && 'toDate' in date) return date.toDate();
+  return new Date(date);
+}
 
 /**
  * Format a date for display
  */
-export function formatDate(date: Date | string, formatStr: string = 'MMM d, yyyy'): string {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+export function formatDate(date: Date | string | Timestamp, formatStr: string = 'MMM d, yyyy'): string {
+  const dateObj = toDate(date);
   return format(dateObj, formatStr);
 }
 
 /**
  * Get relative time string (e.g., "2 hours ago", "yesterday")
  */
-export function getRelativeTime(date: Date | string): string {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+export function getRelativeTime(date: Date | string | Timestamp): string {
+  const dateObj = toDate(date);
   const now = new Date();
 
   if (isToday(dateObj)) {

@@ -34,7 +34,11 @@ export default function DashboardPage() {
     return <NoEntries />;
   }
 
-  const latestEntry = logEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+  const latestEntry = [...logEntries].sort((a, b) => {
+    const dateA = a.date instanceof Date ? a.date : a.date.toDate();
+    const dateB = b.date instanceof Date ? b.date : b.date.toDate();
+    return dateB.getTime() - dateA.getTime();
+  })[0];
 
   return (
     <div className="flex-1 bg-gradient-to-b from-background to-muted/20 p-4 md:p-8">

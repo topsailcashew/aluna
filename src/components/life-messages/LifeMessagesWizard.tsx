@@ -99,8 +99,10 @@ export function LifeMessagesWizard({
   };
 
   // Navigate steps
-  const goToStep = (step: 0 | 1 | 2 | 3 | 4) => {
-    setCurrentStep(step);
+  const goToStep = (step: number) => {
+    if (step >= 0 && step <= 4) {
+      setCurrentStep(step as 0 | 1 | 2 | 3 | 4);
+    }
   };
 
   const nextStep = () => {

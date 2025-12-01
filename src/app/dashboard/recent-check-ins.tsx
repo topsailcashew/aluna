@@ -23,10 +23,11 @@ export function RecentCheckIns() {
   const recentEntries = useMemo(() => {
     if (!logEntries || logEntries.length === 0) return [];
     return [...logEntries]
-      .sort(
-        (a, b) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
+      .sort((a, b) => {
+        const dateA = a.date instanceof Date ? a.date : a.date.toDate();
+        const dateB = b.date instanceof Date ? b.date : b.date.toDate();
+        return dateB.getTime() - dateA.getTime();
+      })
       .slice(0, 5);
   }, [logEntries]);
 

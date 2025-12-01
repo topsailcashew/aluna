@@ -37,7 +37,7 @@ export function AIInsightsCard({ daysBack = 7 }: AIInsightsCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const recentEntries = logEntries.filter((entry) => {
-    const entryDate = new Date(entry.date);
+    const entryDate = entry.date instanceof Date ? entry.date : entry.date.toDate();
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysBack);
     return entryDate >= cutoffDate;

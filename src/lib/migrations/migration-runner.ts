@@ -193,7 +193,7 @@ export function validateMigratedEntry(entry: LogEntry): boolean {
   }
 
   // Validate types
-  if (!(entry.date instanceof Timestamp) && !entry.date?.toDate) {
+  if (!(entry.date instanceof Timestamp) && !(typeof (entry.date as any)?.toDate === 'function')) {
     throw new Error('Migrated entry date is not a Timestamp');
   }
 

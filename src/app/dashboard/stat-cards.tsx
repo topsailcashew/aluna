@@ -27,11 +27,16 @@ export function StatCards() {
     }
 
     const sortedEntries = [...logEntries].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => {
+        const dateA = a.date instanceof Date ? a.date : a.date.toDate();
+        const dateB = b.date instanceof Date ? b.date : b.date.toDate();
+        return dateB.getTime() - dateA.getTime();
+      }
     );
 
     const lastEntry = sortedEntries[0];
-    const lastCheckIn = formatDistanceToNow(parseISO(lastEntry.date), {
+    const lastDate = lastEntry.date instanceof Date ? lastEntry.date : lastEntry.date.toDate();
+    const lastCheckIn = formatDistanceToNow(lastDate, {
       addSuffix: true,
     });
 

@@ -1,21 +1,12 @@
 
 import { subDays } from "date-fns";
+import { Sensation, LegacyLogEntry } from "./types";
 
-export type Sensation = {
-  id: string;
-  location: string;
-  intensity: number;
-  notes: string;
-};
+// Re-export for backward compatibility
+export type { Sensation, LegacyLogEntry };
 
-export type LogEntry = {
-  id: string;
-  date: string;
-  emotion: string; // This will now store the Level 2 emotion
-  specificEmotions: string[]; // New field for Level 3 emotions
-  sensations: Sensation[];
-  thoughts: string[];
-};
+// This is kept for mock data only
+export type LogEntry = LegacyLogEntry;
 
 export const bodyParts = [
   "Head",
