@@ -19,12 +19,12 @@ const phaseDetails: Record<
   BreathingPhase,
   { text: string; scale: number; bgClass: string }
 > = {
-  begin: { text: 'Get Ready...', scale: 1, bgClass: 'from-gray-300 to-gray-400' },
-  inhale: { text: 'Breathe In', scale: 1.5, bgClass: 'from-blue-200 to-blue-300' },
-  hold1: { text: 'Hold', scale: 1.5, bgClass: 'from-purple-200 to-purple-300' },
-  exhale: { text: 'Breathe Out', scale: 0.7, bgClass: 'from-green-200 to-green-300' },
-  hold2: { text: 'Hold', scale: 0.7, bgClass: 'from-purple-200 to-purple-300' },
-  end: { text: 'Finished', scale: 1, bgClass: 'from-gray-300 to-gray-400' },
+  begin: { text: 'Get Ready...', scale: 1, bgClass: 'from-gray-400 to-gray-500' },
+  inhale: { text: 'Breathe In', scale: 1.5, bgClass: 'from-blue-400 to-blue-500' },
+  hold1: { text: 'Hold', scale: 1.5, bgClass: 'from-purple-400 to-purple-500' },
+  exhale: { text: 'Breathe Out', scale: 0.7, bgClass: 'from-green-400 to-green-500' },
+  hold2: { text: 'Hold', scale: 0.7, bgClass: 'from-purple-400 to-purple-500' },
+  end: { text: 'Finished', scale: 1, bgClass: 'from-gray-400 to-gray-500' },
 };
 
 export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAnimatorProps) {
@@ -114,8 +114,8 @@ export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAni
 
       {/* Title */}
       <div className="absolute top-16 text-center z-10">
-        <h2 className="text-2xl font-bold text-white/80">{exercise.name}</h2>
-        <p className="text-white/60">Follow the guide on screen.</p>
+        <h2 className="text-2xl font-bold text-white/90" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>{exercise.name}</h2>
+        <p className="text-white/70" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Follow the guide on screen.</p>
       </div>
 
       {/* Animator */}
@@ -142,7 +142,7 @@ export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAni
               transition={{ duration: 0.5 }}
               className="absolute flex flex-col items-center"
             >
-              <p className="text-5xl font-bold tracking-tight">
+              <p className="text-5xl font-bold tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                 {currentPhaseDetails.text}
               </p>
             </motion.div>
@@ -152,10 +152,10 @@ export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAni
       {/* Footer Info */}
       <div className="absolute bottom-16 text-center z-10 space-y-4">
         {phase !== 'end' && phase !== 'begin' && (
-             <p className="text-white/80 font-medium">Cycles left: {cyclesLeft}</p>
+             <p className="text-white/80 font-medium" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Cycles left: {cyclesLeft}</p>
         )}
         {phase === 'end' && (
-             <p className="text-white font-semibold text-lg">Well done.</p>
+             <p className="text-white font-semibold text-lg" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Well done.</p>
         )}
         <Button onClick={() => onOpenChange(false)} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10 hover:text-white">
             End Session
