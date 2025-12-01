@@ -2,16 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { BreathingExercise } from '@/lib/constants/crisis-resources';
 import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
 
 interface BreathingAnimatorProps {
   exercise: BreathingExercise | null;
@@ -23,14 +17,14 @@ type BreathingPhase = 'inhale' | 'hold1' | 'exhale' | 'hold2' | 'begin' | 'end';
 
 const phaseDetails: Record<
   BreathingPhase,
-  { text: string; scale: number; textColor: string }
+  { text: string; scale: number; bgClass: string }
 > = {
-  begin: { text: 'Get Ready...', scale: 1, textColor: 'text-foreground' },
-  inhale: { text: 'Breathe In', scale: 1.5, textColor: 'text-blue-500' },
-  hold1: { text: 'Hold', scale: 1.5, textColor: 'text-purple-500' },
-  exhale: { text: 'Breathe Out', scale: 0.5, textColor: 'text-green-500' },
-  hold2: { text: 'Hold', scale: 0.5, textColor: 'text-purple-500' },
-  end: { text: 'Finished', scale: 1, textColor: 'text-foreground' },
+  begin: { text: 'Get Ready...', scale: 1, bgClass: 'from-gray-300 to-gray-400' },
+  inhale: { text: 'Breathe In', scale: 1.5, bgClass: 'from-blue-200 to-blue-300' },
+  hold1: { text: 'Hold', scale: 1.5, bgClass: 'from-purple-200 to-purple-300' },
+  exhale: { text: 'Breathe Out', scale: 0.7, bgClass: 'from-green-200 to-green-300' },
+  hold2: { text: 'Hold', scale: 0.7, bgClass: 'from-purple-200 to-purple-300' },
+  end: { text: 'Finished', scale: 1, bgClass: 'from-gray-300 to-gray-400' },
 };
 
 export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAnimatorProps) {
@@ -60,58 +54,86 @@ export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAni
     setPhase('begin');
     let currentPhaseIndex = -1;
     let cycleCount = exercise.cycles;
+    let mainTimeout: NodeJS.Timeout;
 
-    const timeout = setTimeout(() => {
-      const advancePhase = () => {
+    // Use a function to schedule the next phase
+    const scheduleNextPhase = () => {
+      mainTimeout = setTimeout(() => {
         currentPhaseIndex = (currentPhaseIndex + 1) % phaseSequence.length;
         const current = phaseSequence[currentPhaseIndex];
 
         if (currentPhaseIndex === 0) {
           cycleCount--;
+          if (cycleCount < 0) {
+            setPhase('end');
+            return; // End of cycles
+          }
           setCyclesLeft(cycleCount);
         }
         
-        if (cycleCount < 0) {
-            setPhase('end');
-            return;
-        }
-        
         setPhase(current.phase);
-        
-        setTimeout(advancePhase, current.duration * 1000);
-      };
+        scheduleNextPhase();
+      }, (currentPhaseIndex === -1 ? 2000 : phaseSequence[currentPhaseIndex].duration * 1000));
+    };
+    
+    scheduleNextPhase();
 
-      advancePhase();
-    }, 2000); // Initial 2s delay
-
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(mainTimeout);
   }, [open, exercise, phaseSequence]);
   
-  if (!exercise) return null;
+  if (!exercise || !open) return null;
+
+  const currentPhaseDetails = phaseDetails[phase];
+  const duration = (phase === 'begin' || phase === 'end') 
+    ? 2 
+    : exercise.pattern[phase as 'inhale' | 'exhale' | 'hold1' | 'hold2'] || 2;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>{exercise.name}</DialogTitle>
-          <DialogDescription>Follow the guide on screen.</DialogDescription>
-        </DialogHeader>
-        <div className="flex-1 flex flex-col items-center justify-center gap-8 text-center">
-            
-          <div className="relative w-48 h-48 flex items-center justify-center">
-            <motion.div
-                className="absolute w-full h-full bg-primary/10 rounded-full"
-                animate={{ scale: phaseDetails[phase].scale }}
-                transition={{ duration: exercise.pattern[phase.startsWith('hold') ? 'inhale' : phase as 'inhale'|'exhale'] || 2, ease: 'easeInOut' }}
-             />
-             <motion.div
-                className="absolute w-2/3 h-2/3 bg-primary/20 rounded-full"
-                animate={{ scale: phaseDetails[phase].scale }}
-                transition={{ duration: exercise.pattern[phase.startsWith('hold') ? 'inhale' : phase as 'inhale'|'exhale'] || 2, ease: 'easeInOut', delay: 0.1 }}
-             />
-          </div>
+    <div className="fixed inset-0 bg-background z-50 flex flex-col items-center justify-center p-4">
+      {/* Background Gradient */}
+      <motion.div
+        key={phase}
+        className={cn("absolute inset-0 transition-colors duration-1000", currentPhaseDetails.bgClass)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2 }}
+        style={{
+          background: `radial-gradient(circle, var(--tw-gradient-from), var(--tw-gradient-to))`,
+        }}
+      />
+      
+      {/* Close Button */}
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="absolute top-4 right-4 z-10 h-12 w-12 rounded-full bg-black/10 hover:bg-black/20 text-white"
+        onClick={() => onOpenChange(false)}
+      >
+        <X className="h-6 w-6" />
+      </Button>
 
-          <AnimatePresence mode="wait">
+      {/* Title */}
+      <div className="absolute top-16 text-center z-10">
+        <h2 className="text-2xl font-bold text-white/80">{exercise.name}</h2>
+        <p className="text-white/60">Follow the guide on screen.</p>
+      </div>
+
+      {/* Animator */}
+      <div className="relative w-64 h-64 flex items-center justify-center text-white">
+        {/* Pulsating circles */}
+        <motion.div
+            className="absolute w-full h-full bg-white/20 rounded-full"
+            animate={{ scale: currentPhaseDetails.scale }}
+            transition={{ duration, ease: 'easeInOut' }}
+         />
+         <motion.div
+            className="absolute w-2/3 h-2/3 bg-white/30 rounded-full"
+            animate={{ scale: currentPhaseDetails.scale }}
+            transition={{ duration, ease: 'easeInOut', delay: 0.1 }}
+         />
+
+         {/* Phase Text */}
+         <AnimatePresence mode="wait">
             <motion.div
               key={phase}
               initial={{ opacity: 0, y: 10 }}
@@ -120,25 +142,25 @@ export function BreathingAnimator({ exercise, open, onOpenChange }: BreathingAni
               transition={{ duration: 0.5 }}
               className="absolute flex flex-col items-center"
             >
-              <p className={cn("text-4xl font-bold tracking-tight", phaseDetails[phase].textColor)}>
-                {phaseDetails[phase].text}
+              <p className="text-5xl font-bold tracking-tight">
+                {currentPhaseDetails.text}
               </p>
             </motion.div>
           </AnimatePresence>
-        </div>
+      </div>
 
-        <div className="text-center space-y-4">
-            {phase !== 'end' && phase !== 'begin' && (
-                 <p className="text-muted-foreground">Cycles left: {cyclesLeft}</p>
-            )}
-            {phase === 'end' && (
-                 <p className="text-foreground font-semibold">Well done.</p>
-            )}
-          <Button onClick={() => onOpenChange(false)} className="w-full" variant="outline">
+      {/* Footer Info */}
+      <div className="absolute bottom-16 text-center z-10 space-y-4">
+        {phase !== 'end' && phase !== 'begin' && (
+             <p className="text-white/80 font-medium">Cycles left: {cyclesLeft}</p>
+        )}
+        {phase === 'end' && (
+             <p className="text-white font-semibold text-lg">Well done.</p>
+        )}
+        <Button onClick={() => onOpenChange(false)} variant="outline" className="bg-transparent text-white border-white/50 hover:bg-white/10 hover:text-white">
             End Session
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </Button>
+      </div>
+    </div>
   );
 }
