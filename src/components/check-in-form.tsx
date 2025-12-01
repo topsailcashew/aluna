@@ -1,7 +1,8 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowDown, Brain, Heart, Plus, Waves, XIcon } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, Brain, Heart, Plus, Waves, XIcon } from 'lucide-react';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -337,6 +338,22 @@ export function CheckInForm() {
                                   <p className="font-medium">{currentSensation.location}</p>
                                    <Badge variant="outline">{currentSensation.intensity}/10</Badge>
                                 </div>
+                                <FormField
+                                  name={`sensations.${fields.length}.intensity`}
+                                  render={() => (
+                                      <FormItem>
+                                          <FormControl>
+                                              <Slider
+                                                  value={[currentSensation.intensity]}
+                                                  onValueChange={([value]) => setCurrentSensation(p => ({ ...p, intensity: value }))}
+                                                  min={0}
+                                                  max={10}
+                                                  step={1}
+                                              />
+                                          </FormControl>
+                                      </FormItem>
+                                  )}
+                                />
                                  <FormItem>
                                   <FormLabel>Notes (optional)</FormLabel>
                                   <Input
@@ -505,20 +522,31 @@ export function CheckInForm() {
               <Button
                 type="button"
                 variant="outline"
+                size="icon"
+                className="rounded-full"
                 onClick={() => setCurrentStep(currentStep - 1)}
                 disabled={currentStep === 0}
+                aria-label="Previous step"
               >
-                Previous
+                <ArrowLeft className="h-4 w-4" />
               </Button>
+
+              <span className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {steps.length}
+              </span>
+
               {currentStep < steps.length - 1 ? (
                 <Button
                   type="button"
+                  size="icon"
+                  className="rounded-full"
                   onClick={() => setCurrentStep(currentStep + 1)}
+                  aria-label="Next step"
                 >
-                  Next
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full">
                   {form.formState.isSubmitting
                     ? 'Saving...'
                     : 'Complete Check-in'}
