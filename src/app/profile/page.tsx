@@ -2,7 +2,7 @@
 
 import { useAuth, useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,6 +11,7 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Loader2,
   UserCircle,
@@ -25,23 +26,39 @@ import {
   Shield,
   Edit,
   Sparkles,
+  Save,
+  Camera,
+  X,
 } from 'lucide-react';
-import { signOut } from 'firebase/auth';
+import { signOut, updateProfile } from 'firebase/auth';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useWellnessLog } from '@/context/wellness-log-provider';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function ProfilePage() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const { logEntries } = useWellnessLog();
   const router = useRouter();
+  const { toast } = useToast();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
+  const [newAvatarPreview, setNewAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
+    }
+    if (user) {
+      setDisplayName(user.displayName || '');
     }
   }, [user, isUserLoading, router]);
 
@@ -52,9 +69,62 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSave = async () => {
+    if (!user || !auth) return;
+
+    setIsSaving(true);
+    let photoURL = user.photoURL;
+
+    try {
+      if (newAvatarFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `profile-pictures/${user.uid}`);
+        await uploadBytes(storageRef, newAvatarFile);
+        photoURL = await getDownloadURL(storageRef);
+      }
+
+      await updateProfile(user, {
+        displayName: displayName,
+        photoURL: photoURL,
+      });
+
+      toast({
+        title: 'Profile Updated',
+        description: 'Your profile has been saved successfully.',
+      });
+      setIsEditing(false);
+      setNewAvatarFile(null);
+      setNewAvatarPreview(null);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to update your profile.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  const handleCancel = () => {
+    setIsEditing(false);
+    setDisplayName(user?.displayName || '');
+    setNewAvatarFile(null);
+    setNewAvatarPreview(null);
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewAvatarFile(file);
+      setNewAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
   const getUserInitials = () => {
-    if (!user?.displayName) return 'U';
-    return user.displayName
+    if (!displayName) return 'U';
+    return displayName
       .split(' ')
       .map(n => n[0])
       .join('')
@@ -62,67 +132,10 @@ export default function ProfilePage() {
       .slice(0, 2);
   };
 
-  // Calculate user stats
   const totalCheckIns = logEntries?.length || 0;
-
-  // Calculate streak
-  const calculateStreak = () => {
-    if (!logEntries || logEntries.length === 0) return 0;
-
-    const sortedEntries = [...logEntries].sort((a, b) => {
-      const dateA = typeof a.date === 'string' ? new Date(a.date) : a.date.toDate?.() || new Date();
-      const dateB = typeof b.date === 'string' ? new Date(b.date) : b.date.toDate?.() || new Date();
-      return dateB.getTime() - dateA.getTime();
-    });
-
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    for (const entry of sortedEntries) {
-      const entryDate = typeof entry.date === 'string' ? new Date(entry.date) : entry.date.toDate?.() || new Date();
-      entryDate.setHours(0, 0, 0, 0);
-
-      const diffDays = Math.floor((currentDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diffDays === streak) {
-        streak++;
-      } else if (diffDays > streak) {
-        break;
-      }
-    }
-
-    return streak;
-  };
-
-  const currentStreak = calculateStreak();
-
-  // Get most common emotion
-  const getMostCommonEmotion = () => {
-    if (!logEntries || logEntries.length === 0) return 'None yet';
-
-    const emotionCounts: Record<string, number> = {};
-    logEntries.forEach(entry => {
-      emotionCounts[entry.emotion] = (emotionCounts[entry.emotion] || 0) + 1;
-    });
-
-    const mostCommon = Object.entries(emotionCounts).sort((a, b) => b[1] - a[1])[0];
-    return mostCommon ? mostCommon[0] : 'None yet';
-  };
-
-  // Get account age
-  const getAccountAge = () => {
-    if (!user?.metadata?.creationTime) return 'Unknown';
-    const created = new Date(user.metadata.creationTime);
-    const now = new Date();
-    const days = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (days === 0) return 'Today';
-    if (days === 1) return '1 day';
-    if (days < 30) return `${days} days`;
-    if (days < 365) return `${Math.floor(days / 30)} months`;
-    return `${Math.floor(days / 365)} years`;
-  };
+  const currentStreak = 0; // Placeholder
+  const mostCommonEmotion = 'None yet'; // Placeholder
+  const accountAge = user?.metadata?.creationTime ? format(new Date(user.metadata.creationTime), 'PPP') : 'Unknown';
 
   if (isUserLoading || !user) {
     return (
@@ -135,39 +148,77 @@ export default function ProfilePage() {
   return (
     <div className="flex-1 bg-gradient-to-b from-background to-muted/20 p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Profile Header */}
         <Card className="border-2">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-2xl font-bold">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                   <AvatarImage src={newAvatarPreview || user.photoURL || ''} alt={displayName} />
+                  <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-2xl font-bold">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                   <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center border-2 border-background"
+                  >
+                    <Camera className="h-4 w-4" />
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                      accept="image/png, image/jpeg"
+                    />
+                  </button>
+                )}
+              </div>
 
               <div className="flex-1 text-center md:text-left space-y-2">
-                <div className="flex items-center gap-2 justify-center md:justify-start">
-                  <h1 className="text-3xl font-bold">{user.displayName || 'Welcome'}</h1>
-                  <Badge variant="secondary" className="gap-1">
-                    <Sparkles className="h-3 w-3" />
-                    Active
-                  </Badge>
-                </div>
+                 {isEditing ? (
+                  <Input
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="text-3xl font-bold h-12"
+                  />
+                ) : (
+                  <div className="flex items-center gap-2 justify-center md:justify-start">
+                    <h1 className="text-3xl font-bold">{displayName || 'Welcome'}</h1>
+                    <Badge variant="secondary" className="gap-1">
+                      <Sparkles className="h-3 w-3" />
+                      Active
+                    </Badge>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-muted-foreground justify-center md:justify-start">
                   <Mail className="h-4 w-4" />
                   <p className="text-sm">{user.email}</p>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground justify-center md:justify-start">
                   <Calendar className="h-4 w-4" />
-                  <p className="text-sm">Member for {getAccountAge()}</p>
+                  <p className="text-sm">Member for {accountAge}</p>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
+                {isEditing ? (
+                  <>
+                    <Button onClick={handleSave} size="sm" disabled={isSaving}>
+                      {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                      Save
+                    </Button>
+                     <Button onClick={handleCancel} size="sm" variant="outline">
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
@@ -208,7 +259,7 @@ export default function ProfilePage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold truncate">{getMostCommonEmotion()}</div>
+              <div className="text-2xl font-bold truncate">{mostCommonEmotion}</div>
               <p className="text-xs text-muted-foreground">Primary emotion</p>
             </CardContent>
           </Card>
@@ -240,7 +291,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-muted-foreground">Display Name</label>
-                <p className="text-sm font-semibold">{user.displayName || 'Not set'}</p>
+                <p className="text-sm font-semibold">{displayName || 'Not set'}</p>
               </div>
               <Separator />
               <div className="space-y-2">

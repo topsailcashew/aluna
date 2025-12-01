@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -28,7 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { signOut } from 'firebase/auth';
 import { useTheme } from 'next-themes';
 import { Switch } from '../ui/switch';
@@ -77,7 +76,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {showNav && (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container grid h-16 grid-cols-3 items-center">
-            {/* Left Section: Logo & Brand */}
             <div className="flex items-center justify-start">
               <Link
                 href={user ? '/dashboard' : '/'}
@@ -89,7 +87,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
 
-            {/* Centered Navigation for Desktop */}
             {isClient && user && (
               <div className="hidden md:flex justify-center">
                 <nav className="flex items-center gap-2 rounded-full bg-muted/50 p-1.5">
@@ -116,7 +113,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             )}
 
-            {/* Right Side Actions */}
             <div className="flex items-center justify-end gap-2">
               {!isClient || isUserLoading ? (
                 <div className="flex items-center gap-2">
@@ -132,82 +128,78 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </Button>
                 </>
               ) : (
-                <>
-                  {/* User & Settings Menu */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full"
-                      >
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
-                            {getUserInitials()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel>
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium">
-                            {user.displayName || 'User'}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {user.email}
-                          </p>
-                        </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-
-                      {/* Mobile Navigation Links */}
-                      <div className="md:hidden">
-                        {navLinks.map((link) => (
-                          <DropdownMenuItem key={link.href} asChild>
-                            <Link href={link.href}>
-                              <link.icon className="mr-2 h-4 w-4" />
-                              {link.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                        <DropdownMenuSeparator />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full"
+                    >
+                      <Avatar className="h-8 w-8">
+                         <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">
+                          {user.displayName || 'User'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
                       </div>
-
-                      <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        {theme === 'dark' ? (
-                          <Moon className="mr-2 h-4 w-4" />
-                        ) : (
-                          <Sun className="mr-2 h-4 w-4" />
-                        )}
-                        <span>Dark Mode</span>
-                        <Switch
-                          checked={theme === 'dark'}
-                          onCheckedChange={(checked) =>
-                            setTheme(checked ? 'dark' : 'light')
-                          }
-                          className="ml-auto"
-                        />
-                      </DropdownMenuItem>
-
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="md:hidden">
+                      {navLinks.map((link) => (
+                        <DropdownMenuItem key={link.href} asChild>
+                          <Link href={link.href}>
+                            <link.icon className="mr-2 h-4 w-4" />
+                            {link.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={handleSignOut}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign Out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
+                    </div>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      {theme === 'dark' ? (
+                        <Moon className="mr-2 h-4 w-4" />
+                      ) : (
+                        <Sun className="mr-2 h-4 w-4" />
+                      )}
+                      <span>Dark Mode</span>
+                      <Switch
+                        checked={theme === 'dark'}
+                        onCheckedChange={(checked) =>
+                          setTheme(checked ? 'dark' : 'light')
+                        }
+                        className="ml-auto"
+                      />
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
