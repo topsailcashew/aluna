@@ -17,17 +17,14 @@ import {
   Wind,
   User,
   LogOut,
-  Settings,
   LogIn,
   UserPlus,
-  UserCircle,
   Plus,
   Moon,
   Sun,
   LineChart,
   Sparkles,
 } from 'lucide-react';
-import { ThemeToggle } from '../theme-toggle';
 import { useAuth, useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
@@ -73,16 +70,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: '/tools', label: 'Tools', icon: Wind },
   ];
 
-  const showNav = !['/', '/login', '/signup'].includes(pathname);
+  const showNav = !['/', '/login', '/signup', '/life-messages'].includes(pathname);
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Modern Navbar */}
       {showNav && (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-16 items-center justify-between">
             {/* Logo & Brand */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
               <Link
                 href={user ? '/dashboard' : '/'}
                 className="flex items-center gap-2 group"
@@ -92,32 +88,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   Aluna
                 </span>
               </Link>
-
-              {/* Navigation Links (logged in only) */}
-              {isClient && user && (
-                <nav className="hidden md:flex items-center gap-2">
-                  {navLinks.map((link) => {
-                    const Icon = link.icon;
-                    const isActive = pathname === link.href;
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={cn(
-                          'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
-                          isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                        )}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-                </nav>
-              )}
             </div>
+
+            {/* Centered Navigation for Desktop */}
+            {isClient && user && (
+                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2">
+                    <nav className="flex items-center gap-2 rounded-full bg-muted/50 p-1.5">
+                        {navLinks.map((link) => {
+                            const Icon = link.icon;
+                            const isActive = pathname === link.href;
+                            return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={cn(
+                                'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                                isActive
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                )}
+                            >
+                                <Icon className="h-4 w-4" />
+                                {link.label}
+                            </Link>
+                            );
+                        })}
+                    </nav>
+                </div>
+            )}
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
