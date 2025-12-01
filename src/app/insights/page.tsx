@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -5,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useWellnessLog } from '@/context/wellness-log-provider';
-import { AIInsightsCard } from '@/components/ai-insights-card';
+import { InsightsCard } from '@/components/insights-card';
 import { PatternInsights } from '@/components/pattern-insights';
 import { CopingSuggestions } from '@/components/coping-suggestions';
 import { NoEntries } from '../dashboard/no-entries';
@@ -38,10 +39,10 @@ export default function InsightsPage() {
   return (
     <div className="container mx-auto flex-1 space-y-6 p-4 md:p-8 pt-6">
        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">AI Insights</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Insights</h2>
         </div>
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <AIInsightsCard daysBack={7} />
+        <InsightsCard daysBack={7} />
         <PatternInsights daysBack={30} />
         {latestEntry && (
             <CopingSuggestions 

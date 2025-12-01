@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -119,7 +120,7 @@ export function LifeMessagesWizard({
     if (messages.length === 0) {
       toast({
         title: 'No messages',
-        description: 'Add at least one message to get AI insights.',
+        description: 'Add at least one message to get insights.',
         variant: 'destructive',
       });
       return;
@@ -150,15 +151,15 @@ export function LifeMessagesWizard({
 
       setAiInsights(data);
       toast({
-        title: 'AI insights generated',
+        title: 'Insights generated',
         description: 'Review your personalized reflections below.',
       });
     } catch (error) {
-      console.error('Failed to fetch AI insights:', error);
+      console.error('Failed to fetch insights:', error);
 
-      let errorMessage = 'Failed to generate AI insights. Please try again.';
+      let errorMessage = 'Failed to generate insights. Please try again.';
       if (error instanceof AuthenticationError) {
-        errorMessage = 'Please sign in to generate AI insights.';
+        errorMessage = 'Please sign in to generate insights.';
       } else if (error instanceof RateLimitError) {
         errorMessage = `Rate limit exceeded. Try again in ${error.retryAfter} seconds.`;
       } else if (error instanceof ApiError) {
@@ -286,7 +287,7 @@ export function LifeMessagesWizard({
                 Here's a visual representation of how your messages connect to core beliefs and patterns.
               </p>
 
-              {/* AI Insights Toggle */}
+              {/* Insights Toggle */}
               <div className="flex items-center justify-center gap-4 pt-4">
                 <Button
                   variant={useAIInsights ? 'default' : 'outline'}
@@ -306,7 +307,7 @@ export function LifeMessagesWizard({
                   ) : (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
-                      {useAIInsights ? 'Hide AI Insights' : 'Get AI Insights'}
+                      {useAIInsights ? 'Hide Insights' : 'Get Insights'}
                     </>
                   )}
                 </Button>
@@ -316,7 +317,7 @@ export function LifeMessagesWizard({
             <SummaryCanvas messages={messages} patterns={patterns} />
             <SummaryTextual messages={messages} patterns={patterns} />
 
-            {/* AI Insights Display */}
+            {/* Insights Display */}
             {useAIInsights && aiInsights && (
               <div className="max-w-4xl mx-auto space-y-6 mt-8">
                 {aiInsights.synthesis && (

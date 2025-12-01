@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -65,7 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/check-in', label: 'Check-in', icon: Plus },
     { href: '/trends', label: 'Trends', icon: LineChart },
-    { href: '/insights', label: 'AI Insights', icon: Sparkles },
+    { href: '/insights', label: 'Insights', icon: Sparkles },
     { href: '/tools', label: 'Tools', icon: Wind },
   ];
 
