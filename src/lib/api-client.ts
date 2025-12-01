@@ -175,7 +175,7 @@ export async function authenticatedFetch(
     // Wrap unknown errors
     throw new ApiError(
       500,
-      'Network error',
+      error instanceof Error ? error.message : 'A network error occurred.',
       error instanceof Error ? error.message : 'Unknown error'
     );
   }

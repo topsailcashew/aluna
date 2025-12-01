@@ -8,7 +8,6 @@ import { Loader2 } from 'lucide-react';
 import { useWellnessLog } from '@/context/wellness-log-provider';
 import { InsightsCard } from '@/components/insights-card';
 import { PatternInsights } from '@/components/pattern-insights';
-import { CopingSuggestions } from '@/components/coping-suggestions';
 import { NoEntries } from '../dashboard/no-entries';
 
 export default function InsightsPage() {
@@ -22,8 +21,6 @@ export default function InsightsPage() {
     }
   }, [user, isUserLoading, router]);
   
-  const latestEntry = logEntries.length > 0 ? logEntries.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null;
-
   if (isUserLoading || !user || isLoading) {
     return (
       <div className="flex items-center justify-center h-full flex-1">
@@ -44,15 +41,6 @@ export default function InsightsPage() {
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         <InsightsCard daysBack={7} />
         <PatternInsights daysBack={30} />
-        {latestEntry && (
-            <CopingSuggestions 
-                currentEmotion={latestEntry.emotion}
-                specificEmotions={latestEntry.specificEmotions}
-                intensity={latestEntry.sensations.reduce((acc, s) => acc + s.intensity, 0) / latestEntry.sensations.length || 5}
-                contextTags={latestEntry.contextTags}
-                recentEntries={logEntries.slice(0, 5)}
-            />
-        )}
       </div>
     </div>
   );
