@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -26,7 +27,7 @@ export default function CheckInPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center p-4 sm:p-6 md:p-8">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-6xl">
         <CheckInForm />
       </div>
     </div>
