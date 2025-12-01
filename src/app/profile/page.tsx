@@ -30,7 +30,7 @@ import {
   Camera,
   X,
 } from 'lucide-react';
-import { signOut, updateProfile } from 'firebase/auth';
+import { signOut, updateProfile, updateEmail } from 'firebase/auth';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,6 +48,7 @@ export default function ProfilePage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
@@ -59,6 +60,7 @@ export default function ProfilePage() {
     }
     if (user) {
       setDisplayName(user.displayName || '');
+      setEmail(user.email || '');
     }
   }, [user, isUserLoading, router]);
 
@@ -76,6 +78,7 @@ export default function ProfilePage() {
     let photoURL = user.photoURL;
 
     try {
+      // Upload new avatar if selected
       if (newAvatarFile) {
         const storage = getStorage();
         const storageRef = ref(storage, `profile-pictures/${user.uid}`);
@@ -83,10 +86,18 @@ export default function ProfilePage() {
         photoURL = await getDownloadURL(storageRef);
       }
 
-      await updateProfile(user, {
-        displayName: displayName,
-        photoURL: photoURL,
-      });
+      // Update profile display name and photo
+      if (displayName !== user.displayName || photoURL !== user.photoURL) {
+        await updateProfile(user, {
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+      }
+
+      // Update email if it has changed
+      if (email !== user.email) {
+        await updateEmail(user, email);
+      }
 
       toast({
         title: 'Profile Updated',
@@ -95,12 +106,16 @@ export default function ProfilePage() {
       setIsEditing(false);
       setNewAvatarFile(null);
       setNewAvatarPreview(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
+      let description = 'Failed to update your profile. Please try again.';
+      if (error.code === 'auth/requires-recent-login') {
+        description = 'Changing your email requires a recent sign-in. Please log out and log back in to continue.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to update your profile.',
+        description,
       });
     } finally {
       setIsSaving(false);
@@ -110,6 +125,7 @@ export default function ProfilePage() {
   const handleCancel = () => {
     setIsEditing(false);
     setDisplayName(user?.displayName || '');
+    setEmail(user?.email || '');
     setNewAvatarFile(null);
     setNewAvatarPreview(null);
   };
@@ -177,27 +193,39 @@ export default function ProfilePage() {
 
               <div className="flex-1 text-center md:text-left space-y-2">
                  {isEditing ? (
-                  <Input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    className="text-3xl font-bold h-12"
-                  />
-                ) : (
-                  <div className="flex items-center gap-2 justify-center md:justify-start">
-                    <h1 className="text-3xl font-bold">{displayName || 'Welcome'}</h1>
-                    <Badge variant="secondary" className="gap-1">
-                      <Sparkles className="h-3 w-3" />
-                      Active
-                    </Badge>
+                  <div className="space-y-4">
+                    <Input
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="text-3xl font-bold h-12"
+                      placeholder="Your Name"
+                    />
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="text-sm h-10"
+                      placeholder="your@email.com"
+                    />
                   </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 justify-center md:justify-start">
+                      <h1 className="text-3xl font-bold">{displayName || 'Welcome'}</h1>
+                      <Badge variant="secondary" className="gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        Active
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground justify-center md:justify-start">
+                      <Mail className="h-4 w-4" />
+                      <p className="text-sm">{user.email}</p>
+                    </div>
+                  </>
                 )}
                 <div className="flex items-center gap-2 text-muted-foreground justify-center md:justify-start">
-                  <Mail className="h-4 w-4" />
-                  <p className="text-sm">{user.email}</p>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground justify-center md:justify-start">
                   <Calendar className="h-4 w-4" />
-                  <p className="text-sm">Member for {accountAge}</p>
+                  <p className="text-sm">Member since {accountAge}</p>
                 </div>
               </div>
 
