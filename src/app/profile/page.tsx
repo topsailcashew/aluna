@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth, useUser } from '@/firebase';
@@ -85,14 +86,12 @@ export default function ProfilePage() {
         await uploadBytes(storageRef, newAvatarFile);
         photoURL = await getDownloadURL(storageRef);
       }
-
-      // Update profile display name and photo
-      if (displayName !== user.displayName || photoURL !== user.photoURL) {
-        await updateProfile(user, {
-          displayName: displayName,
-          photoURL: photoURL,
-        });
-      }
+      
+      // Update profile display name and photo unconditionally if in edit mode
+      await updateProfile(user, {
+        displayName: displayName,
+        photoURL: photoURL,
+      });
 
       // Update email if it has changed
       if (email !== user.email) {
@@ -407,3 +406,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
