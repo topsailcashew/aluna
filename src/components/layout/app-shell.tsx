@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={user ? '/dashboard' : '/'}
                 className="flex items-center gap-2 group"
               >
-                <Icons.logo className="h-7 w-7 text-primary" />
+                
                 <span className="font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
                   Aluna
                 </span>
