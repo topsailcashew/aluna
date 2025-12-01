@@ -32,6 +32,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { signOut } from 'firebase/auth';
 import { useTheme } from 'next-themes';
 import { Switch } from '../ui/switch';
+import { Icons } from '../icons';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
