@@ -12,9 +12,24 @@ const sensationSchema = z.object({
 
 const logEntrySchema = z.object({
   emotion: z.string().min(1, "A level 2 emotion selection is required."),
-  specificEmotions: z.array(z.string()).min(1, "At least one specific emotion must be selected."),
+  specificEmotions: z
+    .array(z.string())
+    .min(1, "At least one specific emotion must be selected."),
   sensations: z.array(sensationSchema),
   thoughts: z.array(z.string()).optional().default([]),
+  contextTags: z
+    .object({
+      location: z.string().optional(),
+      activity: z.array(z.string()).optional(),
+      triggers: z.array(z.string()).optional(),
+      people: z.string().optional(),
+      timeOfDay: z.string().optional(),
+    })
+    .optional(),
+  journalEntry: z
+    .string()
+    .max(2000, "Journal entry is too long (max 2000 characters)")
+    .optional(),
 });
 
 export async function submitLogEntry(formData: unknown) {
