@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -70,134 +71,136 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: '/tools', label: 'Tools', icon: Wind },
   ];
 
+  const showNav = !['/', '/login', '/signup'].includes(pathname);
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Modern Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-6">
-            <Link
-              href={user ? '/dashboard' : '/'}
-              className="flex items-center gap-2 group"
-            >
-              <Icons.logo className="h-7 w-7 text-primary" />
-              <span className="font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
-                Aluna
-              </span>
-            </Link>
+      {showNav && (
+        <header className="sticky top-0 z-50 w-full px-4">
+          <div className="flex h-16 items-center justify-between mt-4 rounded-xl border bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 px-6">
+            {/* Logo & Brand */}
+            <div className="flex items-center gap-6">
+              <Link
+                href={user ? '/dashboard' : '/'}
+                className="flex items-center gap-2 group"
+              >
+                <Icons.logo className="h-7 w-7 text-primary" />
+                <span className="font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
+                  Aluna
+                </span>
+              </Link>
 
-            {/* Navigation Links (logged in only) */}
-            {isClient && user && (
-              <nav className="hidden md:flex items-center gap-2">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const isActive = pathname === link.href;
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
-          </div>
-
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-2">
-            {!isClient || isUserLoading ? (
-               <div className="flex items-center gap-2">
-                <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
-                <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
-              </div>
-            ) : !user ? (
-              <>
-                 <Button variant="ghost" asChild>
-                    <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild>
-                    <Link href="/signup">Sign Up</Link>
-                </Button>
-                <div className="h-4 w-px bg-border mx-1" />
-                <ThemeToggle />
-              </>
-            ) : (
-              <>
-                {/* User & Settings Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                      <Settings className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>
-                      <div className="flex items-center gap-3">
-                         <Avatar className="h-9 w-9">
-                          <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
-                            {getUserInitials()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium">{user.displayName || 'User'}</p>
-                          <p className="text-xs text-muted-foreground">{user.email}</p>
-                        </div>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-
-                    {/* Mobile Navigation Links */}
-                    <div className="md:hidden">
-                      {navLinks.map((link) => (
-                        <DropdownMenuItem key={link.href} asChild>
-                           <Link href={link.href}>
-                            <link.icon className="mr-2 h-4 w-4" />
-                            {link.label}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                      <DropdownMenuSeparator />
-                    </div>
-
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile">
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
+              {/* Navigation Links (logged in only) */}
+              {isClient && user && (
+                <nav className="hidden md:flex items-center gap-2">
+                  {navLinks.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {link.label}
                       </Link>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      {theme === 'dark' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
-                      <span>Dark Mode</span>
-                      <Switch
-                        checked={theme === 'dark'}
-                        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                        className="ml-auto"
-                      />
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            )}
+                    );
+                  })}
+                </nav>
+              )}
+            </div>
+
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-2">
+              {!isClient || isUserLoading ? (
+                 <div className="flex items-center gap-2">
+                  <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+                  <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+                </div>
+              ) : !user ? (
+                <>
+                   <Button variant="ghost" asChild>
+                      <Link href="/login">Sign In</Link>
+                  </Button>
+                  <Button asChild>
+                      <Link href="/signup">Sign Up</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {/* User & Settings Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full">
+                        <Settings className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>
+                        <div className="flex items-center gap-3">
+                           <Avatar className="h-9 w-9">
+                            <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs">
+                              {getUserInitials()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium">{user.displayName || 'User'}</p>
+                            <p className="text-xs text-muted-foreground">{user.email}</p>
+                          </div>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+
+                      {/* Mobile Navigation Links */}
+                      <div className="md:hidden">
+                        {navLinks.map((link) => (
+                          <DropdownMenuItem key={link.href} asChild>
+                             <Link href={link.href}>
+                              <link.icon className="mr-2 h-4 w-4" />
+                              {link.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                      </div>
+
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        {theme === 'dark' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                        <span>Dark Mode</span>
+                        <Switch
+                          checked={theme === 'dark'}
+                          onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                          className="ml-auto"
+                        />
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
       <main className="flex-1 flex flex-col pt-0">{children}</main>
     </div>
   );
