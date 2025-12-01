@@ -84,9 +84,6 @@ export function JournalEntryEditor({
               {showPrompts ? "Hide" : "Show"} Prompts
             </button>
           </div>
-          <p className="text-muted-foreground">
-            Take a moment to reflect on your experience. What's on your mind?
-          </p>
         </div>
 
         {showPrompts && (
