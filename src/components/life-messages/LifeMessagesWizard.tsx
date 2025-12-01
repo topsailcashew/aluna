@@ -16,7 +16,7 @@ import { MicroGoalCreator } from './MicroGoalCreator';
 import { CrisisModal } from './CrisisModal';
 import { LifeMessageSession, LifeMessage, Pattern, MicroGoal, AIReflectResponse } from '@/lib/types/life-messages';
 import { saveDraftToLocal, loadDraftFromLocal } from '@/lib/utils/local-storage';
-import { Download, Share2, Sparkles, Loader2 } from 'lucide-react';
+import { Download, Share2, Sparkles, Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
@@ -391,8 +391,14 @@ export function LifeMessagesWizard({
       {/* Navigation Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-4 px-4 sm:px-6 z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Button variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-            Previous
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={prevStep}
+            disabled={currentStep === 0}
+            aria-label="Previous step"
+          >
+            <ArrowLeft className="h-4 w-4" />
           </Button>
 
           <span className="text-sm text-muted-foreground">
@@ -400,10 +406,12 @@ export function LifeMessagesWizard({
           </span>
 
           <Button
+            size="icon"
             onClick={nextStep}
             disabled={currentStep === 4 || !canProceedFromStep(currentStep)}
+            aria-label="Next step"
           >
-            {currentStep === 3 ? 'Continue to Actions' : 'Next'}
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
