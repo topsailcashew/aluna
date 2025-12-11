@@ -17,6 +17,7 @@ import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { submitLogEntry } from '@/lib/actions';
 import { useWellnessLog } from '@/context/wellness-log-provider';
@@ -218,7 +219,9 @@ export function MobileCheckInForm() {
             className="absolute inset-0 flex flex-col"
           >
             <div className="flex-1 overflow-y-auto px-4 pb-4">
-              <CurrentStepComponent form={form} />
+              <Form {...form}>
+                <CurrentStepComponent form={form} />
+              </Form>
             </div>
           </motion.div>
         </AnimatePresence>
