@@ -155,7 +155,14 @@ async function checkRateLimit(
     return { allowed: true };
   } catch (error) {
     console.error('Rate limit check failed:', error);
-    // On error, allow the request (fail open) but log the error
+
+    // Fail closed for AI endpoints to prevent abuse
+    // Fail open for other endpoints to maintain availability
+    if (endpoint.startsWith('ai-')) {
+      return { allowed: false, retryAfter: 60 };
+    }
+
+    // For non-AI endpoints, fail open but log the error
     return { allowed: true };
   }
 }

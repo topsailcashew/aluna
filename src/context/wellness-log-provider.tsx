@@ -42,19 +42,28 @@ export function WellnessLogProvider({
       // When logged in, use data from Firestore.
       // Entries from Firestore should already be LogEntry type with proper Timestamps
       const formattedEntries: LogEntry[] = logEntriesFromDb.map(entry => {
+        // Type guard function to check if value is a Timestamp
+        const isTimestamp = (value: any): value is Timestamp => {
+          return value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function';
+        };
+
         // Ensure date is a Timestamp
         const dateValue = entry.date;
-        const timestamp = (dateValue && typeof dateValue === 'object' && 'toDate' in dateValue)
-          ? dateValue as Timestamp
-          : Timestamp.now();
+        const timestamp = isTimestamp(dateValue) ? dateValue : Timestamp.now();
+
+        // Safely access optional Timestamp fields
+        const rawEntry = entry as any;
+        const createdAt = isTimestamp(rawEntry.createdAt) ? rawEntry.createdAt : timestamp;
+        const updatedAt = isTimestamp(rawEntry.updatedAt) ? rawEntry.updatedAt : timestamp;
+        const version = typeof rawEntry.version === 'number' && rawEntry.version >= 1 ? rawEntry.version : 1;
 
         return {
           ...entry,
           date: timestamp,
           userId: user.uid,
-          createdAt: (entry as any).createdAt || timestamp,
-          updatedAt: (entry as any).updatedAt || timestamp,
-          version: (entry as any).version || 1,
+          createdAt,
+          updatedAt,
+          version,
         } as LogEntry;
       });
       setLocalEntries(formattedEntries);

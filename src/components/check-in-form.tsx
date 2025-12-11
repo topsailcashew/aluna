@@ -134,20 +134,29 @@ export function CheckInForm() {
   }, [selectedLevel2Emotion]);
 
   const onSubmit = async (data: CheckInFormValues) => {
-    const result = await submitLogEntry(data);
-    if (result.success) {
-      addLogEntry(data);
-      toast({
-        title: 'Entry Saved',
-        description:
-          'Your wellness check-in has been logged successfully.',
-      });
-      router.push('/dashboard');
-    } else {
+    try {
+      const result = await submitLogEntry(data);
+      if (result.success) {
+        addLogEntry(data);
+        toast({
+          title: 'Entry Saved',
+          description:
+            'Your wellness check-in has been logged successfully.',
+        });
+        router.push('/dashboard');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.message || 'Failed to save entry',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to submit check-in:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: result.message,
+        description: 'Failed to save entry. Please try again.',
       });
     }
   };

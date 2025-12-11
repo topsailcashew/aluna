@@ -39,10 +39,10 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    if (!isUserLoading && user) {
+    if (!isUserLoading && user && !form.formState.isSubmitting) {
       router.push('/dashboard');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, form.formState.isSubmitting]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!auth) return;

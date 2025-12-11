@@ -438,7 +438,7 @@ interface ContextTags {
 ```
 
 ### Life Messages Sessions
-**Collection Path:** `/users/{userId}/lifeMessagesSessions/{sessionId}`
+**Collection Path:** `/users/{userId}/lifeMessageSessions/{sessionId}`
 
 ```typescript
 interface LifeMessageSession {
@@ -457,12 +457,44 @@ interface LifeMessageSession {
 
 ## Security
 
-- **Firestore Security Rules:** User-specific data access enforcement
-- **Authentication Required:** All protected routes require Firebase Auth
-- **Schema Validation:** Server-side validation on all write operations
-- **Environment Variables:** Sensitive configuration kept secure
-- **API Route Protection:** Token verification on all API endpoints
-- **Rate Limiting:** Protection against abuse in AI endpoints
+### Authentication & Authorization
+- **Firebase Authentication:** Industry-standard authentication with secure token-based sessions
+- **Protected Routes:** All user data routes require valid authentication
+- **Token Verification:** ID tokens verified on every API request
+- **Session Management:** Automatic token refresh and expiration handling
+
+### Data Security
+- **Firestore Security Rules:** Comprehensive user-specific data access enforcement
+  - Users can only access their own data
+  - Therapist access requires explicit grants
+  - Append-only logging for audit trails
+- **Schema Validation:** Server-side validation using Zod on all write operations
+- **Input Sanitization:** All user input sanitized to prevent XSS attacks
+  - HTML entity escaping
+  - SQL injection prevention
+  - Path traversal protection
+
+### API Security
+- **CSRF Protection:** Origin validation on all state-changing requests
+- **Rate Limiting:** Protection against abuse and DDoS
+  - AI endpoints: 5-20 requests/hour per user
+  - Fail-closed strategy for AI endpoints
+  - Tracked in Firestore for distributed rate limiting
+- **CORS Configuration:** Configurable allowed origins via `ALLOWED_ORIGINS` environment variable
+  - Leave empty for same-origin only (recommended for production)
+  - Example: `ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com`
+
+### Environment Variables
+- **Secrets Management:** All sensitive keys stored in environment variables
+- **Validation:** Startup validation ensures all required variables are present
+- **Separation:** Client-side (`NEXT_PUBLIC_*`) vs server-side variables clearly separated
+- **Documentation:** Comprehensive `.env.example` file provided
+
+### Monitoring & Logging
+- **Structured Logging:** Centralized error logging with context
+- **Error Tracking:** Ready for Sentry integration
+- **Health Checks:** `/api/health` endpoint for monitoring
+- **Audit Trail:** AI usage tracking in Firestore
 
 ## Pages & Routes
 
