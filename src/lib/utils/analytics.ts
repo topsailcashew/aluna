@@ -4,9 +4,9 @@
  * Data aggregation, transformation, and statistical calculations for dashboard
  */
 
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import type { LogEntry, ChartDataPoint, EmotionFrequency } from '../types';
-import { filterByDateRange, groupByDay } from './date-helpers';
+import { filterByDateRange, groupByDay, toDate } from './date-helpers';
 import { emotionCategories } from '../data';
 
 /**
@@ -65,8 +65,7 @@ export function getMonthlyComparison(
   current: { emotions: EmotionFrequency[]; count: number };
   previous: { emotions: EmotionFrequency[]; count: number };
 } {
-  const getDate = (entry: LogEntry) =>
-    entry.date instanceof Date ? entry.date : parseISO(entry.date as any);
+  const getDate = (entry: LogEntry) => toDate(entry.date as any);
 
   const currentEntries = filterByDateRange(entries, getDate, currentMonthStart, currentMonthEnd);
   const previousEntries = filterByDateRange(entries, getDate, previousMonthStart, previousMonthEnd);

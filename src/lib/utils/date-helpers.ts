@@ -9,10 +9,14 @@ import { Timestamp } from 'firebase/firestore';
 /**
  * Helper to convert various date types to Date object
  */
-function toDate(date: Date | string | Timestamp): Date {
+export function toDate(date: Date | string | Timestamp): Date {
   if (date instanceof Date) return date;
+  if (date instanceof Timestamp) return date.toDate();
   if (typeof date === 'string') return parseISO(date);
-  if (date && typeof date === 'object' && 'toDate' in date) return date.toDate();
+  // Fallback for objects with toDate method (like Firestore Timestamp)
+  if (date && typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
+    return date.toDate();
+  }
   return new Date(date);
 }
 
@@ -137,13 +141,13 @@ export function getDaysInLastN(n: number): Date[] {
  */
 export function groupByDay<T>(
   items: T[],
-  getDate: (item: T) => Date | string
+  getDate: (item: T) => Date | string | Timestamp
 ): Map<string, T[]> {
   const grouped = new Map<string, T[]>();
 
   for (const item of items) {
     const date = getDate(item);
-    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    const dateObj = toDate(date as any);
     const dayKey = format(startOfDay(dateObj), 'yyyy-MM-dd');
 
     if (!grouped.has(dayKey)) {
@@ -158,8 +162,8 @@ export function groupByDay<T>(
 /**
  * Get time of day from a date (morning, afternoon, evening, night)
  */
-export function getTimeOfDay(date: Date | string): 'morning' | 'afternoon' | 'evening' | 'night' {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+export function getTimeOfDay(date: Date | string | Timestamp): 'morning' | 'afternoon' | 'evening' | 'night' {
+  const dateObj = toDate(date as any);
   const hour = dateObj.getHours();
 
   if (hour >= 5 && hour < 12) return 'morning';
@@ -171,16 +175,16 @@ export function getTimeOfDay(date: Date | string): 'morning' | 'afternoon' | 'ev
 /**
  * Get day of week name
  */
-export function getDayOfWeek(date: Date | string): string {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+export function getDayOfWeek(date: Date | string | Timestamp): string {
+  const dateObj = toDate(date as any);
   return format(dateObj, 'EEEE');
 }
 
 /**
  * Check if a date is within a range
  */
-export function isDateInRange(date: Date | string, start: Date, end: Date): boolean {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+export function isDateInRange(date: Date | string | Timestamp, start: Date, end: Date): boolean {
+  const dateObj = toDate(date as any);
   return dateObj >= start && dateObj <= end;
 }
 
@@ -189,7 +193,7 @@ export function isDateInRange(date: Date | string, start: Date, end: Date): bool
  */
 export function filterByDateRange<T>(
   items: T[],
-  getDate: (item: T) => Date | string,
+  getDate: (item: T) => Date | string | Timestamp,
   start: Date,
   end: Date
 ): T[] {
@@ -199,7 +203,7 @@ export function filterByDateRange<T>(
 /**
  * Calculate streak from sorted dates (newest first)
  */
-export function calculateStreak(dates: (Date | string)[]): {
+export function calculateStreak(dates: (Date | string | Timestamp)[]): {
   current: number;
   longest: number;
 } {
@@ -207,7 +211,7 @@ export function calculateStreak(dates: (Date | string)[]): {
 
   // Convert to Date objects and sort (newest first)
   const sortedDates = dates
-    .map((d) => (typeof d === 'string' ? parseISO(d) : d))
+    .map((d) => toDate(d as any))
     .sort((a, b) => b.getTime() - a.getTime());
 
   let currentStreak = 0;
@@ -247,7 +251,7 @@ export function calculateStreak(dates: (Date | string)[]): {
  */
 export function getHeatmapData<T>(
   items: T[],
-  getDate: (item: T) => Date | string,
+  getDate: (item: T) => Date | string | Timestamp,
   daysBack: number = 90
 ): Array<{ date: string; count: number; day: number; value: number }> {
   const { start, end } = getLastNDays(daysBack);
@@ -271,7 +275,7 @@ export function getHeatmapData<T>(
  */
 export function getTimeOfDayDistribution<T>(
   items: T[],
-  getDate: (item: T) => Date | string
+  getDate: (item: T) => Date | string | Timestamp
 ): Record<string, number> {
   const distribution: Record<string, number> = {
     morning: 0,
@@ -293,7 +297,7 @@ export function getTimeOfDayDistribution<T>(
  */
 export function getDayOfWeekDistribution<T>(
   items: T[],
-  getDate: (item: T) => Date | string
+  getDate: (item: T) => Date | string | Timestamp
 ): Record<string, number> {
   const distribution: Record<string, number> = {
     Sunday: 0,
