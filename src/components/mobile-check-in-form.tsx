@@ -167,65 +167,64 @@ export function MobileCheckInForm() {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col">
-      {/* Header with Progress */}
-      <div className="flex-none p-4 pb-2">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-lg font-semibold">{steps[currentStep].title}</h1>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            Cancel
-          </button>
+    <Form {...form}>
+      <div className="fixed inset-0 bg-background flex flex-col">
+        {/* Header with Progress */}
+        <div className="flex-none p-4 pb-2">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-semibold">{steps[currentStep].title}</h1>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+
+          {/* Progress dots */}
+          <div className="flex items-center justify-center gap-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  'h-2 rounded-full transition-all duration-300',
+                  index === currentStep
+                    ? 'w-8 bg-primary'
+                    : index < currentStep
+                    ? 'w-2 bg-primary'
+                    : 'w-2 bg-muted'
+                )}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-2">
-          {steps.map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                'h-2 rounded-full transition-all duration-300',
-                index === currentStep
-                  ? 'w-8 bg-primary'
-                  : index < currentStep
-                  ? 'w-2 bg-primary'
-                  : 'w-2 bg-muted'
-              )}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Main Content Area - Swipeable */}
-      <div className="flex-1 relative overflow-hidden">
-        <AnimatePresence initial={false} custom={direction} mode="wait">
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: 'spring', stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
-            className="absolute inset-0 flex flex-col"
-          >
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
-              <Form {...form}>
+        {/* Main Content Area - Swipeable */}
+        <div className="flex-1 relative overflow-hidden">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={handleDragEnd}
+              className="absolute inset-0 flex flex-col"
+            >
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
                 <CurrentStepComponent form={form} />
-              </Form>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
       {/* Navigation Footer */}
       <div className="flex-none p-4 border-t bg-background">
@@ -266,6 +265,7 @@ export function MobileCheckInForm() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </Form>
   );
 }
