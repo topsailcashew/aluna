@@ -23,9 +23,10 @@ import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError
 interface LifeMessagesWizardProps {
   sessionId: string;
   initialData?: Partial<LifeMessageSession>;
-  onSave: (session: Partial<LifeMessageSession>) => Promise<void>;
+  onComplete: (session: Partial<LifeMessageSession>) => Promise<void>;
   onExportPDF?: () => void;
   onShare?: () => void;
+  isSaving?: boolean;
 }
 
 /**
@@ -34,9 +35,10 @@ interface LifeMessagesWizardProps {
 export function LifeMessagesWizard({
   sessionId,
   initialData,
-  onSave,
+  onComplete,
   onExportPDF,
   onShare,
+  isSaving = false,
 }: LifeMessagesWizardProps) {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<0 | 1 | 2 | 3 | 4>(initialData?.currentStep || 0);
@@ -70,7 +72,7 @@ export function LifeMessagesWizard({
     }
   }, [sessionId, initialData, toast]);
 
-  // Session data for auto-save
+  // Session data
   const sessionData: Partial<LifeMessageSession> = {
     id: sessionId,
     messages,
@@ -78,20 +80,18 @@ export function LifeMessagesWizard({
     microGoals,
     currentStep,
     isDraft: true,
-    isComplete: currentStep === 4,
+    isComplete: false,
   };
 
-  // Auto-save to Firestore
-  const { status: saveStatus, lastSaved } = useAutoSave({
-    data: sessionData,
-    onSave: async (data) => {
-      // Save to local storage first
-      saveDraftToLocal(sessionId, data);
-      // Then sync to Firestore
-      await onSave(data);
-    },
-    delay: 10000, // 10 seconds
-  });
+  // Auto-save to LOCAL STORAGE only (not Firestore)
+  useEffect(() => {
+    // Save draft to local storage for recovery
+    const timeoutId = setTimeout(() => {
+      saveDraftToLocal(sessionId, sessionData);
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [sessionId, messages, patterns, microGoals, currentStep]);
 
   // Update message
   const updateMessage = (id: string, updates: Partial<LifeMessage>) => {
@@ -392,12 +392,12 @@ export function LifeMessagesWizard({
 
       {/* Navigation Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t py-4 px-4 sm:px-6 z-20">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <Button
             variant="outline"
             size="icon"
             onClick={prevStep}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || isSaving}
             aria-label="Previous step"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -407,14 +407,32 @@ export function LifeMessagesWizard({
             Step {currentStep + 1} of 5
           </span>
 
-          <Button
-            size="icon"
-            onClick={nextStep}
-            disabled={currentStep === 4 || !canProceedFromStep(currentStep)}
-            aria-label="Next step"
-          >
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+          {currentStep === 4 ? (
+            <Button
+              onClick={() => onComplete({ ...sessionData, isComplete: true })}
+              disabled={isSaving}
+              aria-label="Complete and save"
+              className="min-w-[100px]"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Complete'
+              )}
+            </Button>
+          ) : (
+            <Button
+              size="icon"
+              onClick={nextStep}
+              disabled={!canProceedFromStep(currentStep) || isSaving}
+              aria-label="Next step"
+            >
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 

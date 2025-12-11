@@ -1,3 +1,10 @@
+/**
+ * Life Messages Exercise Page
+ *
+ * Collects all data in local state and only saves to Firestore when user
+ * explicitly completes the entire process.
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,17 +18,13 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { authenticatedJsonRequest, AuthenticationError, RateLimitError, ApiError } from '@/lib/api-client';
 
-/**
- * Life Messages Exercise Page
- * Protected route - requires authentication
- */
 export default function LifeMessagesPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [sessionId] = useState(() => crypto.randomUUID());
   const [isExporting, setIsExporting] = useState(false);
-  const [sessionCreated, setSessionCreated] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Auth guard
   useEffect(() => {
@@ -30,7 +33,6 @@ export default function LifeMessagesPage() {
     }
   }, [user, isUserLoading, router]);
 
-  // Show loading while checking auth
   if (isUserLoading || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -40,32 +42,34 @@ export default function LifeMessagesPage() {
   }
 
   /**
-   * Save session to Firestore
+   * Save complete session to Firestore
+   * Only called when user explicitly completes the process
    */
-  const handleSave = async (sessionData: Partial<LifeMessageSession>) => {
-    try {
-      if (!sessionCreated) {
-        // First save: create the session
-        await authenticatedJsonRequest('/api/lifemessages', {
-          method: 'POST',
-          body: {
-            sessionData: {
-              ...sessionData,
-              id: sessionId,
-            },
-          },
-        });
+  const handleComplete = async (sessionData: Partial<LifeMessageSession>) => {
+    if (isSaving) return;
 
-        setSessionCreated(true);
-      } else {
-        // Subsequent saves: update the session
-        await authenticatedJsonRequest(`/api/lifemessages/${sessionId}`, {
-          method: 'PATCH',
-          body: {
-            updates: sessionData,
+    setIsSaving(true);
+
+    try {
+      // Save complete session to Firestore
+      await authenticatedJsonRequest('/api/lifemessages', {
+        method: 'POST',
+        body: {
+          sessionData: {
+            ...sessionData,
+            id: sessionId,
+            completed: true,
           },
-        });
-      }
+        },
+      });
+
+      toast({
+        title: 'Session Saved',
+        description: 'Your Life Messages session has been saved successfully.',
+      });
+
+      // Navigate to dashboard or summary
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error saving session:', error);
 
@@ -87,9 +91,15 @@ export default function LifeMessagesPage() {
           description: error.message,
           variant: 'destructive',
         });
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to save session. Please try again.',
+          variant: 'destructive',
+        });
       }
-
-      throw error;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -169,9 +179,10 @@ export default function LifeMessagesPage() {
     <div className="min-h-screen bg-background">
       <LifeMessagesWizard
         sessionId={sessionId}
-        onSave={handleSave}
+        onComplete={handleComplete}
         onExportPDF={handleExportPDF}
         onShare={handleShare}
+        isSaving={isSaving}
       />
 
       {/* Loading overlay during export */}
@@ -180,6 +191,16 @@ export default function LifeMessagesPage() {
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">Generating PDF...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Loading overlay during save */}
+      {isSaving && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Saving your session...</p>
           </div>
         </div>
       )}
