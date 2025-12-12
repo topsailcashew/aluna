@@ -2,8 +2,10 @@
  * Emotions Step - Mobile Check-In
  *
  * Focused emotion selection optimized for mobile with modal workflow.
- * 1. User selects primary emotion from wheel (Level 1)
- * 2. Modal opens for deeper emotion selection (Level 2 & 3)
+ * 1. User selects primary emotion from wheel (Level 1) - outer ring
+ * 2. Level 2 emotions appear in inner ring
+ * 3. User selects Level 2 emotion - modal opens automatically
+ * 4. User selects Level 3 specific emotions in modal
  */
 
 'use client';
@@ -24,23 +26,21 @@ interface EmotionsStepProps {
 
 export function EmotionsStep({ form }: EmotionsStepProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [selectedPrimaryEmotion, setSelectedPrimaryEmotion] = React.useState<string>('');
+  const [selectedLevel2Emotion, setSelectedLevel2Emotion] = React.useState<string>('');
 
   const currentLevel2Emotion = form.watch('emotion');
   const currentSpecificEmotions = form.watch('specificEmotions') || [];
 
-  // Handle selection from emotion wheel (Level 1)
-  const handlePrimaryEmotionSelect = (primaryEmotion: string) => {
-    // Find the category to get the first Level 2 emotion
-    const category = emotionCategories.find((cat) => cat.name === primaryEmotion);
-
-    if (category && category.subCategories.length > 0) {
-      setSelectedPrimaryEmotion(primaryEmotion);
+  // Handle Level 2 emotion selection from wheel
+  const handleLevel2EmotionSelect = (level2Emotion: string) => {
+    if (level2Emotion) {
+      // A Level 2 emotion was selected, open the modal
+      setSelectedLevel2Emotion(level2Emotion);
       setIsModalOpen(true);
     }
   };
 
-  // Handle saving from modal (Level 2 & 3)
+  // Handle saving from modal (Level 3 emotions)
   const handleModalSave = (data: { level2Emotion: string; specificEmotions: string[] }) => {
     form.setValue('emotion', data.level2Emotion, { shouldValidate: true });
     form.setValue('specificEmotions', data.specificEmotions, { shouldValidate: true });
@@ -65,10 +65,10 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
   return (
     <div className="flex flex-col h-full py-4">
       <p className="text-sm text-muted-foreground mb-6">
-        Tap on the emotion wheel to select how you're feeling.
+        Select from the outer ring, then choose a specific feeling from the inner ring.
       </p>
 
-      {/* Emotion Wheel - Shows Primary Emotions (Level 1) */}
+      {/* Emotion Wheel - Shows Primary Emotions (Level 1) and Level 2 */}
       <div className="relative w-full max-w-[400px] mx-auto aspect-square mb-6">
         <FormField
           control={form.control}
@@ -76,20 +76,10 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
           render={() => (
             <FormItem className="w-full h-full">
               <FormControl>
-                <div
-                  onClick={() => {
-                    // Open modal for currently selected emotion if any
-                    if (currentPrimaryEmotion) {
-                      setSelectedPrimaryEmotion(currentPrimaryEmotion);
-                      setIsModalOpen(true);
-                    }
-                  }}
-                >
-                  <EmotionWheelWrapper
-                    selectedEmotion={currentPrimaryEmotion}
-                    onSelectEmotion={handlePrimaryEmotionSelect}
-                  />
-                </div>
+                <EmotionWheelWrapper
+                  selectedEmotion={currentLevel2Emotion}
+                  onSelectEmotion={handleLevel2EmotionSelect}
+                />
               </FormControl>
               <FormMessage className="text-center mt-2" />
             </FormItem>
@@ -107,7 +97,7 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                setSelectedPrimaryEmotion(currentPrimaryEmotion);
+                setSelectedLevel2Emotion(currentLevel2Emotion);
                 setIsModalOpen(true);
               }}
               className="text-primary hover:text-primary rounded-full px-4 transition-all hover:scale-105"
@@ -144,10 +134,10 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
       <EmotionDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        primaryEmotion={selectedPrimaryEmotion}
+        primaryEmotion={getPrimaryEmotionForLevel2(selectedLevel2Emotion)}
         onSave={handleModalSave}
         initialData={{
-          level2Emotion: currentLevel2Emotion,
+          level2Emotion: selectedLevel2Emotion,
           specificEmotions: currentSpecificEmotions,
         }}
       />
