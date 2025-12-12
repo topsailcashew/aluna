@@ -107,33 +107,50 @@ export function SensationsStep({ form }: SensationsStepProps) {
 
         {/* Added Sensations List */}
         {sensations.length > 0 && (
-          <div className="w-full mt-4 space-y-2">
+          <div className="w-full mt-6 space-y-3">
             <p className="text-sm font-medium">Sensations you're tracking:</p>
-            <div className="space-y-2">
-              {sensations.map((sensation: any) => (
-                <div
-                  key={sensation.id}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-card"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{sensation.location}</Badge>
-                      <span className="text-sm font-medium">Intensity: {sensation.intensity}/10</span>
-                    </div>
-                    {sensation.notes && (
-                      <p className="text-xs text-muted-foreground mt-1">{sensation.notes}</p>
-                    )}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeSensation(sensation.id)}
+            <div className="space-y-3">
+              {sensations.map((sensation: any) => {
+                // Get color based on intensity
+                const getIntensityBadgeColor = (value: number) => {
+                  if (value <= 3) return 'bg-green-500/20 text-green-700 border-green-500/30';
+                  if (value <= 6) return 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30';
+                  if (value <= 8) return 'bg-orange-500/20 text-orange-700 border-orange-500/30';
+                  return 'bg-red-500/20 text-red-700 border-red-500/30';
+                };
+
+                return (
+                  <div
+                    key={sensation.id}
+                    className="flex items-center justify-between p-4 rounded-2xl border-2 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all"
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="secondary" className="rounded-full px-3 py-1 font-medium">
+                          {sensation.location}
+                        </Badge>
+                        <Badge
+                          className={`rounded-full px-3 py-1 font-bold border ${getIntensityBadgeColor(sensation.intensity)}`}
+                        >
+                          {sensation.intensity}/10
+                        </Badge>
+                      </div>
+                      {sensation.notes && (
+                        <p className="text-sm text-muted-foreground italic">{sensation.notes}</p>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeSensation(sensation.id)}
+                      className="ml-2 rounded-full hover:bg-destructive/20 hover:text-destructive transition-all hover:scale-110"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -141,17 +158,17 @@ export function SensationsStep({ form }: SensationsStepProps) {
 
       {/* Region Part Selector (for multi-part regions) */}
       {showRegionSelector && selectedRegionParts.length > 0 && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-background border rounded-lg p-6 max-w-md w-full space-y-4">
-            <h3 className="text-lg font-semibold">Select specific body part</h3>
-            <div className="grid grid-cols-2 gap-2">
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-background border-2 border-primary/20 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="text-xl font-bold">Select specific body part</h3>
+            <div className="grid grid-cols-2 gap-3">
               {selectedRegionParts.map((part) => (
                 <Button
                   key={part}
                   type="button"
                   variant="outline"
                   onClick={() => handleRegionPartSelect(part)}
-                  className="h-auto py-3"
+                  className="h-auto py-4 rounded-2xl font-medium hover:scale-105 transition-all hover:shadow-lg"
                 >
                   {part}
                 </Button>
@@ -161,8 +178,9 @@ export function SensationsStep({ form }: SensationsStepProps) {
               type="button"
               variant="ghost"
               onClick={() => setShowRegionSelector(false)}
-              className="w-full"
+              className="w-full rounded-2xl py-4 hover:scale-105 transition-all"
             >
+              <X className="w-5 h-5 mr-2" />
               Cancel
             </Button>
           </div>

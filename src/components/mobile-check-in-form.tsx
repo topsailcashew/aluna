@@ -187,12 +187,12 @@ export function MobileCheckInForm() {
               <div
                 key={index}
                 className={cn(
-                  'h-2 rounded-full transition-all duration-300',
+                  'h-2.5 rounded-full transition-all duration-500',
                   index === currentStep
-                    ? 'w-8 bg-primary'
+                    ? 'w-10 bg-primary shadow-[0_0_12px_rgba(var(--primary-rgb),0.8)]'
                     : index < currentStep
-                    ? 'w-2 bg-primary'
-                    : 'w-2 bg-muted'
+                    ? 'w-2.5 bg-primary/80 shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]'
+                    : 'w-2.5 bg-muted'
                 )}
               />
             ))}
@@ -227,16 +227,16 @@ export function MobileCheckInForm() {
         </div>
 
       {/* Navigation Footer */}
-      <div className="flex-none p-4 border-t bg-background">
-        <div className="flex items-center justify-between gap-4">
+      <div className="flex-none p-4 border-t bg-background/80 backdrop-blur-lg">
+        <div className="flex items-center justify-between gap-3">
           {currentStep > 0 ? (
             <Button
               type="button"
               variant="outline"
               onClick={goToPreviousStep}
-              className="flex-1"
+              className="flex-1 rounded-2xl py-6 text-base font-medium hover:scale-105 transition-all"
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
+              <ChevronLeft className="w-5 h-5 mr-2" />
               Back
             </Button>
           ) : (
@@ -247,19 +247,23 @@ export function MobileCheckInForm() {
             <Button
               type="button"
               onClick={goToNextStep}
-              className="flex-1"
+              className="flex-1 rounded-2xl py-6 text-base font-medium shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105 transition-all"
             >
               Next
-              <ChevronRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           ) : (
             <Button
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={form.formState.isSubmitting}
-              className="flex-1"
+              className={`flex-1 rounded-2xl py-6 text-base font-medium transition-all ${
+                !form.formState.isSubmitting
+                  ? 'shadow-[0_0_30px_rgba(var(--primary-rgb),0.7)] hover:shadow-[0_0_40px_rgba(var(--primary-rgb),0.9)] hover:scale-105'
+                  : ''
+              }`}
             >
-              <Check className="w-4 h-4 mr-2" />
+              <Check className="w-5 h-5 mr-2" />
               {form.formState.isSubmitting ? 'Saving...' : 'Complete'}
             </Button>
           )}

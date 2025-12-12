@@ -15,6 +15,7 @@ import { Slider } from '../ui/slider';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
+import { Plus, X } from 'lucide-react';
 
 interface SensationDetailsModalProps {
   isOpen: boolean;
@@ -54,14 +55,22 @@ export function SensationDetailsModal({
     onClose();
   };
 
+  // Get intensity color based on value
+  const getIntensityColor = (value: number) => {
+    if (value <= 3) return 'text-green-500';
+    if (value <= 6) return 'text-yellow-500';
+    if (value <= 8) return 'text-orange-500';
+    return 'text-red-500';
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] rounded-3xl">
         <DialogHeader>
-          <DialogTitle>Sensation Details</DialogTitle>
+          <DialogTitle className="text-2xl">Sensation Details</DialogTitle>
           <DialogDescription>
             Describe the sensation you're feeling in your{' '}
-            <Badge variant="secondary" className="mx-1">
+            <Badge variant="secondary" className="mx-1 rounded-full px-3 py-1">
               {bodyPart}
             </Badge>
           </DialogDescription>
@@ -69,10 +78,12 @@ export function SensationDetailsModal({
 
         <div className="space-y-6 py-4">
           {/* Intensity Slider */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="intensity">Intensity</Label>
-              <span className="text-2xl font-bold text-primary">{intensity}</span>
+              <Label htmlFor="intensity" className="text-base font-medium">Intensity</Label>
+              <span className={`text-4xl font-bold transition-colors ${getIntensityColor(intensity)}`}>
+                {intensity}
+              </span>
             </div>
             <Slider
               id="intensity"
@@ -93,7 +104,7 @@ export function SensationDetailsModal({
 
           {/* Optional Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes (optional)</Label>
+            <Label htmlFor="notes" className="text-base font-medium">Notes (optional)</Label>
             <Textarea
               id="notes"
               placeholder="Describe what you're feeling... (e.g., tight, sharp, dull, tingling)"
@@ -101,7 +112,7 @@ export function SensationDetailsModal({
               onChange={(e) => setNotes(e.target.value)}
               maxLength={200}
               rows={4}
-              className="resize-none"
+              className="resize-none rounded-2xl"
             />
             <div className="text-xs text-muted-foreground text-right">
               {notes.length}/200
@@ -109,13 +120,24 @@ export function SensationDetailsModal({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
+        {/* Action Buttons - Full Width with Icons */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="w-full rounded-2xl py-6 text-base font-medium hover:scale-105 transition-all"
+          >
+            <X className="w-5 h-5 mr-2" />
             Cancel
           </Button>
-          <Button type="button" onClick={handleSave}>
-            Add Sensation
+          <Button
+            type="button"
+            onClick={handleSave}
+            className="w-full rounded-2xl py-6 text-base font-medium shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105 transition-all"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Add
           </Button>
         </div>
       </DialogContent>

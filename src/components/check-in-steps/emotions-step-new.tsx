@@ -13,7 +13,9 @@ import { UseFormReturn } from 'react-hook-form';
 import { EmotionWheelWrapper } from '../emotion-wheel-wrapper';
 import { EmotionDetailsModal } from '../modals/emotion-details-modal';
 import { FormField, FormItem, FormControl, FormMessage } from '../ui/form';
+import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { Edit2 } from 'lucide-react';
 import { emotionCategories } from '@/lib/data';
 
 interface EmotionsStepProps {
@@ -100,23 +102,27 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">Your emotions:</p>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setSelectedPrimaryEmotion(currentPrimaryEmotion);
                 setIsModalOpen(true);
               }}
-              className="text-sm text-primary hover:underline"
+              className="text-primary hover:text-primary rounded-full px-4 transition-all hover:scale-105"
             >
+              <Edit2 className="w-4 h-4 mr-1" />
               Edit
-            </button>
+            </Button>
           </div>
 
-          <div className="p-4 rounded-lg bg-muted space-y-2">
+          <div className="p-4 rounded-2xl bg-muted/50 backdrop-blur-sm space-y-3 border-2 border-primary/20">
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-muted-foreground">Feeling:</span>
               <Badge
                 variant="secondary"
+                className="rounded-full px-3 py-1 font-medium"
                 style={{ backgroundColor: currentCategory?.color + '40', color: currentCategory?.color }}
               >
                 {currentLevel2Emotion}
@@ -125,7 +131,7 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
 
             <div className="flex flex-wrap gap-2">
               {currentSpecificEmotions.map((emotion: string) => (
-                <Badge key={emotion} variant="outline" className="text-xs">
+                <Badge key={emotion} variant="outline" className="text-xs rounded-full px-3 py-1">
                   {emotion}
                 </Badge>
               ))}

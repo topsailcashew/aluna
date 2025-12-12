@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { emotionCategories } from '@/lib/data';
-import { cn } from '@/lib/utils';
+import { Check, X } from 'lucide-react';
 
 interface EmotionDetailsModalProps {
   isOpen: boolean;
@@ -66,7 +66,7 @@ export function EmotionDetailsModal({
   };
 
   const handleSave = () => {
-    if (!selectedLevel2) return; // Require at least Level 2 selection
+    if (!selectedLevel2) return;
 
     onSave({
       level2Emotion: selectedLevel2,
@@ -79,14 +79,14 @@ export function EmotionDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto rounded-3xl">
         <DialogHeader>
-          <DialogTitle>How are you feeling?</DialogTitle>
+          <DialogTitle className="text-2xl">How are you feeling?</DialogTitle>
           <DialogDescription>
             You selected{' '}
             <Badge
               variant="secondary"
-              className="mx-1"
+              className="mx-1 rounded-full px-3 py-1"
               style={{ backgroundColor: category?.color + '40', color: category?.color }}
             >
               {primaryEmotion}
@@ -99,22 +99,28 @@ export function EmotionDetailsModal({
           {/* Level 2 Emotions */}
           <div className="space-y-3">
             <h3 className="text-sm font-medium">Select a specific feeling</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {category?.subCategories.map((subCat) => (
-                <Button
-                  key={subCat.name}
-                  type="button"
-                  variant={selectedLevel2 === subCat.name ? 'default' : 'outline'}
-                  onClick={() => {
-                    setSelectedLevel2(subCat.name);
-                    // Clear specific emotions when changing Level 2
-                    setSelectedSpecificEmotions([]);
-                  }}
-                  className="h-auto py-3"
-                >
-                  {subCat.name}
-                </Button>
-              ))}
+            <div className="grid grid-cols-2 gap-3">
+              {category?.subCategories.map((subCat) => {
+                const isSelected = selectedLevel2 === subCat.name;
+                return (
+                  <Button
+                    key={subCat.name}
+                    type="button"
+                    variant={isSelected ? 'default' : 'outline'}
+                    onClick={() => {
+                      setSelectedLevel2(subCat.name);
+                      setSelectedSpecificEmotions([]);
+                    }}
+                    className={`h-auto py-4 rounded-2xl font-medium transition-all duration-300 ${
+                      isSelected
+                        ? 'shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105'
+                        : 'hover:scale-105'
+                    }`}
+                  >
+                    {subCat.name}
+                  </Button>
+                );
+              })}
             </div>
           </div>
 
@@ -122,7 +128,7 @@ export function EmotionDetailsModal({
           {availableSpecificEmotions.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-medium">
-                Select one or more emotions that describe how you feel
+                Select emotions that describe how you feel
               </h3>
               <div className="flex flex-wrap gap-2">
                 {availableSpecificEmotions.map((emotion) => {
@@ -134,7 +140,11 @@ export function EmotionDetailsModal({
                       variant={isSelected ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => toggleSpecificEmotion(emotion)}
-                      className="rounded-full"
+                      className={`rounded-full px-4 py-2 transition-all duration-300 ${
+                        isSelected
+                          ? 'shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] scale-105'
+                          : 'hover:scale-105'
+                      }`}
                     >
                       {emotion}
                     </Button>
@@ -146,11 +156,11 @@ export function EmotionDetailsModal({
 
           {/* Selected Summary */}
           {selectedSpecificEmotions.length > 0 && (
-            <div className="p-4 rounded-lg bg-muted">
+            <div className="p-4 rounded-2xl bg-muted">
               <p className="text-sm font-medium mb-2">Your selections:</p>
               <div className="flex flex-wrap gap-2">
                 {selectedSpecificEmotions.map((emotion) => (
-                  <Badge key={emotion} variant="secondary">
+                  <Badge key={emotion} variant="secondary" className="rounded-full">
                     {emotion}
                   </Badge>
                 ))}
@@ -159,13 +169,29 @@ export function EmotionDetailsModal({
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
+        {/* Action Buttons - Full Width with Icons */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="w-full rounded-2xl py-6 text-base font-medium hover:scale-105 transition-all"
+          >
+            <X className="w-5 h-5 mr-2" />
             Cancel
           </Button>
-          <Button type="button" onClick={handleSave} disabled={!canSave}>
-            Save Emotions
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className={`w-full rounded-2xl py-6 text-base font-medium transition-all ${
+              canSave
+                ? 'shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105'
+                : ''
+            }`}
+          >
+            <Check className="w-5 h-5 mr-2" />
+            Save
           </Button>
         </div>
       </DialogContent>
