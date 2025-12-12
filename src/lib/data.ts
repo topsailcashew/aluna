@@ -44,7 +44,7 @@ export const bodyParts = [
 export const emotionCategories = [
   {
     name: "Happy",
-    color: "#F9D95B", // Yellow
+    color: "#FDCB58", // Yellow (Mood Tracking)
     subCategories: [
       { name: "Joyful", emotions: ["Excited", "Interested", "Liberated", "Ecstatic", "Invigorated", "Amused", "Confident", "Important", "Fulfilled"] },
       { name: "Proud", emotions: ["Accepted", "Powerful", "Courageous", "Creative", "Provocative", "Respected"] },
@@ -54,7 +54,7 @@ export const emotionCategories = [
   },
   {
     name: "Sad",
-    color: "#7BB3DB", // Blue
+    color: "#4D87E6", // Blue (Sleep)
     subCategories: [
       { name: "Lonely", emotions: ["Isolated", "Abandoned", "Alone", "Inferior", "Empty", "Apathetic", "Indifferent"] },
       { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Ignored", "Victimized", "Abandoned"] },
@@ -64,7 +64,7 @@ export const emotionCategories = [
   },
   {
     name: "Disgust",
-    color: "#B299D3", // Purple
+    color: "#A876C4", // Purple (Therapy)
     subCategories: [
       { name: "Awful", emotions: ["Repulsed", "Nauseated", "Detestable", "Revolted", "Sickened", "Repelled"] },
       { name: "Disapproving", emotions: ["Judgmental", "Loathing", "Critical", "Disappointed", "Disapproval"] },
@@ -73,7 +73,7 @@ export const emotionCategories = [
   },
   {
     name: "Anger",
-    color: "#F38989", // Red/Pink
+    color: "#EB7995", // Pink (Community)
     subCategories: [
       { name: "Frustrated", emotions: ["Infuriated", "Irritated", "Aggravated", "Agitated", "Distant", "Critical"] },
       { name: "Mad", emotions: ["Furious", "Enraged", "Hostile", "Hateful", "Resentful", "Violated"] },
@@ -83,7 +83,7 @@ export const emotionCategories = [
   },
   {
     name: "Fearful",
-    color: "#8BC9A7", // Green
+    color: "#5CAE5C", // Green (Mindfulness)
     subCategories: [
       { name: "Scared", emotions: ["Frightened", "Terrified", "Shocked", "Overwhelmed", "Helpless"] },
       { name: "Anxious", emotions: ["Worried", "Inadequate", "Insecure", "Inferior", "Insignificant", "Worthless", "Overwhelmed"] },
@@ -93,7 +93,7 @@ export const emotionCategories = [
   },
   {
     name: "Surprise",
-    color: "#7DD4DE", // Cyan/Light Blue
+    color: "#60C3B7", // Teal (Stress Relief)
     subCategories: [
       { name: "Excited", emotions: ["Eager", "Energetic", "Liberated", "Ecstatic", "Amazed", "Awe"] },
       { name: "Amazed", emotions: ["Astonished", "Awe", "Eager", "Energetic", "Shocked", "Dismayed"] },

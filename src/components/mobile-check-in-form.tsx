@@ -234,7 +234,7 @@ export function MobileCheckInForm() {
               type="button"
               variant="outline"
               onClick={goToPreviousStep}
-              className="flex-1 rounded-2xl py-6 text-base font-medium hover:scale-105 transition-all"
+              className="flex-1 rounded-lg py-6 text-base font-medium hover:scale-105 transition-all"
             >
               <ChevronLeft className="w-5 h-5 mr-2" />
               Back
@@ -247,7 +247,7 @@ export function MobileCheckInForm() {
             <Button
               type="button"
               onClick={goToNextStep}
-              className="flex-1 rounded-2xl py-6 text-base font-medium shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105 transition-all"
+              className="flex-1 rounded-lg py-6 text-base font-medium shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105 transition-all"
             >
               Next
               <ChevronRight className="w-5 h-5 ml-2" />
@@ -257,7 +257,7 @@ export function MobileCheckInForm() {
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={form.formState.isSubmitting}
-              className={`flex-1 rounded-2xl py-6 text-base font-medium transition-all ${
+              className={`flex-1 rounded-lg py-6 text-base font-medium transition-all ${
                 !form.formState.isSubmitting
                   ? 'shadow-[0_0_30px_rgba(var(--primary-rgb),0.7)] hover:shadow-[0_0_40px_rgba(var(--primary-rgb),0.9)] hover:scale-105'
                   : ''

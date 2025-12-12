@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Right side - Auth buttons or User menu */}
             <div className="flex items-center gap-2">
               {!isClient || isUserLoading ? (
-                <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
+                <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
               ) : !user ? (
                 <>
                   <Button variant="ghost" asChild className="hidden sm:flex">

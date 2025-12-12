@@ -107,7 +107,7 @@ export function EmotionsStep({ form }: EmotionsStepProps) {
             </Button>
           </div>
 
-          <div className="p-4 rounded-2xl bg-muted/50 backdrop-blur-sm space-y-3 border-2 border-primary/20">
+          <div className="p-4 rounded-lg bg-muted/50 backdrop-blur-sm space-y-3 border-2 border-primary/20">
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-muted-foreground">Feeling:</span>
               <Badge

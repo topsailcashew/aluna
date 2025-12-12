@@ -84,7 +84,7 @@ export function InteractiveBodyMap({
   return (
     <div className={cn('flex flex-col items-center gap-4', className)}>
       {/* Body Diagram */}
-      <div className="relative p-6 rounded-2xl bg-gray-100 dark:bg-gray-800">
+      <div className="relative p-6 rounded-lg bg-gray-100 dark:bg-gray-800">
         <BodyComponent
           partsInput={getBodyParams()}
           onClick={handleRegionClick}

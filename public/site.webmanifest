@@ -4,8 +4,8 @@
   "description": "Track your emotional wellness and mental health journey",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A0E15",
-  "theme_color": "#0A0E15",
+  "background_color": "#FBF7F0",
+  "theme_color": "#FBF7F0",
   "orientation": "portrait-primary",
   "icons": [
     {

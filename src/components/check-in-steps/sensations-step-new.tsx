@@ -122,7 +122,7 @@ export function SensationsStep({ form }: SensationsStepProps) {
                 return (
                   <div
                     key={sensation.id}
-                    className="flex items-center justify-between p-4 rounded-2xl border-2 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all"
+                    className="flex items-center justify-between p-4 rounded-lg border-2 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all"
                   >
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -159,7 +159,7 @@ export function SensationsStep({ form }: SensationsStepProps) {
       {/* Region Part Selector (for multi-part regions) */}
       {showRegionSelector && selectedRegionParts.length > 0 && (
         <div className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-background border-2 border-primary/20 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+          <div className="bg-background border-2 border-primary/20 rounded-lg p-6 max-w-md w-full space-y-4 shadow-2xl">
             <h3 className="text-xl font-bold">Select specific body part</h3>
             <div className="grid grid-cols-2 gap-3">
               {selectedRegionParts.map((part) => (
@@ -168,7 +168,7 @@ export function SensationsStep({ form }: SensationsStepProps) {
                   type="button"
                   variant="outline"
                   onClick={() => handleRegionPartSelect(part)}
-                  className="h-auto py-4 rounded-2xl font-medium hover:scale-105 transition-all hover:shadow-lg"
+                  className="h-auto py-4 rounded-lg font-medium hover:scale-105 transition-all hover:shadow-lg"
                 >
                   {part}
                 </Button>
@@ -178,7 +178,7 @@ export function SensationsStep({ form }: SensationsStepProps) {
               type="button"
               variant="ghost"
               onClick={() => setShowRegionSelector(false)}
-              className="w-full rounded-2xl py-4 hover:scale-105 transition-all"
+              className="w-full rounded-lg py-4 hover:scale-105 transition-all"
             >
               <X className="w-5 h-5 mr-2" />
               Cancel

@@ -79,7 +79,7 @@ export function EmotionDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto rounded-3xl">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">How are you feeling?</DialogTitle>
           <DialogDescription>
@@ -111,7 +111,7 @@ export function EmotionDetailsModal({
                       setSelectedLevel2(subCat.name);
                       setSelectedSpecificEmotions([]);
                     }}
-                    className={`h-auto py-4 rounded-2xl font-medium transition-all duration-300 ${
+                    className={`h-auto py-4 font-medium transition-all duration-300 ${
                       isSelected
                         ? 'shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105'
                         : 'hover:scale-105'
@@ -156,7 +156,7 @@ export function EmotionDetailsModal({
 
           {/* Selected Summary */}
           {selectedSpecificEmotions.length > 0 && (
-            <div className="p-4 rounded-2xl bg-muted">
+            <div className="p-4 rounded-lg bg-muted">
               <p className="text-sm font-medium mb-2">Your selections:</p>
               <div className="flex flex-wrap gap-2">
                 {selectedSpecificEmotions.map((emotion) => (
@@ -175,7 +175,7 @@ export function EmotionDetailsModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            className="w-full rounded-2xl py-6 text-base font-medium hover:scale-105 transition-all"
+            className="w-full py-6 text-base font-medium hover:scale-105 transition-all"
           >
             <X className="w-5 h-5 mr-2" />
             Cancel
@@ -184,7 +184,7 @@ export function EmotionDetailsModal({
             type="button"
             onClick={handleSave}
             disabled={!canSave}
-            className={`w-full rounded-2xl py-6 text-base font-medium transition-all ${
+            className={`w-full py-6 text-base font-medium transition-all ${
               canSave
                 ? 'shadow-[0_0_25px_rgba(var(--primary-rgb),0.6)] hover:shadow-[0_0_35px_rgba(var(--primary-rgb),0.8)] hover:scale-105'
                 : ''
