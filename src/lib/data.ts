@@ -39,61 +39,65 @@ export const bodyParts = [
   "Other",
 ];
 
-// This is a new, 3-level data structure for emotions.
+// 3-level Wheel of Emotions data structure
+// Based on the Plutchik Wheel of Emotions model
 export const emotionCategories = [
   {
     name: "Happy",
-    color: "#F9B233", // Bolder Orange
+    color: "#F9D95B", // Yellow
     subCategories: [
-      { name: "Peaceful", emotions: ["Content", "Relaxed", "Calm", "Serene", "Tranquil", "At Ease", "Grounded", "Fulfilled", "Secure"] },
-      { name: "Joyful", emotions: ["Pleased", "Glad", "Cheerful", "Elated", "Ecstatic", "Jubilant", "Radiant", "Delighted", "Overjoyed"] },
-      { name: "Proud", emotions: ["Satisfied", "Triumphant", "Confident", "Accomplished", "Respected", "Valued", "Assured", "Capable", "Worthy"] },
-      { name: "Optimistic", emotions: ["Hopeful", "Encouraged", "Inspired", "Positive", "Enthusiastic", "Eager", "Motivated", "Ambitious", "Trusting"] },
+      { name: "Joyful", emotions: ["Excited", "Interested", "Liberated", "Ecstatic", "Invigorated", "Amused", "Confident", "Important", "Fulfilled"] },
+      { name: "Proud", emotions: ["Accepted", "Powerful", "Courageous", "Creative", "Provocative", "Respected"] },
+      { name: "Optimistic", emotions: ["Hopeful", "Loving", "Sensitive", "Inspired", "Open", "Playful", "Intimate"] },
+      { name: "Peaceful", emotions: ["Trusting", "Thankful", "Secure", "Nurturing", "Comfortable", "Relaxed", "Serene"] },
     ],
   },
   {
     name: "Sad",
-    color: "#EF798A", // Bolder Pink
+    color: "#7BB3DB", // Blue
     subCategories: [
-      { name: "Hurt", emotions: ["Disappointed", "Pained", "Sorrowful", "Let Down", "Wounded", "Betrayed", "Crushed", "Grieved", "Heartbroken"] },
-      { name: "Lonely", emotions: ["Isolated", "Abandoned", "Empty", "Forsaken", "Alienated", "Unwanted", "Disconnected", "Alone", "Rejected"] },
-      { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Regretful", "Culpable", "Sorry", "Contrite", "Self-reproach", "Disgraced", "Blameworthy"] },
-      { name: "Depressed", emotions: ["Gloomy", "Miserable", "Dejected", "Despondent", "Hopeless", "Melancholy", "Defeated", "Powerless", "Lifeless"] },
+      { name: "Lonely", emotions: ["Isolated", "Abandoned", "Alone", "Inferior", "Empty", "Apathetic", "Indifferent"] },
+      { name: "Guilty", emotions: ["Ashamed", "Remorseful", "Ignored", "Victimized", "Abandoned"] },
+      { name: "Depressed", emotions: ["Inferior", "Empty", "Vulnerable", "Powerless", "Bored", "Despair"] },
+      { name: "Hurt", emotions: ["Disappointed", "Embarrassed", "Devastated", "Rejected", "Insecure"] },
     ],
   },
   {
-    name: "Disgusted",
-    color: "#A086D3", // Bolder Purple
+    name: "Disgust",
+    color: "#B299D3", // Purple
     subCategories: [
-      { name: "Repelled", emotions: ["Revolted", "Nauseated", "Sickened", "Averse", "Disturbed", "Appalled", "Offended", "Contemptuous", "Horrified"] },
-      { name: "Disapproving", emotions: ["Judgmental", "Critical", "Loathing", "Scornful", "Skeptical", "Cynical", "Condemning", "Repulsed", "Displeased"] },
+      { name: "Awful", emotions: ["Repulsed", "Nauseated", "Detestable", "Revolted", "Sickened", "Repelled"] },
+      { name: "Disapproving", emotions: ["Judgmental", "Loathing", "Critical", "Disappointed", "Disapproval"] },
+      { name: "Avoidance", emotions: ["Hesitant", "Aversion", "Detestable", "Revolted", "Awful"] },
     ],
   },
   {
-    name: "Angry",
-    color: "#61A0AF", // Bolder Teal/Blue
+    name: "Anger",
+    color: "#F38989", // Red/Pink
     subCategories: [
-      { name: "Frustrated", emotions: ["Irritated", "Annoyed", "Exasperated", "Impatient", "Aggravated", "Agitated", "Restless", "Bothered", "Vexed"] },
-      { name: "Hostile", emotions: ["Aggressive", "Furious", "Enraged", "Hateful", "Violent", "Threatening", "Provoked", "Irate", "Outraged"] },
-      { name: "Bitter", emotions: ["Resentful", "Vindictive", "Spiteful", "Jealous", "Grudge-holding", "Acrimonious", "Caustic", "Malicious", "Sullen"] },
+      { name: "Frustrated", emotions: ["Infuriated", "Irritated", "Aggravated", "Agitated", "Distant", "Critical"] },
+      { name: "Mad", emotions: ["Furious", "Enraged", "Hostile", "Hateful", "Resentful", "Violated"] },
+      { name: "Aggressive", emotions: ["Provoked", "Hostile", "Hateful", "Threatened", "Oppressed", "Aggressive"] },
+      { name: "Hurt", emotions: ["Embarrassed", "Jealous", "Violated", "Resentful", "Withdrawn", "Skeptical", "Suspicious"] },
     ],
   },
   {
     name: "Fearful",
-    color: "#48B3A6", // Bolder Teal/Green
+    color: "#8BC9A7", // Green
     subCategories: [
-      { name: "Anxious", emotions: ["Worried", "Nervous", "Stressed", "Apprehensive", "Uneasy", "Tense", "Edgy", "Overwhelmed", "Frazzled"] },
-      { name: "Insecure", emotions: ["Inadequate", "Inferior", "Uncertain", "Self-conscious", "Vulnerable", "Worthless", "Unsure", "Exposed", "Helpless"] },
-      { name: "Scared", emotions: ["Frightened", "Terrified", "Panicked", "Alarmed", "Petrified", "Dread", "Horrified", "Afraid", "Daunted"] },
+      { name: "Scared", emotions: ["Frightened", "Terrified", "Shocked", "Overwhelmed", "Helpless"] },
+      { name: "Anxious", emotions: ["Worried", "Inadequate", "Insecure", "Inferior", "Insignificant", "Worthless", "Overwhelmed"] },
+      { name: "Rejected", emotions: ["Alienated", "Ridiculed", "Persecuted", "Disrespected", "Humiliated", "Inadequate"] },
+      { name: "Insecure", emotions: ["Submissive", "Rejected", "Humiliated", "Insecure", "Inferior", "Inadequate", "Insignificant", "Worthless"] },
     ],
   },
   {
-    name: "Surprised",
-    color: "#F2CD5C", // Bolder Yellow
+    name: "Surprise",
+    color: "#7DD4DE", // Cyan/Light Blue
     subCategories: [
-      { name: "Amazed", emotions: ["Astonished", "Awestruck", "Impressed", "Startled", "Moved", "Speechless", "Stunned", "Wonder", "Dumbfounded"] },
-      { name: "Confused", emotions: ["Baffled", "Puzzled", "Perplexed", "Bewildered", "Disoriented", "Lost", "Uncertain", "Muddled", "Clueless"] },
-      { name: "Excited", emotions: ["Eager", "Enthusiastic", "Thrilled", "Anticipating", "Energetic", "Lively", "Aroused", "Fired up", "Passionate"] },
+      { name: "Excited", emotions: ["Eager", "Energetic", "Liberated", "Ecstatic", "Amazed", "Awe"] },
+      { name: "Amazed", emotions: ["Astonished", "Awe", "Eager", "Energetic", "Shocked", "Dismayed"] },
+      { name: "Confused", emotions: ["Perplexed", "Disillusioned", "Amazed", "Astonished", "Startled", "Dismayed"] },
     ],
   },
 ];

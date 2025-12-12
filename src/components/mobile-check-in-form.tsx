@@ -24,8 +24,8 @@ import { useWellnessLog } from '@/context/wellness-log-provider';
 import { cn } from '@/lib/utils';
 
 // Import step components
-import { EmotionsStep } from './check-in-steps/emotions-step';
-import { SensationsStep } from './check-in-steps/sensations-step';
+import { EmotionsStep } from './check-in-steps/emotions-step-new';
+import { SensationsStep } from './check-in-steps/sensations-step-new';
 import { ThoughtsStep } from './check-in-steps/thoughts-step';
 
 const sensationSchema = z.object({
