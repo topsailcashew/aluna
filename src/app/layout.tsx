@@ -11,6 +11,17 @@ import { EmergencyResourcesButton } from '@/components/emergency-resources-butto
 export const metadata: Metadata = {
   title: 'Aluna',
   description: 'A wellness check-in app to chart your feelings over time.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.svg',
+  },
+  manifest: '/site.webmanifest',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F9F9FB' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0E15' },
+  ],
 };
 
 export default function RootLayout({

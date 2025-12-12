@@ -1,0 +1,53 @@
+{
+  "name": "Aluna - Wellness Tracker",
+  "short_name": "Aluna",
+  "description": "Track your emotional wellness and mental health journey",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0E15",
+  "theme_color": "#0A0E15",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["health", "lifestyle", "medical"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Quick Check-In",
+      "short_name": "Check-In",
+      "description": "Record your current emotional state",
+      "url": "/check-in",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your wellness insights",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
