@@ -7,6 +7,9 @@
 - [ ] Delete these exposed keys:
   - `AIzaSyDuQf1wyv38-AjvLB4BlPZeMQ-siMCr3-E`
   - `AIzaSyCbGZr2AvcE--wuV9-BaHAxB69c-w1NL0A`
+  - `AIzaSyDZpv9FHfqcX6xmrV4jQh9QLsA4g3vAQjg` (was committed in `.env.example`;
+    the file now holds a placeholder, but the key remains in git history and
+    must still be revoked)
 - [ ] Generate NEW API key with restrictions
 - [ ] Add new key to `.env.local` file
 

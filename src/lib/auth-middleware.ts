@@ -17,6 +17,7 @@ export const RATE_LIMITS = {
   'ai-insights': { limit: 5, windowMs: 3600000 }, // 5 per hour
   'ai-patterns': { limit: 10, windowMs: 3600000 }, // 10 per hour
   'lifemessages': { limit: 30, windowMs: 3600000 }, // 30 per hour
+  'ai-test': { limit: 5, windowMs: 3600000 }, // 5 per hour
 } as const;
 
 export type RateLimitEndpoint = keyof typeof RATE_LIMITS;
